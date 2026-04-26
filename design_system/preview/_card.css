@@ -1,0 +1,25 @@
+/* Shared card chrome for preview/* files */
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: var(--font-latin);
+  color: var(--fg-primary);
+  background: var(--bg-canvas);
+  padding: 20px;
+}
+.card-row { display: flex; gap: 12px; flex-wrap: wrap; align-items: stretch; }
+.swatch {
+  border-radius: 12px;
+  border: 1px solid var(--border-subtle);
+  padding: 12px;
+  display: flex; flex-direction: column; gap: 8px;
+  min-width: 96px; flex: 1;
+  background: var(--bg-surface);
+}
+.swatch .chip {
+  height: 56px; border-radius: 8px;
+  border: 1px solid var(--border-subtle);
+}
+.swatch .name { font-size: 12px; font-weight: 600; color: var(--fg-primary); }
+.swatch .val  { font-size: 11px; color: var(--fg-tertiary); font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+.lbl { font-size: 11px; font-weight: 600; color: var(--fg-tertiary); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 12px; }

@@ -1,0 +1,24 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css"><link rel="stylesheet" href="_card.css">
+<style>
+  .pair { display:grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .col { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 16px; }
+  .nums { font-size: 36px; font-weight: 600; letter-spacing: 0.04em; color: var(--fg-primary); }
+  .meta { font-size: 11px; color: var(--fg-tertiary); margin-top: 8px; font-family: ui-monospace, monospace; }
+  .ex { font-size: 14px; color: var(--fg-secondary); margin-top: 12px; }
+</style></head>
+<body>
+  <p class="lbl">Numerals · Bangla & English</p>
+  <div class="pair">
+    <div class="col">
+      <div class="nums" style="font-family: var(--font-bangla)">০ ১ ২ ৩ ৪ ৫ ৬ ৭ ৮ ৯</div>
+      <div class="meta">Hind Siliguri · use when surrounding text is Bangla</div>
+      <div class="ex" style="font-family: var(--font-bangla)">১৪ বৈশাখ ১৪৩২ · ২৭ এপ্রিল ২০২৬</div>
+    </div>
+    <div class="col">
+      <div class="nums" style="font-family: var(--font-latin)">0 1 2 3 4 5 6 7 8 9</div>
+      <div class="meta">Inter · use when surrounding text is English</div>
+      <div class="ex">14 Boishakh 1432 · 27 April 2026</div>
+    </div>
+  </div>
+</body></html>

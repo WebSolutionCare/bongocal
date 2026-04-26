@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BongoCal · Pro Upgrade</title>
+  <link rel="stylesheet" href="colors_and_type.css">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; min-height: 100vh; background: #EDEDE7; color: #141413; }
+    body { font-family: var(--font-bangla); padding: 56px 32px 80px; display: flex; flex-direction: column; align-items: center; gap: 32px; }
+    .header { text-align: center; max-width: 760px; }
+    .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; color: #767670; text-transform: uppercase; font-family: var(--font-latin); }
+    .title { font-family: var(--font-latin); font-size: 32px; font-weight: 700; letter-spacing: -0.02em; margin-top: 10px; }
+    .sub { font-family: var(--font-latin); font-size: 15px; color: #535350; margin-top: 8px; line-height: 1.5; }
+    .row { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+    .stage { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .label { font-family: var(--font-latin); font-size: 11px; font-weight: 700; color: #767670; letter-spacing: 0.10em; text-transform: uppercase; }
+
+    .device { width: 390px; height: 844px; background: var(--bg-canvas); border-radius: 50px; border: 10px solid #1A1A18; box-shadow: 0 6px 12px rgba(20,20,19,.10), 0 30px 60px rgba(20,20,19,.20); overflow: hidden; position: relative; }
+    .device.dark { background: #0A0A09; border-color: #000; }
+    .island { position: absolute; left: 50%; top: 8px; transform: translateX(-50%); width: 110px; height: 32px; background: #000; border-radius: 999px; z-index: 50; }
+    .statusbar { position: absolute; top: 0; left: 0; right: 0; height: 47px; padding: 0 30px; display: flex; align-items: center; justify-content: space-between; font-family: var(--font-latin); font-size: 15px; font-weight: 600; color: #fff; z-index: 40; pointer-events: none; }
+    .home-bar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 999px; background: #fff; opacity: 0.5; z-index: 40; }
+    .screen { position: absolute; inset: 0; overflow: hidden; }
+    .scroll { position: absolute; inset: 0; overflow-y: auto; scrollbar-width: none; padding-bottom: 140px; }
+    .scroll::-webkit-scrollbar { display: none; }
+
+    /* ================= HERO ================= */
+    .hero {
+      position: relative; padding: 68px 22px 28px;
+      color: #fff;
+      background:
+        radial-gradient(circle at 80% 12%, rgba(212,175,55,0.55) 0%, transparent 45%),
+        radial-gradient(circle at 18% 75%, rgba(0,138,102,0.30) 0%, transparent 50%),
+        linear-gradient(165deg, #0F2B23 0%, #1A1A18 50%, #2A1F0A 100%);
+      overflow: hidden;
+    }
+    .hero::before {
+      content: ""; position: absolute; right: -80px; top: -60px;
+      width: 280px; height: 280px; border-radius: 999px;
+      border: 1px solid rgba(212,175,55,0.18);
+      box-shadow: 0 0 0 28px rgba(212,175,55,0.06), 0 0 0 60px rgba(212,175,55,0.03);
+      pointer-events: none;
+    }
+    .close-btn {
+      position: absolute; top: 56px; right: 16px; z-index: 10;
+      width: 36px; height: 36px; border-radius: 999px;
+      background: rgba(255,255,255,0.10); backdrop-filter: blur(10px);
+      border: 0; color: #fff; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .close-btn svg { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .hero-icon {
+      width: 88px; height: 88px; border-radius: 26px;
+      background: linear-gradient(135deg, #F0D360 0%, #D4AF37 50%, #A8881C 100%);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 12px 30px rgba(212,175,55,0.40), inset 0 1px 0 rgba(255,255,255,0.4);
+      position: relative;
+      animation: float 4s ease-in-out infinite;
+    }
+    @keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+    .hero-icon svg { fill: #1A1A18; }
+    .hero-icon::after {
+      content: ""; position: absolute; inset: -8px; border-radius: 32px;
+      border: 1px solid rgba(212,175,55,0.30);
+      animation: ring 2.5s ease-in-out infinite;
+    }
+    @keyframes ring { 0%,100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 0; transform: scale(1.15); } }
+    .hero-title {
+      font-family: var(--font-latin); font-size: 32px; font-weight: 700; letter-spacing: -0.02em;
+      margin-top: 18px; display: inline-flex; align-items: baseline; gap: 8px;
+    }
+    .hero-title .pro {
+      font-family: var(--font-latin); font-weight: 700;
+      background: linear-gradient(135deg, #F5DC7C 0%, #D4AF37 100%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .hero-tag {
+      font-family: var(--font-bangla); font-size: 14px; opacity: 0.78; margin-top: 6px;
+    }
+
+    /* ================= FEATURES ================= */
+    .features {
+      margin: 24px 16px 0;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px; padding: 4px 0;
+      backdrop-filter: blur(8px);
+    }
+    .feat {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .feat:last-child { border-bottom: 0; }
+    .feat .ic {
+      width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+      background: rgba(212,175,55,0.16); color: #E8C969;
+      display: inline-flex; align-items: center; justify-content: center;
+      font-size: 14px;
+    }
+    .feat .ic svg { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .feat .nm {
+      font-family: var(--font-bangla); font-size: 14px; font-weight: 500;
+      color: rgba(255,255,255,0.94); flex: 1;
+    }
+    .feat .check {
+      width: 20px; height: 20px; border-radius: 999px;
+      background: linear-gradient(135deg, #D4AF37, #A8881C); color: #1A1A18;
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .feat .check svg { stroke: currentColor; fill: none; stroke-width: 2.6; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ================= PRICING ================= */
+    .pricing {
+      margin: 22px 16px 0;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .price {
+      background: rgba(255,255,255,0.05);
+      border: 1.5px solid rgba(255,255,255,0.10);
+      border-radius: 18px; padding: 14px 16px;
+      cursor: pointer; position: relative;
+      display: flex; align-items: center; gap: 12px;
+      transition: all 160ms var(--ease-standard);
+    }
+    .price:hover { background: rgba(255,255,255,0.08); }
+    .price.on {
+      background: rgba(212,175,55,0.10);
+      border-color: #D4AF37;
+      box-shadow: 0 0 0 3px rgba(212,175,55,0.18);
+    }
+    .price-radio {
+      width: 22px; height: 22px; border-radius: 999px; flex-shrink: 0;
+      border: 2px solid rgba(255,255,255,0.30);
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .price.on .price-radio { border-color: #D4AF37; background: #D4AF37; }
+    .price.on .price-radio::after {
+      content: ""; width: 8px; height: 8px; border-radius: 999px; background: #1A1A18;
+    }
+    .price-meta { flex: 1; min-width: 0; }
+    .price-row1 {
+      display: flex; align-items: center; gap: 8px;
+      font-family: var(--font-bangla); font-size: 15px; font-weight: 600;
+      color: #fff;
+    }
+    .price-tag {
+      font-family: var(--font-latin); font-size: 9px; font-weight: 700; letter-spacing: 0.10em;
+      padding: 2px 7px; border-radius: 999px;
+      background: linear-gradient(135deg, #D4AF37, #A8881C); color: #1A1A18;
+    }
+    .price-row2 {
+      font-family: var(--font-latin); font-size: 12px; color: rgba(255,255,255,0.55); margin-top: 2px;
+    }
+    .price-amt {
+      text-align: right; flex-shrink: 0;
+    }
+    .price-amt .big {
+      font-family: var(--font-latin); font-size: 22px; font-weight: 700; color: #fff;
+      letter-spacing: -0.01em;
+    }
+    .price-amt .per {
+      font-family: var(--font-latin); font-size: 11px; color: rgba(255,255,255,0.55);
+    }
+    .price-strike {
+      font-family: var(--font-latin); font-size: 11px; color: rgba(255,255,255,0.40);
+      text-decoration: line-through; margin-right: 4px;
+    }
+
+    /* ================= SOCIAL PROOF ================= */
+    .proof {
+      margin: 24px 16px 0;
+      text-align: center;
+    }
+    .stars {
+      display: inline-flex; gap: 2px;
+      color: #D4AF37;
+    }
+    .stars svg { width: 16px; height: 16px; fill: currentColor; }
+    .proof-num {
+      font-family: var(--font-latin); font-size: 22px; font-weight: 700; color: #fff;
+      letter-spacing: -0.01em; margin-top: 8px;
+    }
+    .proof-num .gold {
+      background: linear-gradient(135deg, #F5DC7C 0%, #D4AF37 100%);
+      -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+    }
+    .proof-sub {
+      font-family: var(--font-bangla); font-size: 12px; color: rgba(255,255,255,0.65);
+      margin-top: 4px;
+    }
+    .testimonials {
+      margin: 16px 16px 0;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .testi {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px; padding: 14px;
+    }
+    .testi-quote {
+      font-family: var(--font-bangla); font-size: 13px; color: rgba(255,255,255,0.92);
+      line-height: 1.6;
+    }
+    .testi-quote::before { content: "\201C"; color: #D4AF37; font-size: 22px; line-height: 0; vertical-align: -8px; margin-right: 4px; }
+    .testi-meta {
+      display: flex; align-items: center; gap: 8px; margin-top: 10px;
+    }
+    .testi-avatar {
+      width: 28px; height: 28px; border-radius: 999px;
+      background: linear-gradient(135deg, #006A4E, #D4AF37);
+      display: inline-flex; align-items: center; justify-content: center;
+      font-family: var(--font-latin); font-size: 12px; font-weight: 700; color: #fff;
+      flex-shrink: 0;
+    }
+    .testi-name {
+      font-family: var(--font-bangla); font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.85);
+    }
+    .testi-loc {
+      font-family: var(--font-latin); font-size: 10px; color: rgba(255,255,255,0.5);
+    }
+    .testi-stars {
+      margin-left: auto; display: inline-flex; gap: 1px; color: #D4AF37;
+    }
+    .testi-stars svg { width: 11px; height: 11px; fill: currentColor; }
+
+    /* ================= STICKY CTA ================= */
+    .cta-wrap {
+      position: absolute; left: 0; right: 0; bottom: 0; padding: 14px 16px 28px;
+      background: linear-gradient(180deg, rgba(10,10,9,0) 0%, rgba(10,10,9,0.92) 25%, rgba(10,10,9,0.98) 100%);
+      backdrop-filter: blur(8px);
+      z-index: 20;
+    }
+    .cta-btn {
+      width: 100%; height: 54px; border-radius: 14px; border: 0;
+      background: linear-gradient(135deg, #F0D360 0%, #D4AF37 50%, #A8881C 100%);
+      color: #1A1A18; cursor: pointer;
+      font-family: var(--font-bangla); font-size: 16px; font-weight: 700;
+      box-shadow: 0 8px 24px rgba(212,175,55,0.35), inset 0 1px 0 rgba(255,255,255,0.4);
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      letter-spacing: -0.005em;
+    }
+    .cta-btn:hover { filter: brightness(1.05); }
+    .cta-btn svg { stroke: currentColor; fill: none; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+    .cta-row {
+      display: flex; align-items: center; justify-content: space-between; margin-top: 10px;
+    }
+    .cta-row a {
+      font-family: var(--font-latin); font-size: 12px; color: rgba(255,255,255,0.65); text-decoration: none;
+      cursor: pointer;
+    }
+    .cta-row a.ghost {
+      font-family: var(--font-bangla);
+    }
+    .cta-disc {
+      font-family: var(--font-latin); font-size: 9px; line-height: 1.5;
+      color: rgba(255,255,255,0.40); text-align: center; margin-top: 8px;
+    }
+
+    /* Section heading */
+    .sec-h {
+      font-family: var(--font-bangla); font-size: 11px; font-weight: 700; letter-spacing: 0.12em;
+      text-transform: uppercase; color: rgba(255,255,255,0.55);
+      padding: 0 22px; margin-top: 26px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">BongoCal · Pro Upgrade</div>
+  <h1 class="title">The conversion screen, premium-feeling.</h1>
+  <p class="sub">Dark-luxury hero with gold + emerald wash, animated medallion icon, full feature list with gold checks, two pricing tiers (yearly recommended, save 75%), star rating + Bangla testimonials, sticky gold CTA.</p>
+</div>
+
+<div class="row" id="row"></div>
+
+<template id="status-tpl">
+  <div class="statusbar">
+    <span>9:41</span>
+    <span style="display:inline-flex;gap:6px;align-items:center">
+      <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4" y="5" width="3" height="6" rx="1"/><rect x="8" y="3" width="3" height="8" rx="1"/><rect x="12" y="0" width="3" height="11" rx="1"/></svg>
+      <svg width="22" height="11" viewBox="0 0 22 11" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5"/><rect x="2" y="2" width="13" height="7" rx="1.2" fill="currentColor"/><rect x="19.5" y="3" width="1.5" height="5" rx="0.5" fill="currentColor"/></svg>
+    </span>
+  </div>
+</template>
+
+<template id="page-tpl">
+  <div class="hero">
+    <button class="close-btn"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg></button>
+    <div class="hero-icon">
+      <svg width="44" height="44" viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+    </div>
+    <div class="hero-title">BongoCal <span class="pro">Pro</span></div>
+    <div class="hero-tag">Premium experience · বিজ্ঞাপন-মুক্ত</div>
+  </div>
+
+  <div class="sec-h">যা পাবেন · What's included</div>
+  <div class="features">
+    <div class="feat"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M5 5l14 14"/></svg></span><span class="nm">কোনো বিজ্ঞাপন নেই</span><span class="check"><svg width="11" height="11" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg></span></div>
+    <div class="feat"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9 9a3 3 0 0 1 6 0c0 2-3 2-3 4M12 17h.01"/></svg></span><span class="nm">৫+ Premium Themes</span><span class="check"><svg width="11" height="11" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg></span></div>
+    <div class="feat"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><span class="nm">All Widget Sizes</span><span class="check"><svg width="11" height="11" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg></span></div>
+    <div class="feat"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M18 10h-1.3A6 6 0 0 0 6 12a4 4 0 0 0 1 8h11a4 4 0 0 0 0-8z"/></svg></span><span class="nm">Cloud Sync (সকল ডিভাইসে)</span><span class="check"><svg width="11" height="11" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg></span></div>
+    <div class="feat"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg></span><span class="nm">ক্যালেন্ডার Export</span><span class="check"><svg width="11" height="11" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg></span></div>
+    <div class="feat"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg></span><span class="nm">Priority নতুন ফিচার</span><span class="check"><svg width="11" height="11" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg></span></div>
+    <div class="feat"><span class="ic"><svg width="16" height="16" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20a6 6 0 0 1 12 0M14 20a5 5 0 0 1 7-4"/></svg></span><span class="nm">Family Sharing (৫ জন)</span><span class="check"><svg width="11" height="11" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg></span></div>
+  </div>
+
+  <div class="sec-h">প্ল্যান বাছুন · Choose plan</div>
+  <div class="pricing">
+    <div class="price" data-plan="m">
+      <span class="price-radio"></span>
+      <div class="price-meta">
+        <div class="price-row1">মাসিক</div>
+        <div class="price-row2">Monthly · নবায়ন প্রতি মাসে</div>
+      </div>
+      <div class="price-amt">
+        <div class="big">৳৪৯</div>
+        <div class="per">/ মাস</div>
+      </div>
+    </div>
+    <div class="price on" data-plan="y">
+      <span class="price-radio"></span>
+      <div class="price-meta">
+        <div class="price-row1">বার্ষিক <span class="price-tag">SAVE 75%</span></div>
+        <div class="price-row2">৳১২.৪ / মাস · ৭ দিন বিনামূল্যে ট্রায়াল</div>
+      </div>
+      <div class="price-amt">
+        <div class="big"><span class="price-strike">৳৫৮৮</span>৳১৪৯</div>
+        <div class="per">/ বছর</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="proof">
+    <div class="stars">
+      <svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+      <svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+    </div>
+    <div class="proof-num"><span class="gold">৫০,০০০+</span> users love Pro</div>
+    <div class="proof-sub">৪.৮ ★ · App Store · Play Store</div>
+  </div>
+
+  <div class="testimonials">
+    <div class="testi">
+      <div class="testi-quote">তিনটি ক্যালেন্ডার একসাথে — অসাধারণ! রমজান ও ঈদের রিমাইন্ডার আমাকে কখনো ভুলতে দেয় না।</div>
+      <div class="testi-meta">
+        <div class="testi-avatar">ফ</div>
+        <div>
+          <div class="testi-name">ফারহান আহমেদ</div>
+          <div class="testi-loc">Dhaka · Pro user</div>
+        </div>
+        <div class="testi-stars">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+        </div>
+      </div>
+    </div>
+    <div class="testi">
+      <div class="testi-quote">পরিবারের সবার জন্মদিন ও বিবাহবার্ষিকী এক জায়গায়। Family Sharing সত্যিই দারুণ।</div>
+      <div class="testi-meta">
+        <div class="testi-avatar">নূ</div>
+        <div>
+          <div class="testi-name">নূসরাত জাহান</div>
+          <div class="testi-loc">Chattogram · Pro user</div>
+        </div>
+        <div class="testi-stars">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+          <svg viewBox="0 0 24 24"><path d="M12 2l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height: 24px;"></div>
+</template>
+
+<template id="cta-tpl">
+  <div class="cta-wrap">
+    <button class="cta-btn">
+      ৭ দিন বিনামূল্যে শুরু করুন
+      <svg width="18" height="18" viewBox="0 0 24 24"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+    </button>
+    <div class="cta-row">
+      <a class="ghost">বিনামূল্যে চালিয়ে যান</a>
+      <a>Restore Purchase</a>
+    </div>
+    <div class="cta-disc">
+      প্ল্যান অটো-নবায়ন হবে · যেকোনো সময় বাতিল করতে পারবেন · <a style="color: rgba(255,255,255,0.55); text-decoration: underline;">Terms &amp; Privacy</a>
+    </div>
+  </div>
+</template>
+
+<script>
+  function build(theme) {
+    const isDark = theme === 'dark';
+    const stage = document.createElement('div');
+    stage.className = 'stage';
+    stage.innerHTML = `
+      <div class="device dark" data-theme="dark">
+        <div class="island"></div>
+        ${document.getElementById('status-tpl').innerHTML}
+        <div class="screen">
+          <div class="scroll">${document.getElementById('page-tpl').innerHTML}</div>
+          ${document.getElementById('cta-tpl').innerHTML}
+        </div>
+        <div class="home-bar"></div>
+      </div>
+      <div class="label">${isDark ? 'Dark · Pro' : 'Light · Pro'}</div>
+    `;
+    if (!isDark) {
+      // For "light" version we still keep dark hero (premium signature), but lighten bg below hero
+      const dev = stage.querySelector('.device');
+      dev.style.background = '#0F2B23';
+    }
+    requestAnimationFrame(() => {
+      stage.querySelectorAll('.price').forEach(p => p.addEventListener('click', () => {
+        stage.querySelectorAll('.price').forEach(x => x.classList.remove('on'));
+        p.classList.add('on');
+      }));
+    });
+    return stage;
+  }
+  const row = document.getElementById('row');
+  row.appendChild(build('light'));
+  row.appendChild(build('dark'));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,22 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css"><link rel="stylesheet" href="_card.css">
+<style>
+  .scale { display:flex; gap: 12px; align-items: flex-end; }
+  .item { display:flex; flex-direction:column; align-items:flex-start; gap:6px; }
+  .bar { background: var(--brand-emerald); border-radius: 4px; width: 56px; }
+  .lab { font-size:11px; font-family: ui-monospace, monospace; color: var(--fg-tertiary); }
+  .nm { font-size: 12px; font-weight: 600; color: var(--fg-primary); }
+</style></head>
+<body>
+  <p class="lbl">Spacing · 4 px base</p>
+  <div class="scale">
+    <div class="item"><div class="bar" style="height:4px"></div><div class="nm">1</div><div class="lab">4 px</div></div>
+    <div class="item"><div class="bar" style="height:8px"></div><div class="nm">2</div><div class="lab">8 px</div></div>
+    <div class="item"><div class="bar" style="height:12px"></div><div class="nm">3</div><div class="lab">12 px</div></div>
+    <div class="item"><div class="bar" style="height:16px"></div><div class="nm">4</div><div class="lab">16 px</div></div>
+    <div class="item"><div class="bar" style="height:24px"></div><div class="nm">6</div><div class="lab">24 px</div></div>
+    <div class="item"><div class="bar" style="height:32px"></div><div class="nm">8</div><div class="lab">32 px</div></div>
+    <div class="item"><div class="bar" style="height:48px"></div><div class="nm">12</div><div class="lab">48 px</div></div>
+    <div class="item"><div class="bar" style="height:64px"></div><div class="nm">16</div><div class="lab">64 px</div></div>
+  </div>
+</body></html>

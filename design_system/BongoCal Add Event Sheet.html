@@ -1,0 +1,477 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BongoCal · Add Event Sheet</title>
+  <link rel="stylesheet" href="colors_and_type.css">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; min-height: 100vh; background: #EDEDE7; color: #141413; }
+    body { font-family: var(--font-bangla); padding: 56px 32px 80px; display: flex; flex-direction: column; align-items: center; gap: 32px; }
+    .header { text-align: center; max-width: 760px; }
+    .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; color: #767670; text-transform: uppercase; font-family: var(--font-latin); }
+    .title { font-family: var(--font-latin); font-size: 32px; font-weight: 700; letter-spacing: -0.02em; margin-top: 10px; }
+    .sub { font-family: var(--font-latin); font-size: 15px; color: #535350; margin-top: 8px; line-height: 1.5; }
+
+    .row { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+    .stage { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .label { font-family: var(--font-latin); font-size: 11px; font-weight: 700; color: #767670; letter-spacing: 0.10em; text-transform: uppercase; }
+
+    .device { width: 390px; height: 844px; background: var(--bg-canvas); border-radius: 50px; border: 10px solid #1A1A18; box-shadow: 0 6px 12px rgba(20,20,19,.10), 0 30px 60px rgba(20,20,19,.20); overflow: hidden; position: relative; }
+    .device.dark { background: #0E0E0D; border-color: #000; }
+    .island { position: absolute; left: 50%; top: 8px; transform: translateX(-50%); width: 110px; height: 32px; background: #000; border-radius: 999px; z-index: 50; }
+    .statusbar { position: absolute; top: 0; left: 0; right: 0; height: 47px; padding: 0 30px; display: flex; align-items: center; justify-content: space-between; font-family: var(--font-latin); font-size: 15px; font-weight: 600; color: #fff; z-index: 40; pointer-events: none; }
+
+    /* Backdrop = darkened home screen */
+    .backdrop {
+      position: absolute; inset: 0;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.65) 100%),
+        radial-gradient(circle at 50% 20%, #007558 0%, #004A36 60%, #002419 100%);
+    }
+    .device.dark .backdrop {
+      background:
+        linear-gradient(180deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.78) 100%),
+        radial-gradient(circle at 50% 20%, #1A1A18 0%, #0E0E0D 100%);
+    }
+
+    /* Sheet */
+    .sheet {
+      position: absolute; left: 0; right: 0; bottom: 0;
+      background: var(--bg-surface);
+      border-radius: 28px 28px 0 0;
+      box-shadow: 0 -12px 40px rgba(0,0,0,0.30);
+      max-height: calc(100% - 58px);
+      display: flex; flex-direction: column;
+      overflow: hidden;
+      animation: slideUp 360ms var(--ease-spring);
+    }
+    @keyframes slideUp {
+      from { transform: translateY(40px); opacity: 0.4; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+    .grabber {
+      width: 36px; height: 5px; border-radius: 999px;
+      background: var(--gray-300); margin: 8px auto 0;
+    }
+    .device.dark .grabber { background: var(--gray-600); }
+
+    .sheet-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px 12px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .sheet-title {
+      font-family: var(--font-bangla); font-size: 17px; font-weight: 600; color: var(--fg-primary);
+    }
+    .sheet-cancel {
+      font-family: var(--font-bangla); font-size: 14px; font-weight: 500; color: var(--fg-secondary);
+      background: none; border: 0; cursor: pointer; padding: 6px 4px;
+    }
+    .sheet-save {
+      font-family: var(--font-bangla); font-size: 14px; font-weight: 600;
+      padding: 7px 14px; border-radius: 999px;
+      background: var(--brand-emerald); color: #fff; border: 0; cursor: pointer;
+    }
+    .sheet-save:hover { background: var(--brand-emerald-700); }
+    .sheet-save:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .sheet-body {
+      flex: 1; overflow-y: auto; scrollbar-width: none;
+      padding: 16px 16px 24px;
+    }
+    .sheet-body::-webkit-scrollbar { display: none; }
+
+    /* Title input row */
+    .title-row {
+      display: flex; gap: 10px; align-items: center;
+      padding: 6px 0 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .emoji-btn {
+      width: 44px; height: 44px; border-radius: 12px;
+      background: var(--bg-surface-2); border: 1px solid var(--border-subtle);
+      cursor: pointer; font-size: 22px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .emoji-btn:hover { background: var(--bg-elevated); }
+    .title-input {
+      flex: 1; min-width: 0;
+      font-family: var(--font-bangla); font-size: 22px; font-weight: 600;
+      color: var(--fg-primary); background: transparent;
+      border: 0; outline: 0; padding: 4px 0;
+      letter-spacing: -0.01em;
+    }
+    .title-input::placeholder { color: var(--fg-tertiary); font-weight: 500; }
+
+    /* Section row */
+    .field {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .field-ic {
+      width: 32px; height: 32px; border-radius: 10px;
+      display: inline-flex; align-items: center; justify-content: center;
+      flex-shrink: 0; color: var(--brand-emerald); background: var(--brand-emerald-50);
+    }
+    .device.dark .field-ic { background: rgba(0,106,78,0.18); color: #4FB394; }
+    .field-ic svg { stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .field-lab {
+      font-family: var(--font-bangla); font-size: 14px; font-weight: 500; color: var(--fg-primary);
+      flex: 0 0 auto;
+    }
+    .field-val {
+      margin-left: auto;
+      font-family: var(--font-latin); font-size: 14px; font-weight: 500; color: var(--fg-secondary);
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .field-val.bn { font-family: var(--font-bangla); }
+    .field-val .chev { color: var(--fg-tertiary); }
+
+    /* Date pill */
+    .date-pill {
+      font-family: var(--font-latin); font-size: 14px; font-weight: 600;
+      padding: 6px 12px; border-radius: 999px;
+      background: var(--brand-emerald-50); color: var(--brand-emerald);
+      border: 0; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
+    }
+    .device.dark .date-pill { background: rgba(0,106,78,0.18); color: #4FB394; }
+    .date-pill svg { stroke: currentColor; fill: none; stroke-width: 1.7; }
+
+    /* Calendar segmented */
+    .seg-row {
+      display: flex; gap: 0; padding: 4px 0 14px; border-bottom: 1px solid var(--border-subtle);
+      align-items: center;
+    }
+    .seg-row .lab {
+      font-family: var(--font-bangla); font-size: 13px; color: var(--fg-tertiary);
+    }
+    .seg {
+      display: inline-flex; padding: 3px; border-radius: 999px;
+      background: var(--bg-surface-2); border: 1px solid var(--border-subtle);
+      margin-left: auto;
+    }
+    .seg button {
+      font-family: var(--font-latin); font-size: 11px; font-weight: 600;
+      padding: 5px 10px; border-radius: 999px; border: 0; background: transparent;
+      color: var(--fg-tertiary); cursor: pointer;
+    }
+    .seg button.on { background: var(--bg-surface); color: var(--fg-primary); box-shadow: var(--shadow-xs); }
+
+    /* Switch */
+    .switch {
+      width: 40px; height: 24px; border-radius: 999px;
+      background: var(--brand-emerald); position: relative;
+      flex-shrink: 0; cursor: pointer;
+      transition: background 160ms var(--ease-standard);
+    }
+    .switch::after {
+      content: ""; position: absolute; top: 2px; left: 18px;
+      width: 20px; height: 20px; border-radius: 999px; background: #fff;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+      transition: left 180ms var(--ease-spring);
+    }
+    .switch.off { background: var(--gray-300); }
+    .switch.off::after { left: 2px; }
+    .device.dark .switch.off { background: var(--gray-700); }
+
+    /* Time row */
+    .time-row {
+      display: flex; gap: 10px; padding: 14px 0;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .time-card {
+      flex: 1; padding: 10px 12px;
+      background: var(--bg-surface-2); border: 1px solid var(--border-subtle);
+      border-radius: 14px; cursor: pointer;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .time-card:hover { background: var(--bg-elevated); }
+    .time-card .nm {
+      font-family: var(--font-bangla); font-size: 11px; font-weight: 600; color: var(--fg-tertiary);
+      letter-spacing: 0.04em; text-transform: uppercase;
+    }
+    .time-card .vl {
+      font-family: var(--font-latin); font-size: 20px; font-weight: 600; color: var(--fg-primary);
+      letter-spacing: -0.01em;
+    }
+    .time-card .sub-bn {
+      font-family: var(--font-bangla); font-size: 11px; color: var(--fg-tertiary);
+    }
+
+    /* Notification options */
+    .notif-opts {
+      display: flex; gap: 6px; flex-wrap: wrap; padding: 4px 0 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .opt {
+      font-family: var(--font-bangla); font-size: 12px; font-weight: 500;
+      padding: 6px 12px; border-radius: 999px;
+      background: var(--bg-surface); border: 1px solid var(--border-default);
+      color: var(--fg-secondary); cursor: pointer;
+    }
+    .opt.on {
+      background: var(--brand-emerald); color: #fff; border-color: var(--brand-emerald);
+    }
+    .opt:hover { background: var(--bg-surface-2); }
+    .opt.on:hover { background: var(--brand-emerald-700); }
+
+    /* Categories */
+    .cat-grid {
+      display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px;
+      padding: 4px 0 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .cat {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 10px 4px;
+      background: var(--bg-surface-2); border: 1px solid var(--border-subtle);
+      border-radius: 12px; cursor: pointer;
+    }
+    .cat:hover { background: var(--bg-elevated); }
+    .cat .ic { font-size: 22px; line-height: 1; }
+    .cat .nm { font-family: var(--font-bangla); font-size: 10px; font-weight: 500; color: var(--fg-secondary); text-align: center; }
+    .cat.on {
+      background: var(--brand-emerald-50);
+      border-color: var(--brand-emerald);
+    }
+    .cat.on .nm { color: var(--brand-emerald); font-weight: 600; }
+    .device.dark .cat.on { background: rgba(0,106,78,0.18); border-color: #4FB394; }
+    .device.dark .cat.on .nm { color: #4FB394; }
+
+    /* Color picker */
+    .color-row {
+      display: flex; gap: 10px; padding: 4px 0 14px;
+      border-bottom: 1px solid var(--border-subtle);
+      align-items: center;
+    }
+    .color-row .lab {
+      font-family: var(--font-bangla); font-size: 13px; font-weight: 500; color: var(--fg-primary);
+    }
+    .colors { display: flex; gap: 8px; margin-left: auto; }
+    .color {
+      width: 28px; height: 28px; border-radius: 999px; cursor: pointer;
+      position: relative;
+      transition: transform 120ms var(--ease-standard);
+    }
+    .color:hover { transform: scale(1.10); }
+    .color.on::after {
+      content: ""; position: absolute; inset: -4px; border-radius: 999px;
+      border: 2px solid currentColor;
+    }
+
+    /* Notes */
+    .notes {
+      width: 100%;
+      font-family: var(--font-bangla); font-size: 14px; color: var(--fg-primary);
+      background: var(--bg-surface-2); border: 1px solid var(--border-subtle);
+      border-radius: 14px; padding: 12px 14px;
+      min-height: 80px; resize: none;
+      outline: 0; line-height: 1.5;
+      margin-top: 12px;
+    }
+    .notes::placeholder { color: var(--fg-tertiary); }
+    .notes:focus { border-color: var(--brand-emerald); }
+
+    .section-lab {
+      font-family: var(--font-bangla); font-size: 11px; font-weight: 700; color: var(--fg-tertiary);
+      letter-spacing: 0.06em; text-transform: uppercase;
+      padding: 14px 0 4px;
+    }
+
+    /* Annotations */
+    .annot {
+      position: absolute; font-family: var(--font-latin); font-size: 11px; color: #535350;
+      background: rgba(255,255,255,0.95); padding: 5px 10px; border-radius: 999px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.10);
+      pointer-events: none;
+    }
+    .annot::before {
+      content: ""; position: absolute; width: 18px; height: 1px; background: rgba(20,20,19,0.4);
+      top: 50%;
+    }
+    .annot.l::before { left: -22px; }
+    .annot.r::before { right: -22px; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">BongoCal · Add Event sheet</div>
+  <h1 class="title">নতুন ইভেন্ট, premium form-craft.</h1>
+  <p class="sub">Modal bottom-sheet over a darkened home backdrop. Drag handle, balanced header (Cancel · Save), large title input with emoji slot, three-calendar date toggle, time wheel, notification chips, category grid, color picker, and notes.</p>
+</div>
+
+<div class="row" id="row"></div>
+
+<template id="status-tpl">
+  <div class="statusbar">
+    <span>9:41</span>
+    <span style="display:inline-flex;gap:6px;align-items:center">
+      <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4" y="5" width="3" height="6" rx="1"/><rect x="8" y="3" width="3" height="8" rx="1"/><rect x="12" y="0" width="3" height="11" rx="1"/></svg>
+      <svg width="22" height="11" viewBox="0 0 22 11" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5"/><rect x="2" y="2" width="13" height="7" rx="1.2" fill="currentColor"/><rect x="19.5" y="3" width="1.5" height="5" rx="0.5" fill="currentColor"/></svg>
+    </span>
+  </div>
+</template>
+
+<template id="sheet-tpl">
+  <div class="backdrop"></div>
+  <div class="sheet">
+    <div class="grabber"></div>
+    <div class="sheet-head">
+      <button class="sheet-cancel">বাতিল</button>
+      <span class="sheet-title">নতুন ইভেন্ট</span>
+      <button class="sheet-save">সংরক্ষণ</button>
+    </div>
+    <div class="sheet-body">
+
+      <!-- TITLE INPUT -->
+      <div class="title-row">
+        <button class="emoji-btn">🎂</button>
+        <input class="title-input" placeholder="ইভেন্টের নাম..." value="আম্মার জন্মদিন" />
+      </div>
+
+      <!-- DATE -->
+      <div class="field">
+        <span class="field-ic"><svg width="18" height="18" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg></span>
+        <span class="field-lab">তারিখ</span>
+        <button class="date-pill" style="margin-left: auto;">28 April 2026
+          <svg width="14" height="14" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+        </button>
+      </div>
+
+      <!-- CALENDAR TYPE -->
+      <div class="seg-row">
+        <span class="lab">তারিখ ফরম্যাট</span>
+        <div class="seg">
+          <button class="on">English</button>
+          <button>বাংলা</button>
+          <button>হিজরি</button>
+        </div>
+      </div>
+
+      <!-- ALL DAY -->
+      <div class="field">
+        <span class="field-ic" style="background: var(--brand-gold-50); color: var(--brand-gold-700);"><svg width="18" height="18" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg></span>
+        <span class="field-lab">সারাদিন</span>
+        <span class="switch off" style="margin-left:auto"></span>
+      </div>
+
+      <!-- TIME -->
+      <div class="time-row">
+        <div class="time-card">
+          <span class="nm">শুরু</span>
+          <span class="vl">10:30 AM</span>
+          <span class="sub-bn">সকাল</span>
+        </div>
+        <div class="time-card">
+          <span class="nm">শেষ</span>
+          <span class="vl">12:00 PM</span>
+          <span class="sub-bn">দুপুর</span>
+        </div>
+      </div>
+
+      <!-- RECURRENCE -->
+      <div class="field">
+        <span class="field-ic" style="background: var(--brand-red-50); color: var(--brand-red-700);"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 14.5-7M21 12a9 9 0 0 1-14.5 7"/><path d="M21 4v5h-5M3 20v-5h5"/></svg></span>
+        <span class="field-lab">পুনরাবৃত্তি</span>
+        <span class="field-val bn">প্রতি বছর
+          <svg class="chev" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+        </span>
+      </div>
+
+      <!-- NOTIFY -->
+      <div class="field">
+        <span class="field-ic"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg></span>
+        <span class="field-lab">রিমাইন্ডার</span>
+        <span class="switch" style="margin-left:auto"></span>
+      </div>
+      <div class="notif-opts">
+        <button class="opt">১৫ মিনিট আগে</button>
+        <button class="opt on">১ ঘণ্টা আগে</button>
+        <button class="opt on">১ দিন আগে</button>
+        <button class="opt">১ সপ্তাহ আগে</button>
+      </div>
+
+      <!-- CATEGORIES -->
+      <div class="section-lab">ক্যাটাগরি</div>
+      <div class="cat-grid">
+        <button class="cat on"><span class="ic">🎂</span><span class="nm">জন্মদিন</span></button>
+        <button class="cat"><span class="ic">💍</span><span class="nm">বিবাহ</span></button>
+        <button class="cat"><span class="ic">🤝</span><span class="nm">মিটিং</span></button>
+        <button class="cat"><span class="ic">⏰</span><span class="nm">রিমাইন্ডার</span></button>
+        <button class="cat"><span class="ic">✨</span><span class="nm">কাস্টম</span></button>
+      </div>
+
+      <!-- COLOR -->
+      <div class="color-row">
+        <span class="lab">রং</span>
+        <div class="colors">
+          <span class="color on" style="background:#006A4E; color:#006A4E"></span>
+          <span class="color" style="background:#F42A41; color:#F42A41"></span>
+          <span class="color" style="background:#D4AF37; color:#D4AF37"></span>
+          <span class="color" style="background:#1E6FBE; color:#1E6FBE"></span>
+          <span class="color" style="background:#7A4FD4; color:#7A4FD4"></span>
+          <span class="color" style="background:#535350; color:#535350"></span>
+        </div>
+      </div>
+
+      <!-- NOTES -->
+      <div class="section-lab">নোট</div>
+      <textarea class="notes" placeholder="অতিরিক্ত বিবরণ যোগ করুন..."></textarea>
+
+      <div style="height: 8px;"></div>
+    </div>
+  </div>
+</template>
+
+<script>
+  function build(theme) {
+    const isDark = theme === 'dark';
+    const stage = document.createElement('div');
+    stage.className = 'stage';
+    stage.innerHTML = `
+      <div class="device ${isDark ? 'dark' : ''}" ${isDark ? 'data-theme="dark"' : ''}>
+        <div class="island"></div>
+        ${document.getElementById('status-tpl').innerHTML}
+        <div class="screen" style="position:absolute;inset:0;overflow:hidden">
+          ${document.getElementById('sheet-tpl').innerHTML}
+        </div>
+      </div>
+      <div class="label">${isDark ? 'Dark · New Event' : 'Light · New Event'}</div>
+    `;
+    requestAnimationFrame(() => {
+      stage.querySelectorAll('.seg').forEach(seg => {
+        seg.querySelectorAll('button').forEach(b => {
+          b.addEventListener('click', () => {
+            seg.querySelectorAll('button').forEach(x => x.classList.remove('on'));
+            b.classList.add('on');
+          });
+        });
+      });
+      stage.querySelectorAll('.switch').forEach(s => s.addEventListener('click', () => s.classList.toggle('off')));
+      stage.querySelectorAll('.opt').forEach(o => o.addEventListener('click', () => o.classList.toggle('on')));
+      stage.querySelectorAll('.cat-grid').forEach(grid => {
+        grid.querySelectorAll('.cat').forEach(c => c.addEventListener('click', () => {
+          grid.querySelectorAll('.cat').forEach(x => x.classList.remove('on'));
+          c.classList.add('on');
+        }));
+      });
+      stage.querySelectorAll('.colors').forEach(grid => {
+        grid.querySelectorAll('.color').forEach(c => c.addEventListener('click', () => {
+          grid.querySelectorAll('.color').forEach(x => x.classList.remove('on'));
+          c.classList.add('on');
+        }));
+      });
+    });
+    return stage;
+  }
+  const row = document.getElementById('row');
+  row.appendChild(build('light'));
+  row.appendChild(build('dark'));
+</script>
+
+</body>
+</html>

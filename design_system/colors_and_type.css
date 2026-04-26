@@ -1,0 +1,190 @@
+/* BongoCal Design System — core tokens
+   ---------------------------------------------------------
+   Import once at the root of any surface. Provides:
+   - Brand + neutral + semantic + festival colors
+   - Light + dark theme via [data-theme="dark"]
+   - Type scale (Bangla + Latin)
+   - Spacing, radii, shadows, motion
+   - Semantic role variables (fg, bg, surface, border, etc.)
+*/
+
+@import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  /* === Brand ============================================ */
+  --brand-emerald:        #006A4E;   /* Bangladesh flag green */
+  --brand-emerald-700:    #005A42;
+  --brand-emerald-600:    #007558;
+  --brand-emerald-500:    #008A66;
+  --brand-emerald-100:    #D6EDE5;
+  --brand-emerald-50:     #EAF6F1;
+
+  --brand-red:            #F42A41;   /* Warm flag red */
+  --brand-red-700:        #C71F33;
+  --brand-red-100:        #FDE0E4;
+  --brand-red-50:         #FEF0F2;
+
+  --brand-gold:           #D4AF37;   /* Premium / festival */
+  --brand-gold-700:       #A8881C;
+  --brand-gold-100:       #F5EBC4;
+  --brand-gold-50:        #FBF6E1;
+
+  /* === Neutrals (warm-leaning) ========================== */
+  --gray-50:   #FAFAF8;
+  --gray-100:  #F4F4F1;
+  --gray-200:  #E8E8E3;
+  --gray-300:  #D4D4CC;
+  --gray-400:  #A8A89E;
+  --gray-500:  #767670;
+  --gray-600:  #535350;
+  --gray-700:  #3A3A38;
+  --gray-800:  #232322;
+  --gray-900:  #141413;
+
+  /* === Semantic (status) ================================ */
+  --success:        #1F8A4C;
+  --success-tint:   #DBEFE2;
+  --warning:        #C97A11;
+  --warning-tint:   #FAEBCD;
+  --error:          #D02D2D;
+  --error-tint:     #F9DCDC;
+  --info:           #1E6FBE;
+  --info-tint:      #DDEAF8;
+
+  /* === Festival accents ================================= */
+  --festival-eid:           #D4AF37;   /* Eid gold */
+  --festival-boishakh:      #E63946;   /* Pohela Boishakh red */
+  --festival-independence:  #006A4E;   /* Independence green */
+  --festival-victory:       #B5172A;   /* Victory Day deep red */
+  --festival-puja:          #E07A1F;   /* Durga Puja saffron */
+
+  /* === Roles (LIGHT) ==================================== */
+  --bg-canvas:       #FAFAF8;
+  --bg-surface:      #FFFFFF;
+  --bg-surface-2:    #F4F4F1;
+  --bg-elevated:     #FFFFFF;
+  --bg-scrim:        rgba(20,20,19, 0.45);
+
+  --fg-primary:      #141413;
+  --fg-secondary:    #535350;
+  --fg-tertiary:     #767670;
+  --fg-on-brand:     #FFFFFF;
+  --fg-on-gold:      #1A1A18;
+
+  --border-subtle:   rgba(20,20,19, 0.08);
+  --border-default:  rgba(20,20,19, 0.14);
+  --border-strong:   rgba(20,20,19, 0.22);
+
+  /* === Type families ==================================== */
+  --font-bangla: 'Hind Siliguri', system-ui, sans-serif;
+  --font-latin:  'Inter', system-ui, -apple-system, sans-serif;
+
+  /* === Type scale ======================================= */
+  --fs-display:    40px;   --lh-display:    48px;   --tr-display:    -0.015em;
+  --fs-h1:         28px;   --lh-h1:         34px;   --tr-h1:         -0.010em;
+  --fs-h2:         22px;   --lh-h2:         28px;   --tr-h2:         -0.005em;
+  --fs-h3:         18px;   --lh-h3:         24px;   --tr-h3:         -0.0025em;
+  --fs-body:       16px;   --lh-body:       24px;
+  --fs-body-sm:    14px;   --lh-body-sm:    20px;
+  --fs-caption:    12px;   --lh-caption:    16px;   --tr-caption:    0.005em;
+
+  /* === Spacing (4px base) =============================== */
+  --space-1:   4px;
+  --space-2:   8px;
+  --space-3:   12px;
+  --space-4:   16px;
+  --space-6:   24px;
+  --space-8:   32px;
+  --space-12:  48px;
+  --space-16:  64px;
+
+  /* === Radii ============================================ */
+  --radius-xs:    4px;
+  --radius-sm:    8px;
+  --radius-md:    12px;
+  --radius-lg:    16px;
+  --radius-xl:    20px;
+  --radius-pill:  999px;
+
+  /* === Shadows (warm-tinted, 4 levels) ================== */
+  --shadow-xs: 0 1px 2px rgba(20,20,19, 0.05);
+  --shadow-sm: 0 1px 2px rgba(20,20,19, 0.04), 0 2px 6px rgba(20,20,19, 0.06);
+  --shadow-md: 0 2px 4px rgba(20,20,19, 0.05), 0 8px 20px rgba(20,20,19, 0.10);
+  --shadow-lg: 0 4px 8px rgba(20,20,19, 0.06), 0 18px 40px rgba(20,20,19, 0.16);
+
+  /* === Motion =========================================== */
+  --ease-standard:  cubic-bezier(0.2, 0, 0, 1);
+  --ease-spring:    cubic-bezier(0.32, 0.72, 0, 1);
+  --dur-hover:      120ms;
+  --dur-press:       80ms;
+  --dur-page:       180ms;
+  --dur-sheet-in:   280ms;
+  --dur-sheet-out:  220ms;
+}
+
+[data-theme="dark"] {
+  --bg-canvas:       #0E0E0D;
+  --bg-surface:      #1A1A18;
+  --bg-surface-2:    #232322;
+  --bg-elevated:     #2A2A28;
+  --bg-scrim:        rgba(0,0,0, 0.6);
+
+  --fg-primary:      #F4F4F1;
+  --fg-secondary:    #B8B8B0;
+  --fg-tertiary:     #8A8A82;
+  --fg-on-brand:     #FFFFFF;
+  --fg-on-gold:      #1A1A18;
+
+  --border-subtle:   rgba(255,255,255, 0.08);
+  --border-default:  rgba(255,255,255, 0.14);
+  --border-strong:   rgba(255,255,255, 0.22);
+
+  --brand-emerald-100: #133D31;
+  --brand-emerald-50:  #0F2B23;
+  --brand-red-100:     #3D1117;
+  --brand-red-50:      #2A0C10;
+  --brand-gold-100:    #3D3318;
+  --brand-gold-50:     #2A240F;
+
+  --success-tint:   #143D24;
+  --warning-tint:   #3D2A0E;
+  --error-tint:     #3D1414;
+  --info-tint:      #142A3D;
+
+  --shadow-xs: 0 1px 2px rgba(0,0,0, 0.4);
+  --shadow-sm: 0 1px 2px rgba(0,0,0, 0.3), 0 2px 6px rgba(0,0,0, 0.4);
+  --shadow-md: 0 2px 4px rgba(0,0,0, 0.4), 0 8px 20px rgba(0,0,0, 0.5);
+  --shadow-lg: 0 4px 8px rgba(0,0,0, 0.4), 0 18px 40px rgba(0,0,0, 0.6);
+}
+
+/* === Semantic type roles ================================ */
+.t-display, [data-type="display"] {
+  font-size: var(--fs-display); line-height: var(--lh-display);
+  letter-spacing: var(--tr-display); font-weight: 700;
+}
+.t-h1, [data-type="h1"] {
+  font-size: var(--fs-h1); line-height: var(--lh-h1);
+  letter-spacing: var(--tr-h1); font-weight: 600;
+}
+.t-h2, [data-type="h2"] {
+  font-size: var(--fs-h2); line-height: var(--lh-h2);
+  letter-spacing: var(--tr-h2); font-weight: 600;
+}
+.t-h3, [data-type="h3"] {
+  font-size: var(--fs-h3); line-height: var(--lh-h3);
+  letter-spacing: var(--tr-h3); font-weight: 600;
+}
+.t-body, [data-type="body"] {
+  font-size: var(--fs-body); line-height: var(--lh-body); font-weight: 400;
+}
+.t-body-sm, [data-type="body-sm"] {
+  font-size: var(--fs-body-sm); line-height: var(--lh-body-sm); font-weight: 400;
+}
+.t-caption, [data-type="caption"] {
+  font-size: var(--fs-caption); line-height: var(--lh-caption);
+  letter-spacing: var(--tr-caption); font-weight: 500;
+  text-transform: uppercase;
+}
+
+.font-bangla { font-family: var(--font-bangla); }
+.font-latin  { font-family: var(--font-latin); }

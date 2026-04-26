@@ -1,0 +1,21 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css"><link rel="stylesheet" href="_card.css">
+<style>
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .row { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 10px; padding: 12px 14px; display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+  .k { font-size: 13px; font-weight: 600; color: var(--fg-primary); }
+  .v { font-size: 11px; color: var(--fg-tertiary); font-family: ui-monospace, monospace; }
+</style></head>
+<body>
+  <p class="lbl">Motion · timings & easings</p>
+  <div class="grid">
+    <div class="row"><div class="k">Hover</div><div class="v">120ms · ease-standard</div></div>
+    <div class="row"><div class="k">Press</div><div class="v">80ms · scale 0.97</div></div>
+    <div class="row"><div class="k">Page transition</div><div class="v">180ms · opacity</div></div>
+    <div class="row"><div class="k">Sheet enter</div><div class="v">280ms · ease-spring</div></div>
+    <div class="row"><div class="k">Sheet exit</div><div class="v">220ms · ease-in</div></div>
+    <div class="row"><div class="k">Today pulse</div><div class="v">2400ms · ease-in-out ∞</div></div>
+    <div class="row"><div class="k">ease-standard</div><div class="v">cubic-bezier(.2,0,0,1)</div></div>
+    <div class="row"><div class="k">ease-spring</div><div class="v">cubic-bezier(.32,.72,0,1)</div></div>
+  </div>
+</body></html>

@@ -1,0 +1,509 @@
+<!doctype html>
+<html lang="bn" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BongoCal · Splash & Onboarding</title>
+  <link rel="stylesheet" href="colors_and_type.css">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; min-height: 100vh; background: var(--bg-canvas); color: var(--fg-primary); }
+    body {
+      font-family: var(--font-bangla);
+      padding: 56px 24px 80px;
+      display: flex; flex-direction: column; align-items: center; gap: 32px;
+    }
+    .header { text-align: center; max-width: 720px; }
+    .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; color: var(--fg-tertiary); text-transform: uppercase; font-family: var(--font-latin); }
+    .title { font-family: var(--font-latin); font-size: 32px; font-weight: 700; letter-spacing: -0.02em; margin-top: 10px; color: var(--fg-primary); }
+    .sub { font-family: var(--font-latin); font-size: 15px; color: var(--fg-secondary); margin-top: 8px; line-height: 1.5; }
+
+    .row {
+      display: flex; gap: 28px; flex-wrap: wrap; justify-content: center; align-items: flex-start;
+    }
+    .stage { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .label { font-family: var(--font-latin); font-size: 11px; font-weight: 600; color: var(--fg-tertiary); letter-spacing: 0.08em; text-transform: uppercase; }
+
+    /* === iPhone frame === */
+    .device {
+      width: 390px; height: 844px;
+      background: var(--bg-canvas);
+      border-radius: 50px;
+      border: 10px solid #1A1A18;
+      box-shadow: 0 4px 8px rgba(20,20,19,.06), 0 18px 40px rgba(20,20,19,.16);
+      overflow: hidden;
+      position: relative;
+    }
+    [data-theme="dark"] .device { border-color: #000; }
+    .island {
+      position: absolute; left: 50%; top: 8px;
+      transform: translateX(-50%);
+      width: 110px; height: 32px; background: #000; border-radius: 999px; z-index: 5;
+    }
+    .statusbar {
+      position: absolute; top: 0; left: 0; right: 0; height: 47px;
+      padding: 0 30px; display: flex; align-items: center; justify-content: space-between;
+      font-family: var(--font-latin); font-size: 15px; font-weight: 600; color: var(--fg-primary);
+      z-index: 6;
+    }
+    .statusbar.light * { color: #fff; }
+    .home {
+      position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+      width: 134px; height: 5px; border-radius: 999px; background: var(--fg-primary); opacity: 0.85;
+    }
+    .home.light { background: #fff; opacity: 0.9; }
+    .screen { position: absolute; inset: 0; }
+
+    /* === SPLASH === */
+    .splash {
+      background: linear-gradient(160deg, #006A4E 0%, #005A42 60%, #003D2D 100%);
+      color: #fff; display: flex; flex-direction: column; align-items: center; justify-content: center;
+      overflow: hidden;
+    }
+    .splash::before {
+      /* Subtle paisley/geometric motif — very faint */
+      content: ""; position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 80% 15%, rgba(212,175,55,0.18) 0%, transparent 35%),
+        radial-gradient(circle at 15% 85%, rgba(244,42,65,0.12) 0%, transparent 40%);
+      pointer-events: none;
+    }
+    .splash::after {
+      content: ""; position: absolute; right: -100px; bottom: -100px;
+      width: 360px; height: 360px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow:
+        inset 0 0 0 60px transparent,
+        0 0 0 60px rgba(255,255,255,0.03),
+        0 0 0 120px rgba(255,255,255,0.02);
+      pointer-events: none;
+    }
+    .splash-logo {
+      width: 96px; height: 96px;
+      animation: logoIn 900ms cubic-bezier(.32,.72,0,1) both;
+      position: relative;
+      filter: drop-shadow(0 8px 24px rgba(0,0,0,0.25));
+    }
+    .splash-name {
+      font-family: var(--font-latin); font-size: 36px; font-weight: 700; letter-spacing: -0.02em;
+      margin-top: 24px;
+      animation: rise 700ms 250ms cubic-bezier(.32,.72,0,1) both;
+    }
+    .splash-tag {
+      font-family: var(--font-bangla); font-size: 16px; font-weight: 500;
+      margin-top: 10px; opacity: 0.85;
+      animation: rise 700ms 450ms cubic-bezier(.32,.72,0,1) both;
+    }
+    .splash-loader {
+      position: absolute; bottom: 80px; left: 50%; transform: translateX(-50%);
+      width: 32px; height: 32px;
+      animation: rise 700ms 700ms cubic-bezier(.32,.72,0,1) both;
+    }
+    .splash-loader::after {
+      content: ""; position: absolute; inset: 0;
+      border: 2px solid rgba(255,255,255,0.18);
+      border-top-color: rgba(255,255,255,0.85);
+      border-radius: 999px;
+      animation: spin 900ms linear infinite;
+    }
+    @keyframes logoIn {
+      from { opacity: 0; transform: scale(0.7); }
+      to { opacity: 1; transform: scale(1); }
+    }
+    @keyframes rise {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes pulseDot { 0%,100% { opacity: 0.5; transform: scale(1); } 50% { opacity: 1; transform: scale(1.2); } }
+    @keyframes floaty { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
+
+    /* === Onboarding chrome === */
+    .ob {
+      display: flex; flex-direction: column; height: 100%;
+      padding: 56px 28px 32px;
+    }
+    .ob-top {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 4px;
+    }
+    .skip {
+      font-family: var(--font-bangla); font-size: 14px; font-weight: 500;
+      color: var(--fg-secondary); background: none; border: 0; cursor: pointer; padding: 6px 4px;
+    }
+    .dots { display: flex; gap: 6px; align-items: center; }
+    .dot {
+      width: 6px; height: 6px; border-radius: 999px; background: var(--gray-300);
+      transition: all 220ms cubic-bezier(.32,.72,0,1);
+    }
+    .dot.on { width: 22px; background: var(--brand-emerald); }
+
+    .ob-body { flex: 1; display: flex; flex-direction: column; }
+    .ob-h {
+      font-family: var(--font-bangla); font-size: 30px; font-weight: 700;
+      letter-spacing: -0.005em; color: var(--fg-primary);
+      line-height: 1.25;
+    }
+    .ob-sub {
+      font-family: var(--font-latin); font-size: 15px;
+      color: var(--fg-secondary); margin-top: 10px; line-height: 1.55;
+      max-width: 32ch;
+    }
+    .ob-cta {
+      display: flex; flex-direction: column; gap: 10px;
+      margin-top: auto;
+    }
+    .btn {
+      width: 100%; height: 52px; border: 0; border-radius: 14px;
+      font-family: var(--font-bangla); font-weight: 600; font-size: 16px;
+      cursor: pointer; transition: all 120ms cubic-bezier(.2,0,0,1);
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn-primary { background: var(--brand-emerald); color: #fff; box-shadow: 0 6px 18px rgba(0,106,78,0.30); }
+    .btn-primary:hover { background: var(--brand-emerald-700); }
+    .btn-ghost { background: transparent; color: var(--fg-secondary); }
+    .btn-ghost:hover { background: var(--bg-surface-2); }
+
+    /* === Screen 1: Welcome illustration === */
+    .illus-1 {
+      flex: 1; display: flex; align-items: center; justify-content: center; position: relative;
+      margin: 0 -8px;
+    }
+    .stack-card {
+      position: absolute; width: 196px; height: 248px;
+      border-radius: 22px; border: 1px solid var(--border-subtle);
+      background: var(--bg-surface);
+      box-shadow: 0 18px 40px rgba(20,20,19,.10), 0 4px 8px rgba(20,20,19,.06);
+      padding: 20px; display: flex; flex-direction: column;
+      animation: floaty 5200ms ease-in-out infinite;
+    }
+    .stack-card .month { font-family: var(--font-latin); font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .stack-card .num { font-family: var(--font-latin); font-size: 64px; font-weight: 700; letter-spacing: -0.04em; line-height: 1; margin-top: auto; color: var(--fg-primary); }
+    .stack-card .word { font-family: var(--font-bangla); font-size: 14px; color: var(--fg-secondary); margin-top: 6px; }
+    .stack-card .stripe { height: 4px; width: 36px; border-radius: 999px; }
+    .card-bn {
+      transform: translate(-78px, -8px) rotate(-9deg);
+      animation-delay: 0ms;
+    }
+    .card-bn .month { color: var(--brand-red); }
+    .card-bn .stripe { background: var(--brand-red); }
+    .card-en {
+      transform: translate(0, 16px) rotate(-1deg);
+      z-index: 2;
+      animation-delay: 600ms;
+    }
+    .card-en .month { color: var(--brand-emerald); }
+    .card-en .stripe { background: var(--brand-emerald); }
+    .card-en .num { color: var(--brand-emerald); }
+    .card-hj {
+      transform: translate(78px, -8px) rotate(9deg);
+      animation-delay: 1200ms;
+    }
+    .card-hj .month { color: var(--brand-gold-700); }
+    .card-hj .stripe { background: var(--brand-gold); }
+
+    .illus-1 .glow {
+      position: absolute; width: 320px; height: 320px; border-radius: 999px;
+      background: radial-gradient(circle, rgba(0,106,78,0.10) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .illus-1 .pulse-mark {
+      position: absolute; bottom: 26px; right: 36px;
+      width: 10px; height: 10px; border-radius: 999px; background: var(--brand-red);
+      animation: pulseDot 2400ms ease-in-out infinite;
+      z-index: 3;
+    }
+
+    /* === Screen 2: Feature cards === */
+    .features { display: flex; flex-direction: column; gap: 12px; margin-top: 28px; }
+    .feature {
+      display: flex; gap: 14px; align-items: flex-start;
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      border-radius: 16px; padding: 16px;
+      box-shadow: 0 1px 2px rgba(20,20,19,.04);
+      animation: rise 600ms cubic-bezier(.32,.72,0,1) both;
+    }
+    .feature:nth-child(1) { animation-delay: 100ms; }
+    .feature:nth-child(2) { animation-delay: 220ms; }
+    .feature:nth-child(3) { animation-delay: 340ms; }
+    .feature .ic-wrap {
+      width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .feature .ic-wrap svg { stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .ic-emerald { background: var(--brand-emerald-50); color: var(--brand-emerald); }
+    .ic-red     { background: var(--brand-red-50);     color: var(--brand-red); }
+    .ic-gold    { background: var(--brand-gold-50);    color: var(--brand-gold-700); }
+    .feature .nm { font-family: var(--font-bangla); font-size: 15px; font-weight: 600; color: var(--fg-primary); }
+    .feature .ds { font-family: var(--font-bangla); font-size: 13px; color: var(--fg-tertiary); margin-top: 2px; line-height: 1.45; }
+
+    /* === Screen 3: Notification === */
+    .notif-stage {
+      flex: 1; position: relative;
+      display: flex; align-items: center; justify-content: center;
+      margin: 8px -8px 0;
+    }
+    .notif-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 50% 35%, rgba(0,106,78,0.08) 0%, transparent 55%),
+        radial-gradient(circle at 70% 80%, rgba(244,42,65,0.06) 0%, transparent 50%);
+      pointer-events: none;
+    }
+    .bell-emoji {
+      width: 88px; height: 88px; border-radius: 28px;
+      background: var(--brand-emerald);
+      display: flex; align-items: center; justify-content: center;
+      color: #fff;
+      box-shadow: 0 12px 28px rgba(0,106,78,0.35);
+      animation: bellShake 3.5s ease-in-out infinite;
+    }
+    .bell-emoji svg { stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+    @keyframes bellShake {
+      0%, 80%, 100% { transform: rotate(0); }
+      82% { transform: rotate(-12deg); }
+      85% { transform: rotate(10deg); }
+      88% { transform: rotate(-6deg); }
+      91% { transform: rotate(4deg); }
+      94% { transform: rotate(0); }
+    }
+    .notif-card {
+      position: absolute; left: 16px; right: 16px;
+      bottom: 24px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: saturate(160%) blur(20px);
+      -webkit-backdrop-filter: saturate(160%) blur(20px);
+      border: 1px solid var(--border-subtle);
+      border-radius: 18px; padding: 12px 14px;
+      box-shadow: 0 8px 20px rgba(20,20,19,.10);
+      display: flex; gap: 10px; align-items: flex-start;
+      animation: rise 600ms 500ms cubic-bezier(.32,.72,0,1) both;
+    }
+    [data-theme="dark"] .notif-card { background: rgba(35,35,34,0.85); }
+    .notif-app {
+      width: 32px; height: 32px; border-radius: 7px; flex-shrink: 0;
+      background: var(--brand-emerald);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .notif-app img { width: 22px; height: 22px; }
+    .notif-meta { display: flex; align-items: baseline; gap: 6px; }
+    .notif-app-name { font-family: var(--font-latin); font-size: 12px; font-weight: 600; color: var(--fg-primary); }
+    .notif-time { font-family: var(--font-latin); font-size: 11px; color: var(--fg-tertiary); margin-left: auto; }
+    .notif-title { font-family: var(--font-bangla); font-size: 14px; font-weight: 600; color: var(--fg-primary); margin-top: 2px; }
+    .notif-body { font-family: var(--font-bangla); font-size: 13px; color: var(--fg-secondary); margin-top: 1px; line-height: 1.45; }
+
+    .perm-bullets { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+    .perm-bullet { display: flex; align-items: flex-start; gap: 10px; font-family: var(--font-bangla); font-size: 13px; color: var(--fg-secondary); }
+    .perm-bullet .check {
+      width: 20px; height: 20px; border-radius: 999px; background: var(--brand-emerald-50); color: var(--brand-emerald);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .perm-bullet .check svg { stroke: currentColor; fill: none; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* Theme toggle */
+    .toolbar {
+      position: fixed; top: 16px; right: 16px; z-index: 100;
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      border-radius: 999px; padding: 4px;
+      box-shadow: 0 1px 2px rgba(20,20,19,.04), 0 2px 6px rgba(20,20,19,.06);
+      display: flex; gap: 4px;
+    }
+    .toolbar button {
+      border: 0; background: transparent; padding: 8px 14px; border-radius: 999px;
+      font-size: 12px; font-weight: 600; cursor: pointer; color: var(--fg-secondary);
+      font-family: var(--font-latin);
+    }
+    .toolbar button.on { background: var(--bg-surface-2); color: var(--fg-primary); }
+  </style>
+</head>
+<body>
+
+<div class="toolbar">
+  <button id="t-light" class="on" onclick="setTheme('light')">Light</button>
+  <button id="t-dark" onclick="setTheme('dark')">Dark</button>
+</div>
+
+<div class="header">
+  <div class="eyebrow">BongoCal · Onboarding flow</div>
+  <h1 class="title">First impressions, in four screens.</h1>
+  <p class="sub">Splash · Welcome · Features · Permission. Hover any control to feel hover; tap to feel press. Subtle Bangladeshi motifs (paisley wash, flag-toned cards) appear quietly throughout.</p>
+</div>
+
+<div class="row">
+
+  <!-- ============== 1. SPLASH ============== -->
+  <div class="stage">
+    <div class="device">
+      <div class="island"></div>
+      <div class="statusbar light"><span>9:41</span><span style="display:inline-flex;gap:6px;align-items:center"><svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4" y="5" width="3" height="6" rx="1"/><rect x="8" y="3" width="3" height="8" rx="1"/><rect x="12" y="0" width="3" height="11" rx="1"/></svg><svg width="22" height="11" viewBox="0 0 22 11" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5"/><rect x="2" y="2" width="13" height="7" rx="1.2" fill="currentColor"/><rect x="19.5" y="3" width="1.5" height="5" rx="0.5" fill="currentColor"/></svg></span></div>
+      <div class="screen splash">
+        <img class="splash-logo" src="assets/logo.svg" alt="">
+        <div class="splash-name">BongoCal</div>
+        <div class="splash-tag">তিন ক্যালেন্ডার, এক জায়গায়</div>
+        <div class="splash-loader"></div>
+      </div>
+      <div class="home light"></div>
+    </div>
+    <div class="label">01 · Splash</div>
+  </div>
+
+  <!-- ============== 2. WELCOME ============== -->
+  <div class="stage">
+    <div class="device">
+      <div class="island"></div>
+      <div class="statusbar"><span>9:41</span><span style="display:inline-flex;gap:6px;align-items:center"><svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4" y="5" width="3" height="6" rx="1"/><rect x="8" y="3" width="3" height="8" rx="1"/><rect x="12" y="0" width="3" height="11" rx="1"/></svg><svg width="22" height="11" viewBox="0 0 22 11" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5"/><rect x="2" y="2" width="13" height="7" rx="1.2" fill="currentColor"/><rect x="19.5" y="3" width="1.5" height="5" rx="0.5" fill="currentColor"/></svg></span></div>
+      <div class="screen ob">
+        <div class="ob-top">
+          <div class="dots"><span class="dot on"></span><span class="dot"></span><span class="dot"></span></div>
+          <button class="skip">এড়িয়ে যান</button>
+        </div>
+        <div class="illus-1">
+          <div class="glow"></div>
+          <div class="stack-card card-bn">
+            <div class="month">বৈশাখ</div>
+            <div class="stripe" style="margin-top:8px"></div>
+            <div class="num">১৪</div>
+            <div class="word">নববর্ষ</div>
+          </div>
+          <div class="stack-card card-en">
+            <div class="month">APR</div>
+            <div class="stripe" style="margin-top:8px"></div>
+            <div class="num">27</div>
+            <div class="word" style="font-family:var(--font-latin)">Monday</div>
+          </div>
+          <div class="stack-card card-hj">
+            <div class="month" style="font-family:var(--font-bangla)">যিলক্বদ</div>
+            <div class="stripe" style="margin-top:8px"></div>
+            <div class="num">৯</div>
+            <div class="word">১৪৪৭</div>
+          </div>
+          <div class="pulse-mark"></div>
+        </div>
+        <div class="ob-body" style="flex: 0 0 auto; margin-top: 8px;">
+          <h2 class="ob-h">স্বাগতম <span style="color:var(--brand-emerald)">BongoCal</span>-এ</h2>
+          <p class="ob-sub">Bangladesh's most beautiful calendar. বাংলা, ইংরেজি ও হিজরি — সব এক জায়গায়।</p>
+        </div>
+        <div class="ob-cta">
+          <button class="btn btn-primary">শুরু করুন
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="home"></div>
+    </div>
+    <div class="label">02 · Welcome</div>
+  </div>
+
+  <!-- ============== 3. FEATURES ============== -->
+  <div class="stage">
+    <div class="device">
+      <div class="island"></div>
+      <div class="statusbar"><span>9:41</span><span style="display:inline-flex;gap:6px;align-items:center"><svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4" y="5" width="3" height="6" rx="1"/><rect x="8" y="3" width="3" height="8" rx="1"/><rect x="12" y="0" width="3" height="11" rx="1"/></svg><svg width="22" height="11" viewBox="0 0 22 11" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5"/><rect x="2" y="2" width="13" height="7" rx="1.2" fill="currentColor"/><rect x="19.5" y="3" width="1.5" height="5" rx="0.5" fill="currentColor"/></svg></span></div>
+      <div class="screen ob">
+        <div class="ob-top">
+          <div class="dots"><span class="dot"></span><span class="dot on"></span><span class="dot"></span></div>
+          <button class="skip">এড়িয়ে যান</button>
+        </div>
+        <div class="ob-body" style="margin-top: 28px;">
+          <h2 class="ob-h">সব এক জায়গায়।</h2>
+          <p class="ob-sub">তিনটি ক্যালেন্ডার, প্রার্থনার সময়, এবং বাংলাদেশের সব ছুটি — একটি সুন্দর অ্যাপে।</p>
+          <div class="features">
+            <div class="feature">
+              <div class="ic-wrap ic-emerald">
+                <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg>
+              </div>
+              <div>
+                <div class="nm">বাংলা ক্যালেন্ডার</div>
+                <div class="ds">সংস্কারকৃত বঙ্গাব্দ — তারিখ, মাস ও পঞ্জিকা।</div>
+              </div>
+            </div>
+            <div class="feature">
+              <div class="ic-wrap ic-gold">
+                <svg width="22" height="22" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+              </div>
+              <div>
+                <div class="nm">হিজরি ও নামাজের সময়</div>
+                <div class="ds">আপনার এলাকা অনুযায়ী পাঁচ ওয়াক্তের সময়সূচী।</div>
+              </div>
+            </div>
+            <div class="feature">
+              <div class="ic-wrap ic-red">
+                <svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 2l2 6h6l-5 3.6 2 6.4-5-3.6-5 3.6 2-6.4L4 8h6z"/></svg>
+              </div>
+              <div>
+                <div class="nm">সব ছুটি ও উৎসব</div>
+                <div class="ds">পহেলা বৈশাখ, ঈদ, পূজা, স্বাধীনতা ও বিজয় দিবস।</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ob-cta">
+          <button class="btn btn-primary">পরবর্তী
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="home"></div>
+    </div>
+    <div class="label">03 · Features</div>
+  </div>
+
+  <!-- ============== 4. PERMISSION ============== -->
+  <div class="stage">
+    <div class="device">
+      <div class="island"></div>
+      <div class="statusbar"><span>9:41</span><span style="display:inline-flex;gap:6px;align-items:center"><svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4" y="5" width="3" height="6" rx="1"/><rect x="8" y="3" width="3" height="8" rx="1"/><rect x="12" y="0" width="3" height="11" rx="1"/></svg><svg width="22" height="11" viewBox="0 0 22 11" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5"/><rect x="2" y="2" width="13" height="7" rx="1.2" fill="currentColor"/><rect x="19.5" y="3" width="1.5" height="5" rx="0.5" fill="currentColor"/></svg></span></div>
+      <div class="screen ob">
+        <div class="ob-top">
+          <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot on"></span></div>
+          <button class="skip" style="visibility:hidden">এড়িয়ে যান</button>
+        </div>
+        <div class="notif-stage" style="height: 280px; flex: 0 0 auto; margin-top: 12px;">
+          <div class="notif-bg"></div>
+          <div class="bell-emoji">
+            <svg width="44" height="44" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+          </div>
+          <div class="notif-card">
+            <div class="notif-app"><img src="assets/logo.svg" alt=""></div>
+            <div style="flex: 1; min-width: 0;">
+              <div class="notif-meta">
+                <span class="notif-app-name">BongoCal</span>
+                <span class="notif-time">এখন</span>
+              </div>
+              <div class="notif-title">আগামীকাল পহেলা বৈশাখ 🌸</div>
+              <div class="notif-body">নতুন বছর ১৪৩৩ — পরিবার ও বন্ধুদের শুভেচ্ছা জানাতে প্রস্তুত হোন।</div>
+            </div>
+          </div>
+        </div>
+        <div class="ob-body" style="margin-top: 16px;">
+          <h2 class="ob-h">Notification on করুন</h2>
+          <p class="ob-sub">ছুটি ও উৎসবের আগে reminder পান। আপনি যেকোনো সময় বন্ধ করতে পারবেন।</p>
+          <div class="perm-bullets">
+            <div class="perm-bullet"><span class="check"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg></span>সরকারি ছুটির ১ দিন আগে</div>
+            <div class="perm-bullet"><span class="check"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg></span>উৎসবের সকালে শুভেচ্ছা</div>
+            <div class="perm-bullet"><span class="check"><svg width="12" height="12" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg></span>প্রার্থনার সময় (ঐচ্ছিক)</div>
+          </div>
+        </div>
+        <div class="ob-cta">
+          <button class="btn btn-primary">Allow notifications</button>
+          <button class="btn btn-ghost">Maybe later</button>
+        </div>
+      </div>
+      <div class="home"></div>
+    </div>
+    <div class="label">04 · Permission</div>
+  </div>
+
+</div>
+
+<script>
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    document.getElementById('t-light').classList.toggle('on', t === 'light');
+    document.getElementById('t-dark').classList.toggle('on', t === 'dark');
+  }
+</script>
+
+</body>
+</html>

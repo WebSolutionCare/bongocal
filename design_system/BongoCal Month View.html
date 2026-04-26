@@ -1,0 +1,522 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BongoCal · Month View</title>
+  <link rel="stylesheet" href="colors_and_type.css">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; min-height: 100vh; background: #EDEDE7; color: #141413; }
+    body {
+      font-family: var(--font-bangla);
+      padding: 56px 32px 80px;
+      display: flex; flex-direction: column; align-items: center; gap: 32px;
+    }
+    .header { text-align: center; max-width: 760px; }
+    .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; color: #767670; text-transform: uppercase; font-family: var(--font-latin); }
+    .title { font-family: var(--font-latin); font-size: 32px; font-weight: 700; letter-spacing: -0.02em; margin-top: 10px; }
+    .sub { font-family: var(--font-latin); font-size: 15px; color: #535350; margin-top: 8px; line-height: 1.5; }
+
+    .row { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+    .stage { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .label { font-family: var(--font-latin); font-size: 11px; font-weight: 700; color: #767670; letter-spacing: 0.10em; text-transform: uppercase; }
+
+    /* === iPhone === */
+    .device {
+      width: 390px; height: 844px;
+      background: var(--bg-canvas);
+      border-radius: 50px; border: 10px solid #1A1A18;
+      box-shadow: 0 6px 12px rgba(20,20,19,.10), 0 30px 60px rgba(20,20,19,.20);
+      overflow: hidden; position: relative;
+    }
+    .device.dark { background: #0E0E0D; border-color: #000; }
+    .island { position: absolute; left: 50%; top: 8px; transform: translateX(-50%); width: 110px; height: 32px; background: #000; border-radius: 999px; z-index: 50; }
+    .statusbar { position: absolute; top: 0; left: 0; right: 0; height: 47px; padding: 0 30px; display: flex; align-items: center; justify-content: space-between; font-family: var(--font-latin); font-size: 15px; font-weight: 600; color: var(--fg-primary); z-index: 40; pointer-events: none; }
+    .home-bar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 999px; background: var(--fg-primary); opacity: 0.4; z-index: 40; }
+    .home-bar.dark { background: #fff; opacity: 0.5; }
+    .screen { position: absolute; inset: 0; overflow: hidden; }
+
+    .scroll { position: absolute; top: 47px; left: 0; right: 0; bottom: 86px; overflow-y: auto; scrollbar-width: none; }
+    .scroll::-webkit-scrollbar { display: none; }
+
+    /* === Top bar === */
+    .topbar {
+      padding: 6px 12px 10px;
+      display: flex; align-items: center; gap: 4px;
+      background: var(--bg-canvas);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .device.dark .topbar { background: #0E0E0D; }
+    .ic-btn { width: 38px; height: 38px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: 0; color: var(--fg-primary); cursor: pointer; }
+    .ic-btn:hover { background: var(--bg-surface-2); }
+    .ic-btn svg { stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+    .month-switch {
+      flex: 1; display: flex; flex-direction: column; align-items: center; gap: 1px;
+    }
+    .month-switch .row1 {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-family: var(--font-latin); font-size: 18px; font-weight: 700; color: var(--fg-primary); letter-spacing: -0.01em;
+    }
+    .month-switch .row1 .chev {
+      width: 22px; height: 22px; border-radius: 999px; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; color: var(--fg-tertiary);
+    }
+    .month-switch .row1 .chev:hover { background: var(--bg-surface-2); color: var(--fg-primary); }
+    .month-switch .row1 .chev svg { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .month-switch .row2 {
+      font-family: var(--font-bangla); font-size: 11px; font-weight: 500; color: var(--fg-tertiary);
+    }
+    .today-pill {
+      font-family: var(--font-bangla); font-size: 12px; font-weight: 600;
+      padding: 7px 12px; border-radius: 999px;
+      background: var(--brand-emerald-50); color: var(--brand-emerald);
+      border: 0; cursor: pointer; flex-shrink: 0;
+    }
+    .device.dark .today-pill { background: rgba(0,106,78,0.18); color: #4FB394; }
+    .today-pill:hover { background: var(--brand-emerald-100); }
+
+    /* === Toggle (Bangla numerals) === */
+    .num-toggle {
+      display: flex; gap: 0; padding: 8px 16px 4px;
+      align-items: center;
+    }
+    .seg {
+      display: inline-flex; padding: 3px; border-radius: 999px;
+      background: var(--bg-surface-2); border: 1px solid var(--border-subtle);
+      margin-left: auto;
+    }
+    .seg button {
+      font-family: var(--font-latin); font-size: 11px; font-weight: 600;
+      padding: 5px 12px; border-radius: 999px; border: 0; background: transparent;
+      color: var(--fg-tertiary); cursor: pointer;
+    }
+    .seg button.on { background: var(--bg-surface); color: var(--fg-primary); box-shadow: var(--shadow-xs); }
+    .num-toggle .lab { font-family: var(--font-bangla); font-size: 12px; color: var(--fg-tertiary); }
+
+    /* === Weekday header === */
+    .dow-row {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      padding: 6px 12px 4px;
+      font-family: var(--font-latin); font-size: 11px; font-weight: 600;
+      color: var(--fg-tertiary); letter-spacing: 0.06em;
+    }
+    .dow-row > span { text-align: center; }
+    .dow-row > span.fri {
+      color: var(--brand-red);
+    }
+    .device.dark .dow-row > span.fri { color: #FF8A98; }
+
+    /* === Calendar grid === */
+    .grid {
+      display: grid; grid-template-columns: repeat(7, 1fr);
+      padding: 0 8px;
+      gap: 0;
+    }
+    .cell {
+      aspect-ratio: 1 / 1.05;
+      display: flex; flex-direction: column; align-items: center; justify-content: flex-start;
+      padding: 6px 0 0;
+      cursor: pointer; position: relative;
+      border-radius: 12px;
+    }
+    .cell .num {
+      font-family: var(--font-latin); font-size: 16px; font-weight: 500;
+      color: var(--fg-primary); letter-spacing: -0.01em;
+      width: 36px; height: 36px; border-radius: 999px;
+      display: flex; align-items: center; justify-content: center;
+      transition: background-color 120ms var(--ease-standard);
+    }
+    .cell .bn {
+      font-family: var(--font-bangla); font-size: 10px;
+      color: var(--fg-tertiary); margin-top: 1px; line-height: 1; min-height: 11px;
+    }
+    .cell .dots {
+      display: flex; gap: 3px; margin-top: 4px; min-height: 5px;
+    }
+    .dot { width: 4px; height: 4px; border-radius: 999px; }
+    .dot.holiday  { background: var(--brand-red); }
+    .dot.festival { background: var(--brand-gold); }
+    .dot.event    { background: var(--info); }
+    .device.dark .dot.holiday { background: #FF6B7C; }
+    .device.dark .dot.festival { background: #E8C969; }
+    .device.dark .dot.event { background: #5FA3DD; }
+
+    /* States */
+    .cell.fri::before {
+      content: ""; position: absolute; inset: 4px; border-radius: 12px;
+      background: var(--brand-red-50); z-index: -1;
+    }
+    .device.dark .cell.fri::before { background: rgba(244,42,65,0.06); }
+    .cell.other .num { color: var(--fg-tertiary); opacity: 0.5; }
+    .cell.other .bn { opacity: 0.4; }
+    .cell.other .dots .dot { opacity: 0.4; }
+
+    .cell.today .num { background: var(--brand-emerald); color: #fff; font-weight: 600; }
+    .cell.today .bn { color: var(--fg-secondary); }
+
+    .cell.selected .num {
+      box-shadow: inset 0 0 0 2px var(--brand-emerald);
+      color: var(--brand-emerald); font-weight: 600;
+    }
+    .device.dark .cell.selected .num {
+      box-shadow: inset 0 0 0 2px #4FB394; color: #4FB394;
+    }
+    .cell.selected.today .num {
+      background: var(--brand-emerald); color: #fff;
+      box-shadow: inset 0 0 0 2px var(--brand-emerald), 0 0 0 3px var(--brand-emerald-50);
+    }
+
+    .cell.holiday-day .num {
+      color: var(--brand-red);
+    }
+    .device.dark .cell.holiday-day .num { color: #FF8A98; }
+    .cell.holiday-day.today .num { color: #fff; }
+
+    .cell.festival-day::after {
+      content: ""; position: absolute; top: 4px; right: 6px;
+      width: 6px; height: 6px; border-radius: 999px;
+      background: var(--brand-gold);
+      box-shadow: 0 0 6px rgba(212,175,55,0.6);
+    }
+
+    /* === Selected info panel === */
+    .panel {
+      margin: 16px 16px 0;
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      border-radius: 20px; padding: 16px 18px;
+      box-shadow: var(--shadow-sm);
+    }
+    .panel-head {
+      display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+    }
+    .panel-date {
+      font-family: var(--font-latin); font-size: 22px; font-weight: 700; letter-spacing: -0.01em; color: var(--fg-primary);
+    }
+    .panel-dow {
+      font-family: var(--font-bangla); font-size: 13px; color: var(--fg-tertiary);
+    }
+    .panel-alt {
+      display: flex; gap: 16px; margin-top: 10px; padding-top: 10px;
+      border-top: 1px solid var(--border-subtle);
+    }
+    .panel-alt .col {
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .panel-alt .col + .col { padding-left: 16px; border-left: 1px solid var(--border-subtle); }
+    .panel-alt .nm {
+      font-family: var(--font-latin); font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--fg-tertiary);
+    }
+    .panel-alt .vl {
+      font-family: var(--font-bangla); font-size: 14px; font-weight: 600; color: var(--fg-primary);
+    }
+
+    .panel-events { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+    .ev-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 8px 10px; border-radius: 12px;
+      background: var(--bg-surface-2);
+    }
+    .ev-tag { width: 4px; align-self: stretch; border-radius: 999px; flex-shrink: 0; }
+    .ev-text { flex: 1; min-width: 0; }
+    .ev-title { font-family: var(--font-bangla); font-size: 13px; font-weight: 600; color: var(--fg-primary); }
+    .ev-meta { font-family: var(--font-latin); font-size: 11px; color: var(--fg-tertiary); margin-top: 1px; }
+    .ev-pill {
+      font-family: var(--font-bangla); font-size: 11px; font-weight: 600;
+      padding: 3px 8px; border-radius: 999px;
+    }
+    .ev-pill.gov { background: var(--brand-red-50); color: var(--brand-red-700); }
+    .ev-pill.fest { background: var(--brand-gold-50); color: var(--brand-gold-700); }
+    .device.dark .ev-pill.gov { background: rgba(244,42,65,0.18); color: #FF8A98; }
+    .device.dark .ev-pill.fest { background: rgba(212,175,55,0.18); color: #E8C969; }
+
+    .add-btn {
+      width: 100%; margin-top: 14px;
+      height: 44px; border-radius: 12px;
+      border: 1px dashed var(--border-default);
+      background: transparent; cursor: pointer;
+      font-family: var(--font-bangla); font-size: 13px; font-weight: 600;
+      color: var(--brand-emerald);
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .device.dark .add-btn { color: #4FB394; }
+    .add-btn:hover { background: var(--bg-surface-2); border-color: var(--brand-emerald); }
+    .add-btn svg { stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* === Bottom nav === */
+    .bottomnav {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 86px;
+      padding: 8px 6px 28px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-top: 1px solid var(--border-subtle);
+      display: flex; align-items: stretch; justify-content: space-around;
+      z-index: 30;
+    }
+    .device.dark .bottomnav { background: rgba(26,26,24,0.85); }
+    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; background: none; border: 0; cursor: pointer; padding: 4px 2px; color: var(--fg-tertiary); }
+    .nav-item svg { stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .nav-item .lab { font-family: var(--font-bangla); font-size: 10px; font-weight: 500; }
+    .nav-item.active { color: var(--brand-emerald); }
+    .nav-item.active .lab { font-weight: 600; }
+    .device.dark .nav-item.active { color: #4FB394; }
+
+    /* Legend */
+    .legend {
+      display: flex; gap: 12px; padding: 8px 16px 0;
+      font-family: var(--font-latin); font-size: 10px; color: var(--fg-tertiary);
+      flex-wrap: wrap;
+    }
+    .legend .item { display: inline-flex; align-items: center; gap: 4px; }
+    .legend .lg-dot { width: 5px; height: 5px; border-radius: 999px; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">BongoCal · Month view</div>
+  <h1 class="title">April 2026, three calendars at a glance.</h1>
+  <p class="sub">Apple-clean grid with red/gold/blue dot encoding for holidays, festivals and personal events. Friday tinted (BD weekend). Pohela Boishakh (১৪ April) carries a gold festival mark; today is the 26th.</p>
+</div>
+
+<div class="row" id="row"></div>
+
+<template id="status-tpl">
+  <div class="statusbar">
+    <span>9:41</span>
+    <span style="display:inline-flex;gap:6px;align-items:center">
+      <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4" y="5" width="3" height="6" rx="1"/><rect x="8" y="3" width="3" height="8" rx="1"/><rect x="12" y="0" width="3" height="11" rx="1"/></svg>
+      <svg width="22" height="11" viewBox="0 0 22 11" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5"/><rect x="2" y="2" width="13" height="7" rx="1.2" fill="currentColor"/><rect x="19.5" y="3" width="1.5" height="5" rx="0.5" fill="currentColor"/></svg>
+    </span>
+  </div>
+</template>
+
+<template id="nav-tpl">
+  <nav class="bottomnav">
+    <button class="nav-item">
+      <svg width="22" height="22" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+      <span class="lab">হোম</span>
+    </button>
+    <button class="nav-item active">
+      <svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+      <span class="lab">ক্যালেন্ডার</span>
+    </button>
+    <button class="nav-item">
+      <svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 2l2 6h6l-5 3.6 2 6.4-5-3.6-5 3.6 2-6.4L4 8h6z"/></svg>
+      <span class="lab">ছুটি</span>
+    </button>
+    <button class="nav-item">
+      <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      <span class="lab">ইভেন্ট</span>
+    </button>
+    <button class="nav-item">
+      <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82 2 2 0 1 1-2.83 2.83 1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33 2 2 0 1 1-2.83-2.83 1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82 2 2 0 1 1 2.83-2.83 1.65 1.65 0 0 0 1.82.33 1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33 2 2 0 1 1 2.83 2.83 1.65 1.65 0 0 0-.33 1.82 1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span class="lab">সেটিংস</span>
+    </button>
+  </nav>
+</template>
+
+<script>
+  /* April 2026: April 1 = Wednesday (verified)
+     Weeks build Sun-Sat. Today = 26 (Sun). Selected = 14 (Pohela Boishakh, Tuesday).
+     Holidays/festivals (Bangladesh):
+       - Apr 14: Pohela Boishakh — festival + government holiday
+       - Apr 17: Friday (weekend tint applies via column)
+       - Apr 26: Today
+       - May 1 : May Day (next month)
+     Bangla numerals are computed; English numbers use Latin digits.
+     Hijri: April 26 → 8 Shawwal 1447. Approximate adjacent days.
+  */
+
+  const enToBn = s => String(s).replace(/\d/g, d => '০১২৩৪৫৬৭৮৯'[d]);
+
+  // Bangla numeral lookup for cells (1-31 plus next month start)
+  // Compute Bangla month-day given Gregorian (April 2026):
+  // Pohela Boishakh = April 14, 2026 ⇒ Boishakh 1, 1433 (reformed)
+  // So April 1 → Choitro 18, 1432 (approx, reformed cal: Choitro = 30 days, last month before Boishakh)
+  // For brevity we hand-set a map for visible cells:
+  const bnMap = {
+    // March (other-month leading): 29, 30, 31 → Choitro 15, 16, 17
+    '2026-3-29': '১৫', '2026-3-30': '১৬', '2026-3-31': '১৭',
+    // April
+    '2026-4-1': '১৮', '2026-4-2': '১৯', '2026-4-3': '২০', '2026-4-4': '২১',
+    '2026-4-5': '২২', '2026-4-6': '২৩', '2026-4-7': '২৪', '2026-4-8': '২৫',
+    '2026-4-9': '২৬', '2026-4-10': '২৭','2026-4-11':'২৮', '2026-4-12':'২৯',
+    '2026-4-13':'৩০',
+    '2026-4-14':'১',  '2026-4-15':'২',  '2026-4-16':'৩',  '2026-4-17':'৪',
+    '2026-4-18':'৫',  '2026-4-19':'৬',  '2026-4-20':'৭',  '2026-4-21':'৮',
+    '2026-4-22':'৯',  '2026-4-23':'১০', '2026-4-24':'১১', '2026-4-25':'১২',
+    '2026-4-26':'১৩', '2026-4-27':'১৪', '2026-4-28':'১৫', '2026-4-29':'১৬',
+    '2026-4-30':'১৭',
+    // May (other-month trailing): 1, 2, 3, 4, 5, 6, 7, 8, 9
+    '2026-5-1':'১৮', '2026-5-2':'১৯', '2026-5-3':'২০', '2026-5-4':'২১',
+    '2026-5-5':'২২', '2026-5-6':'২৩', '2026-5-7':'২৪', '2026-5-8':'২৫', '2026-5-9':'২৬',
+  };
+
+  const holidays = {
+    '2026-4-14': { kind: 'festival', name: 'পহেলা বৈশাখ', en: 'Bangla New Year', tag: 'fest' },
+    '2026-5-1':  { kind: 'holiday',  name: 'মে দিবস',     en: 'May Day',         tag: 'gov' },
+  };
+  const events = {
+    '2026-4-26': [{ title: 'বিকেলের ঘুরাঘুরি', meta: 'বিকেল ৪:৩০ · ধানমন্ডি লেক', color: 'var(--brand-emerald)' }],
+    '2026-4-28': [{ title: "আম্মার জন্মদিন", meta: 'সারাদিন · পুনরাবৃত্তি',         color: 'var(--brand-emerald)' }],
+  };
+
+  // April 2026 starts on Wednesday (day 3 in Sun=0)
+  // Build 6×7 grid starting from previous Sunday (March 29)
+  const start = new Date(2026, 2, 29); // March 29, 2026 (Sun)
+  const cells = [];
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(start);
+    d.setDate(start.getDate() + i);
+    cells.push(d);
+  }
+
+  function cellHTML(d, useBangla) {
+    const m = d.getMonth() + 1, day = d.getDate(), y = d.getFullYear();
+    const key = `${y}-${m}-${day}`;
+    const otherMonth = m !== 4;
+    const isFriday = d.getDay() === 5;
+    const isToday = key === '2026-4-26';
+    const isSelected = key === '2026-4-14';
+    const hol = holidays[key];
+    const hasEvent = events[key];
+
+    const classes = ['cell'];
+    if (isFriday) classes.push('fri');
+    if (otherMonth) classes.push('other');
+    if (isToday) classes.push('today');
+    if (isSelected) classes.push('selected');
+    if (hol && hol.kind === 'holiday') classes.push('holiday-day');
+    if (hol && hol.kind === 'festival') classes.push('festival-day');
+
+    const dots = [];
+    if (hol && hol.kind === 'holiday') dots.push('<span class="dot holiday"></span>');
+    if (hol && hol.kind === 'festival') dots.push('<span class="dot holiday"></span>');
+    if (hasEvent) dots.push('<span class="dot event"></span>');
+
+    const numStr = useBangla ? enToBn(day) : day;
+    const bnStr = bnMap[key] || '';
+
+    return `<div class="${classes.join(' ')}">
+      <span class="num">${numStr}</span>
+      <span class="bn">${bnStr}</span>
+      <span class="dots">${dots.join('')}</span>
+    </div>`;
+  }
+
+  function build(theme) {
+    const isDark = theme === 'dark';
+    const stage = document.createElement('div');
+    stage.className = 'stage';
+
+    const useBangla = false;
+    const gridHTML = cells.map(d => cellHTML(d, useBangla)).join('');
+
+    stage.innerHTML = `
+      <div class="device ${isDark ? 'dark' : ''}" ${isDark ? 'data-theme="dark"' : ''}>
+        <div class="island"></div>
+        ${document.getElementById('status-tpl').innerHTML}
+        <div class="screen">
+          <div class="scroll">
+            <div class="topbar">
+              <button class="ic-btn"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+              <div class="month-switch">
+                <div class="row1">
+                  <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></span>
+                  April 2026
+                  <span class="chev"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+                </div>
+                <div class="row2">বৈশাখ ১৪৩৩ · শাওয়াল ১৪৪৭</div>
+              </div>
+              <button class="today-pill">আজ · 26</button>
+            </div>
+
+            <div class="num-toggle">
+              <span class="lab">সংখ্যা</span>
+              <div class="seg">
+                <button class="on">EN</button>
+                <button>বাং</button>
+              </div>
+            </div>
+
+            <div class="dow-row">
+              <span>SUN</span><span>MON</span><span>TUE</span><span>WED</span><span>THU</span><span class="fri">FRI</span><span>SAT</span>
+            </div>
+
+            <div class="grid">${gridHTML}</div>
+
+            <div class="legend">
+              <span class="item"><span class="lg-dot" style="background:var(--brand-red)"></span>সরকারি ছুটি</span>
+              <span class="item"><span class="lg-dot" style="background:var(--brand-gold)"></span>উৎসব</span>
+              <span class="item"><span class="lg-dot" style="background:var(--info)"></span>ব্যক্তিগত ইভেন্ট</span>
+            </div>
+
+            <div class="panel">
+              <div class="panel-head">
+                <div>
+                  <div class="panel-date">14 April 2026</div>
+                  <div class="panel-dow">মঙ্গলবার · Tuesday</div>
+                </div>
+                <span class="ev-pill fest">উৎসব</span>
+              </div>
+              <div class="panel-alt">
+                <div class="col">
+                  <span class="nm">বাংলা</span>
+                  <span class="vl">১ বৈশাখ</span>
+                  <span class="nm" style="opacity:0.7">১৪৩৩</span>
+                </div>
+                <div class="col">
+                  <span class="nm">হিজরি</span>
+                  <span class="vl">২৬ রমজান</span>
+                  <span class="nm" style="opacity:0.7">১৪৪৭</span>
+                </div>
+              </div>
+              <div class="panel-events">
+                <div class="ev-item">
+                  <span class="ev-tag" style="background: var(--brand-gold);"></span>
+                  <div class="ev-text">
+                    <div class="ev-title">পহেলা বৈশাখ</div>
+                    <div class="ev-meta">Bangla New Year · জাতীয় উৎসব</div>
+                  </div>
+                  <span class="ev-pill gov">সরকারি ছুটি</span>
+                </div>
+              </div>
+              <button class="add-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+                ইভেন্ট যোগ করুন
+              </button>
+            </div>
+
+            <div style="height: 16px;"></div>
+          </div>
+          ${document.getElementById('nav-tpl').innerHTML}
+        </div>
+        <div class="home-bar ${isDark ? 'dark' : ''}"></div>
+      </div>
+      <div class="label">${isDark ? 'Dark · Month' : 'Light · Month'}</div>
+    `;
+
+    // Wire numeral toggle
+    requestAnimationFrame(() => {
+      const segs = stage.querySelectorAll('.seg button');
+      const grid = stage.querySelector('.grid');
+      segs.forEach((b, i) => b.addEventListener('click', () => {
+        segs.forEach(x => x.classList.remove('on'));
+        b.classList.add('on');
+        grid.innerHTML = cells.map(d => cellHTML(d, i === 1)).join('');
+      }));
+    });
+
+    return stage;
+  }
+
+  const row = document.getElementById('row');
+  row.appendChild(build('light'));
+  row.appendChild(build('dark'));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,20 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css"><link rel="stylesheet" href="_card.css">
+<style>
+  .row { display: flex; gap: 16px; }
+  .demo { flex:1; background: var(--bg-surface); border:1px solid var(--border-subtle); border-radius: 12px; padding: 24px; display: flex; align-items:center; justify-content:center; min-height: 100px; }
+  .square { background: var(--brand-emerald); width: 64px; height: 64px; }
+  .lab { font-size:11px; font-family: ui-monospace, monospace; color: var(--fg-tertiary); margin-top: 8px; text-align: center; }
+  .nm { font-size:12px; font-weight: 600; color: var(--fg-primary); text-align:center; }
+</style></head>
+<body>
+  <p class="lbl">Border radius</p>
+  <div class="row">
+    <div><div class="demo"><div class="square" style="border-radius: 4px"></div></div><div class="nm">xs</div><div class="lab">4 px</div></div>
+    <div><div class="demo"><div class="square" style="border-radius: 8px"></div></div><div class="nm">sm</div><div class="lab">8 px</div></div>
+    <div><div class="demo"><div class="square" style="border-radius: 12px"></div></div><div class="nm">md</div><div class="lab">12 px</div></div>
+    <div><div class="demo"><div class="square" style="border-radius: 16px"></div></div><div class="nm">lg</div><div class="lab">16 px</div></div>
+    <div><div class="demo"><div class="square" style="border-radius: 20px"></div></div><div class="nm">xl</div><div class="lab">20 px</div></div>
+    <div><div class="demo"><div class="square" style="border-radius: 999px"></div></div><div class="nm">pill</div><div class="lab">999 px</div></div>
+  </div>
+</body></html>

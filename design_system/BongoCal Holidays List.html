@@ -1,0 +1,561 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BongoCal · Holidays</title>
+  <link rel="stylesheet" href="colors_and_type.css">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; min-height: 100vh; background: #EDEDE7; color: #141413; }
+    body { font-family: var(--font-bangla); padding: 56px 32px 80px; display: flex; flex-direction: column; align-items: center; gap: 32px; }
+    .header { text-align: center; max-width: 760px; }
+    .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; color: #767670; text-transform: uppercase; font-family: var(--font-latin); }
+    .title { font-family: var(--font-latin); font-size: 32px; font-weight: 700; letter-spacing: -0.02em; margin-top: 10px; }
+    .sub { font-family: var(--font-latin); font-size: 15px; color: #535350; margin-top: 8px; line-height: 1.5; }
+
+    .row { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+    .stage { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .label { font-family: var(--font-latin); font-size: 11px; font-weight: 700; color: #767670; letter-spacing: 0.10em; text-transform: uppercase; }
+
+    .device { width: 390px; height: 844px; background: var(--bg-canvas); border-radius: 50px; border: 10px solid #1A1A18; box-shadow: 0 6px 12px rgba(20,20,19,.10), 0 30px 60px rgba(20,20,19,.20); overflow: hidden; position: relative; }
+    .device.dark { background: #0E0E0D; border-color: #000; }
+    .island { position: absolute; left: 50%; top: 8px; transform: translateX(-50%); width: 110px; height: 32px; background: #000; border-radius: 999px; z-index: 50; }
+    .statusbar { position: absolute; top: 0; left: 0; right: 0; height: 47px; padding: 0 30px; display: flex; align-items: center; justify-content: space-between; font-family: var(--font-latin); font-size: 15px; font-weight: 600; color: var(--fg-primary); z-index: 40; pointer-events: none; }
+    .home-bar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 999px; background: var(--fg-primary); opacity: 0.4; z-index: 40; }
+    .home-bar.dark { background: #fff; opacity: 0.5; }
+    .screen { position: absolute; inset: 0; overflow: hidden; }
+    .scroll { position: absolute; top: 47px; left: 0; right: 0; bottom: 86px; overflow-y: auto; scrollbar-width: none; }
+    .scroll::-webkit-scrollbar { display: none; }
+
+    /* Top bar */
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      background: var(--bg-canvas);
+      padding: 12px 20px 14px;
+    }
+    .device.dark .topbar { background: #0E0E0D; }
+    .topbar-row { display: flex; align-items: center; justify-content: space-between; }
+    .pg-title { font-family: var(--font-bangla); font-size: 24px; font-weight: 700; color: var(--fg-primary); letter-spacing: -0.005em; }
+    .pg-title-en { font-family: var(--font-latin); font-size: 11px; font-weight: 600; color: var(--fg-tertiary); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 2px; }
+    .topbar-actions { display: flex; gap: 4px; align-items: center; }
+    .yr-pill {
+      font-family: var(--font-latin); font-size: 13px; font-weight: 600;
+      padding: 8px 12px; border-radius: 999px;
+      background: var(--bg-surface-2); color: var(--fg-primary);
+      border: 0; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;
+    }
+    .yr-pill svg { stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .ic-btn { width: 38px; height: 38px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; background: transparent; border: 0; color: var(--fg-primary); cursor: pointer; }
+    .ic-btn:hover { background: var(--bg-surface-2); }
+    .ic-btn svg { stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* Filter chips */
+    .chips {
+      display: flex; gap: 6px; padding: 4px 20px 12px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .chips::-webkit-scrollbar { display: none; }
+    .chip {
+      flex-shrink: 0;
+      font-family: var(--font-bangla); font-size: 13px; font-weight: 500;
+      padding: 7px 14px; border-radius: 999px;
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      color: var(--fg-secondary); cursor: pointer;
+    }
+    .chip:hover { background: var(--bg-surface-2); }
+    .chip.on {
+      background: var(--brand-emerald); color: #fff; border-color: var(--brand-emerald);
+      box-shadow: 0 2px 6px rgba(0,106,78,0.20);
+    }
+    .chip .count {
+      font-family: var(--font-latin); font-size: 11px; opacity: 0.65; margin-left: 4px;
+    }
+
+    /* Month header */
+    .month-head {
+      padding: 16px 20px 8px;
+      display: flex; align-items: baseline; justify-content: space-between;
+    }
+    .month-head .en {
+      font-family: var(--font-latin); font-size: 15px; font-weight: 700; color: var(--fg-primary); letter-spacing: -0.005em;
+    }
+    .month-head .bn {
+      font-family: var(--font-bangla); font-size: 12px; color: var(--fg-tertiary); margin-left: 6px;
+    }
+    .month-head .count {
+      font-family: var(--font-latin); font-size: 11px; font-weight: 600; color: var(--fg-tertiary);
+      letter-spacing: 0.06em;
+    }
+
+    /* Holiday card */
+    .h-list { padding: 0 16px; display: flex; flex-direction: column; gap: 10px; }
+    .h-card {
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      border-radius: 16px; padding: 14px 14px 14px 16px;
+      display: flex; gap: 14px; align-items: flex-start;
+      box-shadow: var(--shadow-xs);
+      position: relative; cursor: pointer; overflow: hidden;
+      transition: transform 120ms var(--ease-standard), box-shadow 120ms var(--ease-standard);
+    }
+    .h-card:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+    .h-card::before {
+      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+      background: var(--accent, var(--brand-emerald));
+    }
+    .h-card[data-type="religious"]   { --accent: var(--brand-gold); }
+    .h-card[data-type="government"]  { --accent: var(--brand-emerald); }
+    .h-card[data-type="national"]    { --accent: var(--brand-red); }
+    .h-card[data-type="optional"]    { --accent: var(--gray-400); }
+
+    .date-badge {
+      flex-shrink: 0; width: 50px; text-align: center;
+      display: flex; flex-direction: column; align-items: center;
+    }
+    .date-badge .m {
+      font-family: var(--font-latin); font-size: 10px; font-weight: 700; letter-spacing: 0.12em;
+      color: var(--accent, var(--brand-emerald)); text-transform: uppercase;
+    }
+    .date-badge .d {
+      font-family: var(--font-latin); font-size: 26px; font-weight: 600;
+      color: var(--fg-primary); line-height: 1; letter-spacing: -0.02em; margin-top: 2px;
+    }
+    .date-badge .bn {
+      font-family: var(--font-bangla); font-size: 10px; color: var(--fg-tertiary);
+      margin-top: 4px;
+    }
+    .h-meta { flex: 1; min-width: 0; padding-top: 2px; }
+    .h-name {
+      font-family: var(--font-bangla); font-size: 16px; font-weight: 600; color: var(--fg-primary);
+      letter-spacing: -0.005em; line-height: 1.25;
+    }
+    .h-name-en {
+      font-family: var(--font-latin); font-size: 12px; font-weight: 500; color: var(--fg-tertiary);
+      margin-top: 2px;
+    }
+    .h-tags {
+      display: flex; gap: 6px; align-items: center; margin-top: 8px; flex-wrap: wrap;
+    }
+    .h-pill {
+      font-family: var(--font-bangla); font-size: 11px; font-weight: 600;
+      padding: 3px 9px; border-radius: 999px;
+    }
+    .h-pill.religious  { background: var(--brand-gold-50); color: var(--brand-gold-700); }
+    .h-pill.government { background: var(--brand-emerald-50); color: var(--brand-emerald); }
+    .h-pill.national   { background: var(--brand-red-50); color: var(--brand-red-700); }
+    .h-pill.optional   { background: var(--bg-surface-2); color: var(--fg-secondary); }
+    .device.dark .h-pill.religious  { background: rgba(212,175,55,0.18); color: #E8C969; }
+    .device.dark .h-pill.government { background: rgba(0,106,78,0.22); color: #4FB394; }
+    .device.dark .h-pill.national   { background: rgba(244,42,65,0.18); color: #FF8A98; }
+    .h-meta-row {
+      font-family: var(--font-latin); font-size: 11px; color: var(--fg-tertiary);
+      display: inline-flex; align-items: center; gap: 4px;
+    }
+    .h-rel {
+      font-family: var(--font-bangla); font-size: 11px; color: var(--fg-tertiary);
+    }
+    .h-rel.future { color: var(--brand-emerald); font-weight: 600; }
+    .device.dark .h-rel.future { color: #4FB394; }
+    .h-rel.past { color: var(--fg-tertiary); }
+
+    .bookmark {
+      flex-shrink: 0; width: 32px; height: 32px; border-radius: 999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--fg-tertiary); background: transparent; border: 0; cursor: pointer;
+      align-self: flex-start; margin-top: -2px;
+    }
+    .bookmark:hover { background: var(--bg-surface-2); }
+    .bookmark svg { stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .bookmark.on { color: var(--brand-gold); }
+    .bookmark.on svg { fill: currentColor; }
+
+    /* Featured upcoming card */
+    .featured {
+      margin: 4px 16px 8px;
+      border-radius: 22px;
+      padding: 18px 18px 16px 22px;
+      position: relative; overflow: hidden;
+      background:
+        radial-gradient(circle at 90% -10%, rgba(244,42,65,0.20) 0%, transparent 50%),
+        linear-gradient(160deg, #FFFFFF 0%, #FFF8F2 100%);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-md);
+    }
+    .device.dark .featured {
+      background:
+        radial-gradient(circle at 90% -10%, rgba(244,42,65,0.18) 0%, transparent 55%),
+        linear-gradient(160deg, #232322 0%, #2A1F1F 100%);
+    }
+    .featured::before {
+      content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+      background: var(--brand-red);
+    }
+    .featured-head {
+      display: flex; align-items: center; justify-content: space-between; gap: 8px;
+    }
+    .featured-eyebrow {
+      font-family: var(--font-bangla); font-size: 10px; font-weight: 700; letter-spacing: 0.10em;
+      text-transform: uppercase; color: var(--brand-red);
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .featured-eyebrow .pulse {
+      width: 6px; height: 6px; border-radius: 999px; background: var(--brand-red);
+      animation: pulse 2200ms ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { box-shadow: 0 0 0 0 rgba(244,42,65,0.5); }
+      50%     { box-shadow: 0 0 0 5px rgba(244,42,65,0); }
+    }
+    .featured-name {
+      font-family: var(--font-bangla); font-size: 22px; font-weight: 700; color: var(--fg-primary);
+      letter-spacing: -0.01em; line-height: 1.2; margin-top: 8px;
+    }
+    .featured-name-en {
+      font-family: var(--font-latin); font-size: 13px; font-weight: 500; color: var(--fg-tertiary);
+      margin-top: 2px;
+    }
+    .featured-row {
+      display: flex; align-items: center; gap: 12px; margin-top: 14px;
+      padding-top: 14px; border-top: 1px solid var(--border-subtle);
+    }
+    .featured-date {
+      flex-shrink: 0;
+      font-family: var(--font-latin); font-size: 13px; color: var(--fg-secondary);
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .featured-date .big { font-size: 16px; font-weight: 600; color: var(--fg-primary); letter-spacing: -0.01em; }
+    .featured-countdown {
+      flex-shrink: 0; margin-left: auto;
+      display: flex; flex-direction: column; align-items: flex-end; gap: 1px;
+    }
+    .featured-countdown .num {
+      font-family: var(--font-latin); font-size: 28px; font-weight: 700; color: var(--brand-red);
+      line-height: 1; letter-spacing: -0.02em;
+    }
+    .device.dark .featured-countdown .num { color: #FF6B7C; }
+    .featured-countdown .lab {
+      font-family: var(--font-bangla); font-size: 11px; color: var(--fg-tertiary);
+      letter-spacing: 0.04em;
+    }
+    .featured-desc {
+      font-family: var(--font-bangla); font-size: 13px; color: var(--fg-secondary); line-height: 1.55;
+      margin-top: 12px;
+    }
+    .featured-actions {
+      display: flex; gap: 8px; margin-top: 14px;
+    }
+    .f-btn {
+      flex: 1; height: 38px; border-radius: 12px; border: 0; cursor: pointer;
+      font-family: var(--font-bangla); font-size: 13px; font-weight: 600;
+      display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .f-btn svg { stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .f-btn.primary { background: var(--brand-red); color: #fff; }
+    .f-btn.primary:hover { background: var(--brand-red-700); }
+    .f-btn.secondary { background: var(--bg-surface-2); color: var(--fg-primary); }
+    .f-btn.secondary:hover { background: var(--bg-elevated); }
+    .toggle {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--font-bangla); font-size: 12px; color: var(--fg-secondary);
+      flex: 1;
+    }
+    .switch {
+      width: 36px; height: 22px; border-radius: 999px;
+      background: var(--brand-emerald); position: relative;
+      flex-shrink: 0;
+    }
+    .switch::after {
+      content: ""; position: absolute; top: 2px; left: 16px;
+      width: 18px; height: 18px; border-radius: 999px; background: #fff;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+      transition: left 160ms var(--ease-spring);
+    }
+    .switch.off { background: var(--gray-300); }
+    .switch.off::after { left: 2px; }
+    .device.dark .switch.off { background: var(--gray-700); }
+
+    /* Bottom nav */
+    .bottomnav { position: absolute; left: 0; right: 0; bottom: 0; height: 86px; padding: 8px 6px 28px; background: rgba(255,255,255,0.85); backdrop-filter: saturate(180%) blur(20px); -webkit-backdrop-filter: saturate(180%) blur(20px); border-top: 1px solid var(--border-subtle); display: flex; align-items: stretch; justify-content: space-around; z-index: 30; }
+    .device.dark .bottomnav { background: rgba(26,26,24,0.85); }
+    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; background: none; border: 0; cursor: pointer; padding: 4px 2px; color: var(--fg-tertiary); }
+    .nav-item svg { stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .nav-item .lab { font-family: var(--font-bangla); font-size: 10px; font-weight: 500; }
+    .nav-item.active { color: var(--brand-emerald); }
+    .nav-item.active .lab { font-weight: 600; }
+    .device.dark .nav-item.active { color: #4FB394; }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">BongoCal · Holidays</div>
+  <h1 class="title">A year of holidays, beautifully indexed.</h1>
+  <p class="sub">Filter chips, month-grouped cards, color-coded by type (religious gold · government green · national red · optional gray). The next upcoming holiday lifts to a featured card with countdown, description, notify toggle, and share.</p>
+</div>
+
+<div class="row" id="row"></div>
+
+<template id="status-tpl">
+  <div class="statusbar">
+    <span>9:41</span>
+    <span style="display:inline-flex;gap:6px;align-items:center">
+      <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4" y="5" width="3" height="6" rx="1"/><rect x="8" y="3" width="3" height="8" rx="1"/><rect x="12" y="0" width="3" height="11" rx="1"/></svg>
+      <svg width="22" height="11" viewBox="0 0 22 11" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5"/><rect x="2" y="2" width="13" height="7" rx="1.2" fill="currentColor"/><rect x="19.5" y="3" width="1.5" height="5" rx="0.5" fill="currentColor"/></svg>
+    </span>
+  </div>
+</template>
+
+<template id="nav-tpl">
+  <nav class="bottomnav">
+    <button class="nav-item">
+      <svg width="22" height="22" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+      <span class="lab">হোম</span>
+    </button>
+    <button class="nav-item">
+      <svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+      <span class="lab">ক্যালেন্ডার</span>
+    </button>
+    <button class="nav-item active">
+      <svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 2l2 6h6l-5 3.6 2 6.4-5-3.6-5 3.6 2-6.4L4 8h6z"/></svg>
+      <span class="lab">ছুটি</span>
+    </button>
+    <button class="nav-item">
+      <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      <span class="lab">ইভেন্ট</span>
+    </button>
+    <button class="nav-item">
+      <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82 2 2 0 1 1-2.83 2.83 1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33 2 2 0 1 1-2.83-2.83 1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82 2 2 0 1 1 2.83-2.83 1.65 1.65 0 0 0 1.82.33 1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33 2 2 0 1 1 2.83 2.83 1.65 1.65 0 0 0-.33 1.82 1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span class="lab">সেটিংস</span>
+    </button>
+  </nav>
+</template>
+
+<template id="page-tpl">
+  <div class="topbar">
+    <div class="topbar-row">
+      <div>
+        <div class="pg-title">ছুটির দিন</div>
+        <div class="pg-title-en">Holidays · 2026</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="yr-pill">2026
+          <svg width="14" height="14" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+        </button>
+        <button class="ic-btn" aria-label="Filter">
+          <svg width="22" height="22" viewBox="0 0 24 24"><path d="M3 6h18M6 12h12M10 18h4"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="chips">
+    <button class="chip on">সব<span class="count">22</span></button>
+    <button class="chip">সরকারি<span class="count">14</span></button>
+    <button class="chip">ধর্মীয়<span class="count">8</span></button>
+    <button class="chip">জাতীয়<span class="count">5</span></button>
+    <button class="chip">ঐচ্ছিক<span class="count">3</span></button>
+  </div>
+
+  <!-- FEATURED -->
+  <div class="featured">
+    <div class="featured-head">
+      <span class="featured-eyebrow"><span class="pulse"></span>পরবর্তী ছুটি · Next up</span>
+      <button class="bookmark on" aria-label="Bookmarked">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+      </button>
+    </div>
+    <div class="featured-name">মে দিবস</div>
+    <div class="featured-name-en">May Day · International Workers' Day</div>
+    <div class="featured-desc">শ্রমিকদের সম্মানে আন্তর্জাতিক ছুটি। দেশব্যাপী সরকারি ছুটি, অফিস ও বাজার বন্ধ থাকবে।</div>
+    <div class="featured-row">
+      <div class="featured-date">
+        <span class="big">Friday, 1 May</span>
+        <span>১৮ বৈশাখ ১৪৩৩ · ১৪ যিলক্বদ ১৪৪৭</span>
+      </div>
+      <div class="featured-countdown">
+        <span class="num">5</span>
+        <span class="lab">দিন বাকি</span>
+      </div>
+    </div>
+    <div class="featured-actions">
+      <div class="toggle">
+        <span class="switch"></span>
+        <span>রিমাইন্ডার চালু</span>
+      </div>
+      <button class="f-btn secondary" style="flex: 0 0 auto; padding: 0 14px;">
+        <svg width="14" height="14" viewBox="0 0 24 24"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8M16 6l-4-4-4 4M12 2v13"/></svg>
+        শেয়ার
+      </button>
+    </div>
+  </div>
+
+  <!-- MARCH -->
+  <div class="month-head">
+    <div><span class="en">March 2026</span><span class="bn">চৈত্র ১৪৩২</span></div>
+    <span class="count">1</span>
+  </div>
+  <div class="h-list">
+    <div class="h-card" data-type="national">
+      <div class="date-badge">
+        <span class="m">MAR</span>
+        <span class="d">26</span>
+        <span class="bn">১২ চৈত্র</span>
+      </div>
+      <div class="h-meta">
+        <div class="h-name">স্বাধীনতা ও জাতীয় দিবস</div>
+        <div class="h-name-en">Independence & National Day</div>
+        <div class="h-tags">
+          <span class="h-pill national">জাতীয় দিবস</span>
+          <span class="h-meta-row">Thursday</span>
+          <span class="h-rel past">গত মাসে · 31 days ago</span>
+        </div>
+      </div>
+      <button class="bookmark"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+    </div>
+  </div>
+
+  <!-- APRIL -->
+  <div class="month-head">
+    <div><span class="en">April 2026</span><span class="bn">বৈশাখ ১৪৩৩</span></div>
+    <span class="count">1</span>
+  </div>
+  <div class="h-list">
+    <div class="h-card" data-type="national">
+      <div class="date-badge">
+        <span class="m">APR</span>
+        <span class="d">14</span>
+        <span class="bn">১ বৈশাখ</span>
+      </div>
+      <div class="h-meta">
+        <div class="h-name">পহেলা বৈশাখ</div>
+        <div class="h-name-en">Bangla New Year · 1433</div>
+        <div class="h-tags">
+          <span class="h-pill national">জাতীয় উৎসব</span>
+          <span class="h-meta-row">Tuesday</span>
+          <span class="h-rel past">১২ দিন আগে</span>
+        </div>
+      </div>
+      <button class="bookmark on"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+    </div>
+  </div>
+
+  <!-- MAY -->
+  <div class="month-head">
+    <div><span class="en">May 2026</span><span class="bn">বৈশাখ–জ্যৈষ্ঠ ১৪৩৩</span></div>
+    <span class="count">2</span>
+  </div>
+  <div class="h-list">
+    <div class="h-card" data-type="government">
+      <div class="date-badge">
+        <span class="m">MAY</span>
+        <span class="d">26</span>
+        <span class="bn">১২ জ্যৈষ্ঠ</span>
+      </div>
+      <div class="h-meta">
+        <div class="h-name">বুদ্ধ পূর্ণিমা</div>
+        <div class="h-name-en">Buddha Purnima</div>
+        <div class="h-tags">
+          <span class="h-pill religious">ধর্মীয়</span>
+          <span class="h-meta-row">Tuesday</span>
+          <span class="h-rel future">৩০ দিন পরে</span>
+        </div>
+      </div>
+      <button class="bookmark"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+    </div>
+  </div>
+
+  <!-- JUNE -->
+  <div class="month-head">
+    <div><span class="en">June 2026</span><span class="bn">জ্যৈষ্ঠ–আষাঢ় ১৪৩৩</span></div>
+    <span class="count">1</span>
+  </div>
+  <div class="h-list">
+    <div class="h-card" data-type="religious">
+      <div class="date-badge">
+        <span class="m">JUN</span>
+        <span class="d">26</span>
+        <span class="bn">১২ আষাঢ়</span>
+      </div>
+      <div class="h-meta">
+        <div class="h-name">ঈদুল আজহা</div>
+        <div class="h-name-en">Eid ul-Adha</div>
+        <div class="h-tags">
+          <span class="h-pill religious">ধর্মীয় উৎসব</span>
+          <span class="h-pill government">৩ দিন ছুটি</span>
+          <span class="h-rel future">৬১ দিন পরে</span>
+        </div>
+      </div>
+      <button class="bookmark on"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+    </div>
+  </div>
+
+  <!-- DEC -->
+  <div class="month-head">
+    <div><span class="en">December 2026</span><span class="bn">অগ্রহায়ণ–পৌষ ১৪৩৩</span></div>
+    <span class="count">1</span>
+  </div>
+  <div class="h-list">
+    <div class="h-card" data-type="national">
+      <div class="date-badge">
+        <span class="m">DEC</span>
+        <span class="d">16</span>
+        <span class="bn">১ পৌষ</span>
+      </div>
+      <div class="h-meta">
+        <div class="h-name">বিজয় দিবস</div>
+        <div class="h-name-en">Victory Day</div>
+        <div class="h-tags">
+          <span class="h-pill national">জাতীয় দিবস</span>
+          <span class="h-meta-row">Wednesday</span>
+          <span class="h-rel future">২৩৪ দিন পরে</span>
+        </div>
+      </div>
+      <button class="bookmark"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></button>
+    </div>
+  </div>
+
+  <div style="height: 16px;"></div>
+</template>
+
+<script>
+  function build(theme) {
+    const isDark = theme === 'dark';
+    const stage = document.createElement('div');
+    stage.className = 'stage';
+    stage.innerHTML = `
+      <div class="device ${isDark ? 'dark' : ''}" ${isDark ? 'data-theme="dark"' : ''}>
+        <div class="island"></div>
+        ${document.getElementById('status-tpl').innerHTML}
+        <div class="screen">
+          <div class="scroll">${document.getElementById('page-tpl').innerHTML}</div>
+          ${document.getElementById('nav-tpl').innerHTML}
+        </div>
+        <div class="home-bar ${isDark ? 'dark' : ''}"></div>
+      </div>
+      <div class="label">${isDark ? 'Dark · Holidays' : 'Light · Holidays'}</div>
+    `;
+    // Filter chips wiring
+    requestAnimationFrame(() => {
+      stage.querySelectorAll('.chip').forEach(c => {
+        c.addEventListener('click', () => {
+          stage.querySelectorAll('.chip').forEach(x => x.classList.remove('on'));
+          c.classList.add('on');
+        });
+      });
+      stage.querySelectorAll('.bookmark').forEach(b => {
+        b.addEventListener('click', e => { e.stopPropagation(); b.classList.toggle('on'); });
+      });
+      stage.querySelectorAll('.switch').forEach(s => {
+        s.addEventListener('click', () => s.classList.toggle('off'));
+      });
+    });
+    return stage;
+  }
+
+  const row = document.getElementById('row');
+  row.appendChild(build('light'));
+  row.appendChild(build('dark'));
+</script>
+
+</body>
+</html>

@@ -1,0 +1,779 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BongoCal — Design System</title>
+  <link rel="stylesheet" href="colors_and_type.css">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { color-scheme: light; }
+    [data-theme="dark"] { color-scheme: dark; }
+    html, body { background: var(--bg-canvas); color: var(--fg-primary); }
+    body { font-family: var(--font-latin); }
+    .bn { font-family: var(--font-bangla); }
+    .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; }
+
+    /* ---- LAYOUT ---- */
+    .gutter { padding-left: 32px; padding-right: 32px; }
+    @media (min-width: 1024px) { .gutter { padding-left: 64px; padding-right: 64px; } }
+
+    .section-title {
+      font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--fg-tertiary);
+    }
+    .section-h {
+      font-size: 36px; font-weight: 700; letter-spacing: -0.02em; color: var(--fg-primary);
+      margin-top: 8px;
+    }
+    .section-sub { color: var(--fg-secondary); margin-top: 12px; max-width: 56ch; line-height: 1.6; }
+    .panel { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 16px; }
+
+    /* ---- HEADER ---- */
+    .topbar {
+      position: sticky; top: 0; z-index: 50;
+      background: color-mix(in oklab, var(--bg-canvas) 80%, transparent);
+      backdrop-filter: saturate(160%) blur(20px); -webkit-backdrop-filter: saturate(160%) blur(20px);
+      border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .toggle {
+      width: 56px; height: 30px; border-radius: 999px;
+      background: var(--bg-surface-2); border: 1px solid var(--border-default);
+      position: relative; cursor: pointer; transition: background 200ms;
+    }
+    .toggle .knob {
+      position: absolute; top: 2px; left: 2px; width: 24px; height: 24px;
+      border-radius: 999px; background: var(--bg-elevated);
+      box-shadow: 0 1px 2px rgba(0,0,0,.15), 0 1px 3px rgba(0,0,0,.08);
+      transition: transform 220ms cubic-bezier(.32,.72,0,1);
+      display: flex; align-items: center; justify-content: center; color: var(--fg-secondary);
+    }
+    [data-theme="dark"] .toggle .knob { transform: translateX(26px); }
+
+    /* ---- COLOR SWATCHES ---- */
+    .swatch {
+      border-radius: 14px; overflow: hidden;
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      display: flex; flex-direction: column;
+      transition: transform 200ms var(--ease-standard), box-shadow 200ms;
+    }
+    .swatch:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+    .swatch .chip { height: 92px; }
+    .swatch .meta { padding: 12px 14px; }
+    .swatch .nm { font-size: 13px; font-weight: 600; color: var(--fg-primary); }
+    .swatch .vl { font-size: 11px; color: var(--fg-tertiary); margin-top: 2px; font-family: ui-monospace, monospace; }
+
+    /* ---- BUTTONS (live) ---- */
+    .btn {
+      font-family: var(--font-bangla); font-weight: 600; font-size: 15px;
+      height: 44px; padding: 0 18px; border-radius: 10px;
+      border: 1px solid transparent; cursor: pointer;
+      transition: all var(--dur-hover) var(--ease-standard);
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .btn:active { transform: scale(0.97); transition-duration: var(--dur-press); }
+    .btn-primary { background: var(--brand-emerald); color: #fff; }
+    .btn-primary:hover { background: var(--brand-emerald-700); }
+    .btn-secondary { background: var(--bg-surface); color: var(--fg-primary); border-color: var(--border-default); }
+    .btn-secondary:hover { background: var(--bg-surface-2); }
+    .btn-ghost { background: transparent; color: var(--brand-emerald); }
+    .btn-ghost:hover { background: var(--brand-emerald-50); }
+    .btn-destructive { background: var(--brand-red); color: #fff; }
+    .btn-destructive:hover { background: var(--brand-red-700); }
+    .btn-icon { width: 44px; padding: 0; justify-content: center; background: var(--bg-surface); color: var(--fg-primary); border-color: var(--border-default); }
+    .btn-icon:hover { background: var(--bg-surface-2); }
+    .btn-disabled { opacity: 0.4; cursor: not-allowed; }
+    .btn-loading::before {
+      content: ""; width: 14px; height: 14px;
+      border: 2px solid rgba(255,255,255,0.4); border-top-color: #fff;
+      border-radius: 999px; animation: sp 800ms linear infinite;
+    }
+    @keyframes sp { to { transform: rotate(360deg); } }
+
+    /* ---- LIVE-DEMO CARDS ---- */
+    .ghost-tile {
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      border-radius: 16px; padding: 24px;
+      display: flex; flex-direction: column; gap: 12px;
+    }
+    .pill { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; background: var(--bg-surface-2); font-size: 11px; font-weight: 600; color: var(--fg-secondary); border: 1px solid var(--border-subtle); }
+
+    /* ---- DATE CELL DEMO ---- */
+    .dcell {
+      width: 44px; height: 52px; border-radius: 10px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px;
+      cursor: pointer; transition: all var(--dur-hover) var(--ease-standard);
+      border: 1px solid transparent;
+    }
+    .dcell .num { font-family: var(--font-latin); font-size: 16px; font-weight: 600; color: var(--fg-primary); font-variant-numeric: tabular-nums; }
+    .dcell .sub { font-family: var(--font-bangla); font-size: 10px; color: var(--fg-tertiary); }
+    .dcell.normal:hover { background: var(--bg-surface-2); }
+    .dcell.today { background: var(--brand-emerald); }
+    .dcell.today .num, .dcell.today .sub { color: #fff; }
+    .dcell.selected { border-color: var(--brand-emerald); background: var(--brand-emerald-50); }
+    .dcell.holiday .num { color: var(--brand-red); }
+    .dot { width: 5px; height: 5px; border-radius: 999px; }
+
+    /* ---- TODAY HERO CARD ---- */
+    .today-hero {
+      background: linear-gradient(135deg, #006A4E 0%, #005A42 60%, #007558 100%);
+      color: #fff; border-radius: 20px; padding: 22px;
+      box-shadow: var(--shadow-md); position: relative; overflow: hidden;
+    }
+    .today-hero::after {
+      content: ""; position: absolute; right: -40px; bottom: -40px;
+      width: 200px; height: 200px; border-radius: 999px;
+      background: radial-gradient(circle, rgba(212,175,55,0.25) 0%, transparent 60%);
+      pointer-events: none;
+    }
+
+    /* ---- ELEVATION ---- */
+    .elev { background: var(--bg-surface); border-radius: 14px; padding: 20px; height: 110px; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px; }
+    .elev .lvl { font-size: 16px; font-weight: 700; color: var(--fg-primary); }
+    .elev .lab { font-size: 11px; color: var(--fg-tertiary); }
+
+    /* ---- INPUT (live) ---- */
+    .field-label { font-size: 12px; font-weight: 600; color: var(--fg-secondary); display: block; margin-bottom: 6px; }
+    .field {
+      height: 44px; border-radius: 10px; border: 1px solid var(--border-default);
+      background: var(--bg-surface); padding: 0 14px; font: inherit; font-size: 15px; color: var(--fg-primary);
+      transition: border-color var(--dur-hover), box-shadow var(--dur-hover);
+      width: 100%;
+    }
+    .field:focus { outline: none; border-color: var(--brand-emerald); box-shadow: 0 0 0 3px var(--brand-emerald-50); }
+
+    /* ---- BANNER ---- */
+    .banner { display: flex; gap: 12px; padding: 12px 14px; border-radius: 12px; border: 1px solid; align-items: flex-start; }
+    .banner svg { flex-shrink: 0; margin-top: 2px; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+    .b-info { background: var(--info-tint); border-color: rgba(30,111,190,0.25); color: #16467A; }
+    .b-success { background: var(--success-tint); border-color: rgba(31,138,76,0.25); color: #155A30; }
+    .b-warn { background: var(--warning-tint); border-color: rgba(201,122,17,0.25); color: #7A4708; }
+    [data-theme="dark"] .b-info { color: #B8D5F4; }
+    [data-theme="dark"] .b-success { color: #B0E2C2; }
+    [data-theme="dark"] .b-warn { color: #F4D2A0; }
+
+    /* ---- FESTIVAL HERO ---- */
+    .festival-hero {
+      position: relative; overflow: hidden; border-radius: 20px;
+      background: radial-gradient(circle at 100% 0%, #F5EBC4 0%, transparent 50%), var(--bg-surface);
+      border: 1px solid var(--brand-gold-100); padding: 22px;
+    }
+    [data-theme="dark"] .festival-hero {
+      background: radial-gradient(circle at 100% 0%, rgba(212,175,55,0.18) 0%, transparent 50%), var(--bg-surface);
+      border-color: rgba(212,175,55,0.3);
+    }
+
+    .badge { display: inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border-radius: 999px; font-size: 12px; font-weight: 600; border: 1px solid; }
+    .badge-eid { background: var(--brand-gold-100); color: var(--brand-gold-700); border-color: var(--brand-gold); }
+    .badge-puja { background: #FCE5CB; color: #B45A0F; border-color: #E07A1F; }
+    .badge-boishakh { background: var(--brand-red-100); color: var(--brand-red-700); border-color: var(--brand-red); }
+    .badge-independence { background: var(--brand-emerald-100); color: var(--brand-emerald-700); border-color: var(--brand-emerald); }
+
+    /* ---- ICONS ---- */
+    .icon-tile { background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: 12px; padding: 16px; display: flex; flex-direction: column; align-items: center; gap: 8px; transition: all 120ms; }
+    .icon-tile:hover { background: var(--bg-surface-2); transform: translateY(-1px); }
+    .icon-tile svg { color: var(--fg-primary); fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .icon-tile .nm { font-size: 11px; font-weight: 600; color: var(--fg-secondary); }
+
+    /* ---- DEVICE FRAME ---- */
+    .device {
+      width: 320px; height: 640px;
+      background: var(--bg-surface); border-radius: 36px;
+      border: 8px solid #1A1A18; box-shadow: var(--shadow-lg);
+      overflow: hidden; position: relative;
+    }
+    [data-theme="dark"] .device { border-color: #000; }
+
+    /* Pulse animation */
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 1; transform: scale(1.15); }
+    }
+    .pulse { animation: pulse-dot 2400ms ease-in-out infinite; }
+
+    /* Spec table */
+    .spec-table { width: 100%; border-collapse: collapse; }
+    .spec-table td, .spec-table th { padding: 10px 14px; text-align: left; font-size: 13px; }
+    .spec-table tr { border-bottom: 1px solid var(--border-subtle); }
+    .spec-table tr:last-child { border-bottom: 0; }
+    .spec-table th { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--fg-tertiary); font-weight: 600; }
+
+    /* Spacing scale visual */
+    .sbar { background: var(--brand-emerald); border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<!-- =========================== HEADER =========================== -->
+<div class="topbar">
+  <div class="gutter flex items-center justify-between" style="height: 64px;">
+    <div class="flex items-center gap-3">
+      <img src="assets/logo.svg" alt="BongoCal" width="36" height="36">
+      <div>
+        <div style="font-size: 15px; font-weight: 700; letter-spacing: -0.01em;">BongoCal</div>
+        <div style="font-size: 11px; color: var(--fg-tertiary); margin-top: -2px;">Design System</div>
+      </div>
+    </div>
+    <div class="flex items-center gap-3">
+      <span class="pill mono" id="theme-pill">light</span>
+      <button class="toggle" id="theme-toggle" aria-label="Toggle theme">
+        <span class="knob">
+          <svg id="theme-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>
+          </svg>
+        </span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- =========================== HERO =========================== -->
+<section class="gutter" style="padding-top: 80px; padding-bottom: 80px;">
+  <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+    <div>
+      <div class="section-title">তিন ক্যালেন্ডার, এক জায়গায়</div>
+      <h1 style="font-size: 56px; line-height: 1.05; letter-spacing: -0.025em; font-weight: 700; margin-top: 12px;">
+        A premium calendar designed for <span style="color: var(--brand-emerald);">Bangladesh</span>.
+      </h1>
+      <p class="section-sub" style="font-size: 17px; max-width: 52ch;">
+        BongoCal is a modern, minimalist calendar that unifies Bengali, Gregorian and Hijri systems —
+        with first-class support for the holidays, festivals and rhythms of Bangladeshi life.
+      </p>
+      <div class="flex gap-2 mt-6">
+        <span class="pill"><span class="dot pulse" style="background: var(--brand-red);"></span>Live demo · toggle dark mode</span>
+      </div>
+    </div>
+    <div class="flex justify-center">
+      <!-- ===== Today hero card (live) ===== -->
+      <div class="today-hero" style="width: 380px;">
+        <div class="flex items-center justify-between" style="margin-bottom: 20px;">
+          <div class="bn" style="font-size: 13px; opacity: 0.85;">আজ</div>
+          <div class="flex items-center gap-2" style="font-size: 12px; opacity: 0.85;">
+            <span class="dot pulse" style="background: var(--brand-red);"></span>
+            <span class="bn">৩টি অনুষ্ঠান</span>
+          </div>
+        </div>
+        <div style="font-family: var(--font-latin); font-size: 96px; font-weight: 700; line-height: 1; letter-spacing: -0.04em;">27</div>
+        <div class="bn" style="font-size: 16px; margin-top: 8px; opacity: 0.92;">এপ্রিল · সোমবার</div>
+        <div style="height: 1px; background: rgba(255,255,255,0.16); margin: 18px 0;"></div>
+        <div class="grid grid-cols-3 gap-3" style="font-size: 12px;">
+          <div>
+            <div class="bn" style="opacity: 0.7;">বাংলা</div>
+            <div class="bn" style="font-weight: 600; margin-top: 2px;">১৪ বৈশাখ ১৪৩২</div>
+          </div>
+          <div>
+            <div style="opacity: 0.7;">English</div>
+            <div style="font-weight: 600; margin-top: 2px;">27 April 2026</div>
+          </div>
+          <div>
+            <div class="bn" style="opacity: 0.7;">হিজরি</div>
+            <div class="bn" style="font-weight: 600; margin-top: 2px;">৯ যিলক্বদ ১৪৪৭</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================== COLOR =========================== -->
+<section class="gutter" style="padding-bottom: 80px;">
+  <div class="section-title">01 · Color</div>
+  <h2 class="section-h">A palette with national soul.</h2>
+  <p class="section-sub">Emerald carries the brand. Warm red is reserved for today and Bengali holidays. Gold appears only on festival surfaces. Neutrals do most of the work.</p>
+
+  <div class="mt-8">
+    <div class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: var(--fg-tertiary);">Brand · Primary</div>
+    <div class="grid grid-cols-3 md:grid-cols-6 gap-3">
+      <div class="swatch"><div class="chip" style="background:#006A4E"></div><div class="meta"><div class="nm">Emerald</div><div class="vl">#006A4E</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#005A42"></div><div class="meta"><div class="nm">Emerald 700</div><div class="vl">#005A42</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#007558"></div><div class="meta"><div class="nm">Emerald 600</div><div class="vl">#007558</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#008A66"></div><div class="meta"><div class="nm">Emerald 500</div><div class="vl">#008A66</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#D6EDE5"></div><div class="meta"><div class="nm">Emerald 100</div><div class="vl">#D6EDE5</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#EAF6F1"></div><div class="meta"><div class="nm">Emerald 50</div><div class="vl">#EAF6F1</div></div></div>
+    </div>
+  </div>
+
+  <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <div class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: var(--fg-tertiary);">Accent · Warm Red</div>
+      <div class="grid grid-cols-4 gap-3">
+        <div class="swatch"><div class="chip" style="background:#F42A41"></div><div class="meta"><div class="nm">Red</div><div class="vl">#F42A41</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#C71F33"></div><div class="meta"><div class="nm">Red 700</div><div class="vl">#C71F33</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#FDE0E4"></div><div class="meta"><div class="nm">Red 100</div><div class="vl">#FDE0E4</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#FEF0F2"></div><div class="meta"><div class="nm">Red 50</div><div class="vl">#FEF0F2</div></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: var(--fg-tertiary);">Premium · Gold</div>
+      <div class="grid grid-cols-4 gap-3">
+        <div class="swatch"><div class="chip" style="background:#D4AF37"></div><div class="meta"><div class="nm">Gold</div><div class="vl">#D4AF37</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#A8881C"></div><div class="meta"><div class="nm">Gold 700</div><div class="vl">#A8881C</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#F5EBC4"></div><div class="meta"><div class="nm">Gold 100</div><div class="vl">#F5EBC4</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#FBF6E1"></div><div class="meta"><div class="nm">Gold 50</div><div class="vl">#FBF6E1</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-8">
+    <div class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: var(--fg-tertiary);">Neutrals · 50–900</div>
+    <div class="grid grid-cols-5 md:grid-cols-10 gap-3">
+      <div class="swatch"><div class="chip" style="background:#FAFAF8"></div><div class="meta"><div class="nm">50</div><div class="vl">#FAFAF8</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#F4F4F1"></div><div class="meta"><div class="nm">100</div><div class="vl">#F4F4F1</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#E8E8E3"></div><div class="meta"><div class="nm">200</div><div class="vl">#E8E8E3</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#D4D4CC"></div><div class="meta"><div class="nm">300</div><div class="vl">#D4D4CC</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#A8A89E"></div><div class="meta"><div class="nm">400</div><div class="vl">#A8A89E</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#767670"></div><div class="meta"><div class="nm">500</div><div class="vl">#767670</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#535350"></div><div class="meta"><div class="nm">600</div><div class="vl">#535350</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#3A3A38"></div><div class="meta"><div class="nm">700</div><div class="vl">#3A3A38</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#232322"></div><div class="meta"><div class="nm">800</div><div class="vl">#232322</div></div></div>
+      <div class="swatch"><div class="chip" style="background:#141413"></div><div class="meta"><div class="nm">900</div><div class="vl">#141413</div></div></div>
+    </div>
+  </div>
+
+  <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div>
+      <div class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: var(--fg-tertiary);">Semantic</div>
+      <div class="grid grid-cols-4 gap-3">
+        <div class="swatch"><div class="chip" style="background:#1F8A4C"></div><div class="meta"><div class="nm">Success</div><div class="vl">#1F8A4C</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#C97A11"></div><div class="meta"><div class="nm">Warning</div><div class="vl">#C97A11</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#D02D2D"></div><div class="meta"><div class="nm">Error</div><div class="vl">#D02D2D</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#1E6FBE"></div><div class="meta"><div class="nm">Info</div><div class="vl">#1E6FBE</div></div></div>
+      </div>
+    </div>
+    <div>
+      <div class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: var(--fg-tertiary);">Festival accents</div>
+      <div class="grid grid-cols-5 gap-3">
+        <div class="swatch"><div class="chip" style="background:#D4AF37"></div><div class="meta"><div class="nm">Eid</div><div class="vl">#D4AF37</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#E63946"></div><div class="meta"><div class="nm">Boishakh</div><div class="vl">#E63946</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#006A4E"></div><div class="meta"><div class="nm">Indep.</div><div class="vl">#006A4E</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#B5172A"></div><div class="meta"><div class="nm">Victory</div><div class="vl">#B5172A</div></div></div>
+        <div class="swatch"><div class="chip" style="background:#E07A1F"></div><div class="meta"><div class="nm">Puja</div><div class="vl">#E07A1F</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================== TYPE =========================== -->
+<section class="gutter" style="padding-bottom: 80px;">
+  <div class="section-title">02 · Typography</div>
+  <h2 class="section-h">Bilingual by design.</h2>
+  <p class="section-sub">Bangla and English are first-class — never one a translation of the other. Hind Siliguri carries the Bengali script with warmth; Inter handles Latin with modern clarity.</p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+    <div class="panel" style="padding: 28px;">
+      <div class="text-xs font-semibold uppercase tracking-wider mb-4" style="color: var(--fg-tertiary);">Bangla · Hind Siliguri</div>
+      <div class="bn" style="font-size: 38px; font-weight: 700; line-height: 1.2;">তিন ক্যালেন্ডার, এক জায়গায়।</div>
+      <div class="bn" style="font-size: 26px; font-weight: 600; line-height: 1.3; margin-top: 24px;">এপ্রিল ২০২৬</div>
+      <div class="bn" style="font-size: 21px; font-weight: 600; line-height: 1.4; margin-top: 16px;">আজকের অনুষ্ঠান</div>
+      <div class="bn" style="font-size: 16px; line-height: 1.6; margin-top: 16px; color: var(--fg-secondary);">বাংলাদেশের জন্য তৈরি একটি প্রিমিয়াম ক্যালেন্ডার। তিনটি ক্যালেন্ডারের সব অনুষ্ঠান এক জায়গায় দেখুন।</div>
+      <div class="bn" style="font-size: 12px; font-weight: 500; margin-top: 16px; color: var(--fg-tertiary);">আসন্ন · ৩টি অনুষ্ঠান</div>
+    </div>
+    <div class="panel" style="padding: 28px;">
+      <div class="text-xs font-semibold uppercase tracking-wider mb-4" style="color: var(--fg-tertiary);">English · Inter</div>
+      <div style="font-size: 40px; font-weight: 700; line-height: 1.2; letter-spacing: -0.015em;">Three calendars, one place.</div>
+      <div style="font-size: 28px; font-weight: 600; line-height: 1.3; margin-top: 24px; letter-spacing: -0.01em;">April 2026</div>
+      <div style="font-size: 22px; font-weight: 600; line-height: 1.4; margin-top: 16px;">Today's events</div>
+      <div style="font-size: 16px; line-height: 1.5; margin-top: 16px; color: var(--fg-secondary);">A premium calendar designed for Bangladesh. View events from three calendars in one place.</div>
+      <div style="font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 16px; color: var(--fg-tertiary);">UPCOMING · 3 EVENTS</div>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+    <div class="panel" style="padding: 24px;">
+      <div class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: var(--fg-tertiary);">Type scale</div>
+      <table class="spec-table">
+        <thead><tr><th>Role</th><th>Size / Line</th><th>Tracking</th><th>Wt</th></tr></thead>
+        <tbody>
+          <tr><td>Display</td><td class="mono">40 / 48</td><td class="mono">-1.5%</td><td class="mono">700</td></tr>
+          <tr><td>Heading 1</td><td class="mono">28 / 34</td><td class="mono">-1.0%</td><td class="mono">600</td></tr>
+          <tr><td>Heading 2</td><td class="mono">22 / 28</td><td class="mono">-0.5%</td><td class="mono">600</td></tr>
+          <tr><td>Heading 3</td><td class="mono">18 / 24</td><td class="mono">-0.25%</td><td class="mono">600</td></tr>
+          <tr><td>Body</td><td class="mono">16 / 24</td><td class="mono">0</td><td class="mono">400</td></tr>
+          <tr><td>Body sm</td><td class="mono">14 / 20</td><td class="mono">0</td><td class="mono">400</td></tr>
+          <tr><td>Caption</td><td class="mono">12 / 16</td><td class="mono">+0.5%</td><td class="mono">500</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="panel" style="padding: 24px;">
+      <div class="text-xs font-semibold uppercase tracking-wider mb-3" style="color: var(--fg-tertiary);">Numerals · use the right script</div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <div class="bn" style="font-size: 38px; font-weight: 600; letter-spacing: 0.04em; color: var(--fg-primary);">০ ১ ২ ৩ ৪ ৫</div>
+          <div class="bn" style="font-size: 38px; font-weight: 600; letter-spacing: 0.04em; color: var(--fg-primary); margin-top: 4px;">৬ ৭ ৮ ৯</div>
+          <div class="bn" style="font-size: 13px; color: var(--fg-tertiary); margin-top: 12px;">বাংলায় তারিখ লিখলে বাংলা সংখ্যা ব্যবহার করুন</div>
+        </div>
+        <div>
+          <div style="font-size: 38px; font-weight: 600; letter-spacing: 0.04em; color: var(--fg-primary);">0 1 2 3 4 5</div>
+          <div style="font-size: 38px; font-weight: 600; letter-spacing: 0.04em; color: var(--fg-primary); margin-top: 4px;">6 7 8 9</div>
+          <div style="font-size: 13px; color: var(--fg-tertiary); margin-top: 12px;">In English, use Latin digits.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================== SPACING =========================== -->
+<section class="gutter" style="padding-bottom: 80px;">
+  <div class="section-title">03 · Spacing & form</div>
+  <h2 class="section-h">A 4 px rhythm.</h2>
+  <p class="section-sub">Eight stops, used predictably. Card padding is 16; section gaps are 24 or 32; touch targets are 44+.</p>
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+    <div class="panel" style="padding: 28px;">
+      <div class="text-xs font-semibold uppercase tracking-wider mb-4" style="color: var(--fg-tertiary);">Spacing scale</div>
+      <div class="flex items-end gap-3" style="height: 90px;">
+        <div class="flex flex-col items-start gap-2"><div class="sbar" style="width: 36px; height: 4px;"></div><div class="text-xs mono" style="color: var(--fg-tertiary);">4</div></div>
+        <div class="flex flex-col items-start gap-2"><div class="sbar" style="width: 36px; height: 8px;"></div><div class="text-xs mono" style="color: var(--fg-tertiary);">8</div></div>
+        <div class="flex flex-col items-start gap-2"><div class="sbar" style="width: 36px; height: 12px;"></div><div class="text-xs mono" style="color: var(--fg-tertiary);">12</div></div>
+        <div class="flex flex-col items-start gap-2"><div class="sbar" style="width: 36px; height: 16px;"></div><div class="text-xs mono" style="color: var(--fg-tertiary);">16</div></div>
+        <div class="flex flex-col items-start gap-2"><div class="sbar" style="width: 36px; height: 24px;"></div><div class="text-xs mono" style="color: var(--fg-tertiary);">24</div></div>
+        <div class="flex flex-col items-start gap-2"><div class="sbar" style="width: 36px; height: 32px;"></div><div class="text-xs mono" style="color: var(--fg-tertiary);">32</div></div>
+        <div class="flex flex-col items-start gap-2"><div class="sbar" style="width: 36px; height: 48px;"></div><div class="text-xs mono" style="color: var(--fg-tertiary);">48</div></div>
+        <div class="flex flex-col items-start gap-2"><div class="sbar" style="width: 36px; height: 64px;"></div><div class="text-xs mono" style="color: var(--fg-tertiary);">64</div></div>
+      </div>
+    </div>
+    <div class="panel" style="padding: 28px;">
+      <div class="text-xs font-semibold uppercase tracking-wider mb-4" style="color: var(--fg-tertiary);">Border radius</div>
+      <div class="flex items-end gap-4">
+        <div class="text-center"><div style="width: 56px; height: 56px; background: var(--brand-emerald); border-radius: 4px;"></div><div class="text-xs mono mt-2" style="color: var(--fg-tertiary);">4 · xs</div></div>
+        <div class="text-center"><div style="width: 56px; height: 56px; background: var(--brand-emerald); border-radius: 8px;"></div><div class="text-xs mono mt-2" style="color: var(--fg-tertiary);">8 · sm</div></div>
+        <div class="text-center"><div style="width: 56px; height: 56px; background: var(--brand-emerald); border-radius: 12px;"></div><div class="text-xs mono mt-2" style="color: var(--fg-tertiary);">12 · md</div></div>
+        <div class="text-center"><div style="width: 56px; height: 56px; background: var(--brand-emerald); border-radius: 16px;"></div><div class="text-xs mono mt-2" style="color: var(--fg-tertiary);">16 · lg</div></div>
+        <div class="text-center"><div style="width: 56px; height: 56px; background: var(--brand-emerald); border-radius: 20px;"></div><div class="text-xs mono mt-2" style="color: var(--fg-tertiary);">20 · xl</div></div>
+        <div class="text-center"><div style="width: 56px; height: 56px; background: var(--brand-emerald); border-radius: 999px;"></div><div class="text-xs mono mt-2" style="color: var(--fg-tertiary);">∞ · pill</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-6 panel" style="padding: 28px;">
+    <div class="text-xs font-semibold uppercase tracking-wider mb-4" style="color: var(--fg-tertiary);">Elevation · 4 levels</div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+      <div class="elev" style="box-shadow: 0 1px 2px rgba(20,20,19, 0.05);"><div class="lvl">xs</div><div class="lab">resting cards</div></div>
+      <div class="elev" style="box-shadow: 0 1px 2px rgba(20,20,19,.04), 0 2px 6px rgba(20,20,19,.06);"><div class="lvl">sm</div><div class="lab">elevated cards</div></div>
+      <div class="elev" style="box-shadow: 0 2px 4px rgba(20,20,19,.05), 0 8px 20px rgba(20,20,19,.10);"><div class="lvl">md</div><div class="lab">popovers, menus</div></div>
+      <div class="elev" style="box-shadow: 0 4px 8px rgba(20,20,19,.06), 0 18px 40px rgba(20,20,19,.16);"><div class="lvl">lg</div><div class="lab">sheets, modals</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================== COMPONENTS =========================== -->
+<section class="gutter" style="padding-bottom: 80px;">
+  <div class="section-title">04 · Components</div>
+  <h2 class="section-h">Live, hover-able, tap-able.</h2>
+  <p class="section-sub">Hover any control to see its hover state. Click to feel the press. Drag focus into inputs.</p>
+
+  <!-- BUTTONS -->
+  <div class="mt-8 panel" style="padding: 28px;">
+    <div class="text-xs font-semibold uppercase tracking-wider mb-4" style="color: var(--fg-tertiary);">Buttons</div>
+    <div class="flex flex-wrap gap-3 items-center">
+      <button class="btn btn-primary bn">নতুন অনুষ্ঠান</button>
+      <button class="btn btn-secondary bn">বাতিল</button>
+      <button class="btn btn-ghost bn">আরও দেখুন</button>
+      <button class="btn btn-destructive bn">মুছুন</button>
+      <button class="btn btn-icon" aria-label="add">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"></path></svg>
+      </button>
+      <button class="btn btn-primary btn-disabled bn">নিষ্ক্রিয়</button>
+      <button class="btn btn-primary btn-loading bn">সংরক্ষণ…</button>
+    </div>
+  </div>
+
+  <!-- DATE CELLS -->
+  <div class="mt-6 panel" style="padding: 28px;">
+    <div class="text-xs font-semibold uppercase tracking-wider mb-4" style="color: var(--fg-tertiary);">Date cells</div>
+    <div class="flex flex-wrap gap-4">
+      <div class="text-center">
+        <div class="dcell normal"><div class="num">14</div><div class="sub">১</div></div>
+        <div class="text-xs mt-2" style="color: var(--fg-tertiary);">normal</div>
+      </div>
+      <div class="text-center">
+        <div class="dcell today"><div class="num">27</div><div class="sub">১৪</div></div>
+        <div class="text-xs mt-2" style="color: var(--fg-tertiary);">today</div>
+      </div>
+      <div class="text-center">
+        <div class="dcell selected"><div class="num">21</div><div class="sub">৮</div></div>
+        <div class="text-xs mt-2" style="color: var(--fg-tertiary);">selected</div>
+      </div>
+      <div class="text-center">
+        <div class="dcell holiday"><div class="num">14</div><div class="dot" style="background: var(--brand-red);"></div></div>
+        <div class="text-xs mt-2" style="color: var(--fg-tertiary);">holiday</div>
+      </div>
+      <div class="text-center">
+        <div class="dcell holiday"><div class="num">5</div><div class="dot" style="background: var(--brand-gold);"></div></div>
+        <div class="text-xs mt-2" style="color: var(--fg-tertiary);">festival</div>
+      </div>
+      <div class="text-center">
+        <div class="dcell" style="opacity: 0.35;"><div class="num">30</div></div>
+        <div class="text-xs mt-2" style="color: var(--fg-tertiary);">other month</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CARDS -->
+  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="panel" style="padding: 28px;">
+      <div class="text-xs font-semibold uppercase tracking-wider mb-4" style="color: var(--fg-tertiary);">Holiday card</div>
+      <div style="background: var(--bg-surface-2); border-radius: 14px; padding: 16px; display: flex; gap: 12px;">
+        <div style="width: 4px; align-self: stretch; background: var(--brand-red); border-radius: 999px;"></div>
+        <div class="flex-1">
+          <div class="bn" style="font-size: 16px; font-weight: 600;">পহেলা বৈশাখ</div>
+          <div class="bn" style="font-size: 12px; color: var(--fg-tertiary); margin-top: 2px;">সরকারি ছুটি · ১ বৈশাখ ১৪৩৩</div>
+        </div>
+        <span class="badge badge-boishakh">বৈশাখ</span>
+      </div>
+      <div style="margin-top: 12px; background: var(--bg-surface-2); border-radius: 14px; padding: 16px; display: flex; align-items: center; gap: 12px;">
+        <div class="dot" style="width: 10px; height: 10px; background: var(--brand-emerald);"></div>
+        <div class="flex-1">
+          <div class="bn" style="font-size: 14px; font-weight: 600;">টিম মিটিং</div>
+          <div class="bn" style="font-size: 12px; color: var(--fg-tertiary); margin-top: 2px;">অফিস · বনানী</div>
+        </div>
+        <div class="mono" style="font-size: 12px; color: var(--fg-tertiary);">10:00–11:00</div>
+      </div>
+    </div>
+    <div class="festival-hero">
+      <div class="text-xs font-semibold uppercase tracking-wider mb-2" style="color: var(--brand-gold-700);">Festival surface · gold</div>
+      <div class="bn" style="font-size: 24px; font-weight: 700;">ঈদ মুবারক</div>
+      <div class="bn" style="font-size: 14px; color: var(--fg-secondary); margin-top: 6px; max-width: 32ch;">শনিবার, ৯ যিলহজ্জ ১৪৪৭ · ৩১ মে ২০২৬</div>
+      <div class="flex gap-2 mt-4">
+        <span class="badge badge-eid">✦ ঈদুল আজহা</span>
+        <span class="badge" style="background: var(--bg-surface-2); color: var(--fg-secondary); border-color: var(--border-subtle);">৩৪ দিন বাকি</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- INPUTS + BANNERS -->
+  <div class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="panel" style="padding: 28px;">
+      <div class="text-xs font-semibold uppercase tracking-wider mb-4" style="color: var(--fg-tertiary);">Inputs</div>
+      <div class="bn">
+        <label class="field-label">অনুষ্ঠানের নাম</label>
+        <input class="field bn" value="পরিবারের ইফতার">
+        <div style="margin-top: 14px;"></div>
+        <label class="field-label">তারিখ</label>
+        <input class="field bn" placeholder="তারিখ নির্বাচন করুন">
+      </div>
+    </div>
+    <div class="panel" style="padding: 28px;">
+      <div class="text-xs font-semibold uppercase tracking-wider mb-4" style="color: var(--fg-tertiary);">Banners</div>
+      <div class="flex flex-col gap-3">
+        <div class="banner b-info">
+          <svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 8v4M12 16h.01"></path></svg>
+          <div><div style="font-size: 14px; font-weight: 600;" class="bn">আগামীকাল পহেলা বৈশাখ</div><div class="bn" style="font-size: 13px; opacity: 0.85; margin-top: 2px;">নতুন বছরের শুভেচ্ছা জানাতে প্রস্তুত হোন।</div></div>
+        </div>
+        <div class="banner b-success">
+          <svg width="20" height="20" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"></path></svg>
+          <div class="bn" style="font-size: 14px; font-weight: 600;">অনুষ্ঠান সংরক্ষিত হয়েছে</div>
+        </div>
+        <div class="banner b-warn">
+          <svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 3l10 18H2z"></path><path d="M12 10v4M12 18h.01"></path></svg>
+          <div><div class="bn" style="font-size: 14px; font-weight: 600;">নোটিফিকেশন বন্ধ</div><div class="bn" style="font-size: 13px; opacity: 0.85; margin-top: 2px;">গুরুত্বপূর্ণ ছুটির রিমাইন্ডার পেতে চালু করুন।</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FESTIVAL BADGES -->
+  <div class="mt-6 panel" style="padding: 28px;">
+    <div class="text-xs font-semibold uppercase tracking-wider mb-4" style="color: var(--fg-tertiary);">Festival celebration badges</div>
+    <div class="flex flex-wrap gap-3 bn">
+      <span class="badge badge-eid">✦ ঈদুল ফিতর</span>
+      <span class="badge badge-eid">✦ ঈদুল আজহা</span>
+      <span class="badge badge-puja">✦ দুর্গাপূজা</span>
+      <span class="badge badge-boishakh">✦ পহেলা বৈশাখ</span>
+      <span class="badge badge-independence">✦ স্বাধীনতা দিবস</span>
+      <span class="badge" style="background: var(--brand-red-100); color: var(--brand-red-700); border-color: var(--brand-red);">✦ বিজয় দিবস</span>
+    </div>
+  </div>
+</section>
+
+<!-- =========================== ICONS =========================== -->
+<section class="gutter" style="padding-bottom: 80px;">
+  <div class="section-title">05 · Iconography</div>
+  <h2 class="section-h">Lucide outline · 1.5 px stroke.</h2>
+  <p class="section-sub">No emoji. No filled icons. Festival markers are dots, not glyphs.</p>
+
+  <div class="mt-8 grid grid-cols-3 md:grid-cols-6 gap-3">
+    <div class="icon-tile"><svg width="28" height="28" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="3"></rect><path d="M16 2v4M8 2v4M3 10h18"></path></svg><div class="nm">calendar</div></div>
+    <div class="icon-tile"><svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 2l2 6h6l-5 3.6 2 6.4-5-3.6-5 3.6 2-6.4L4 8h6z"></path></svg><div class="nm">festival</div></div>
+    <div class="icon-tile"><svg width="28" height="28" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9"></path><path d="M10 21a2 2 0 004 0"></path></svg><div class="nm">bell</div></div>
+    <div class="icon-tile"><svg width="28" height="28" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"></circle><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"></path></svg><div class="nm">settings</div></div>
+    <div class="icon-tile"><svg width="28" height="28" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg><div class="nm">plus</div></div>
+    <div class="icon-tile"><svg width="28" height="28" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg><div class="nm">search</div></div>
+    <div class="icon-tile"><svg width="28" height="28" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"></circle><path d="M12 1v3M12 20v3M1 12h3M20 12h3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"></path></svg><div class="nm">sun · বাংলা</div></div>
+    <div class="icon-tile"><svg width="28" height="28" viewBox="0 0 24 24"><path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"></path></svg><div class="nm">moon · হিজরি</div></div>
+    <div class="icon-tile"><svg width="28" height="28" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3a14 14 0 010 18M12 3a14 14 0 000 18"></path></svg><div class="nm">globe</div></div>
+    <div class="icon-tile"><svg width="28" height="28" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"></path></svg><div class="nm">back</div></div>
+    <div class="icon-tile"><svg width="28" height="28" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.4"></circle><circle cx="12" cy="12" r="1.4"></circle><circle cx="19" cy="12" r="1.4"></circle></svg><div class="nm">more</div></div>
+    <div class="icon-tile"><svg width="28" height="28" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"></circle><path d="M12 7v5l3 2"></path></svg><div class="nm">today</div></div>
+  </div>
+</section>
+
+<!-- =========================== MOTION =========================== -->
+<section class="gutter" style="padding-bottom: 80px;">
+  <div class="section-title">06 · Motion</div>
+  <h2 class="section-h">Quiet, quick, never bouncy.</h2>
+  <p class="section-sub">Hover above any button to feel <span class="mono">120 ms</span>. Press for <span class="mono">80 ms scale 0.97</span>. Sheets ride a soft iOS-flavored spring.</p>
+
+  <div class="mt-8 panel" style="padding: 28px;">
+    <table class="spec-table">
+      <thead><tr><th>Action</th><th>Duration</th><th>Easing</th><th>What changes</th></tr></thead>
+      <tbody>
+        <tr><td>Hover</td><td class="mono">120 ms</td><td class="mono">ease-standard · cubic-bezier(.2,0,0,1)</td><td>4% darker fill or 8% surface tint</td></tr>
+        <tr><td>Press</td><td class="mono">80 ms</td><td class="mono">ease-standard</td><td>scale 0.97, opacity 0.85</td></tr>
+        <tr><td>Page transition</td><td class="mono">180 ms</td><td class="mono">ease-standard</td><td>opacity only</td></tr>
+        <tr><td>Sheet enter</td><td class="mono">280 ms</td><td class="mono">ease-spring · cubic-bezier(.32,.72,0,1)</td><td>translateY + opacity</td></tr>
+        <tr><td>Sheet exit</td><td class="mono">220 ms</td><td class="mono">ease-in</td><td>translateY + opacity</td></tr>
+        <tr><td>Today dot pulse</td><td class="mono">2400 ms ∞</td><td class="mono">ease-in-out</td><td>opacity 0.5 → 1, scale 1 → 1.15</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- =========================== APP PREVIEW =========================== -->
+<section class="gutter" style="padding-bottom: 100px;">
+  <div class="section-title">07 · It all comes together</div>
+  <h2 class="section-h">A full screen, in both modes.</h2>
+  <p class="section-sub">The same tokens, applied. Toggle the theme up top to see this preview re-skin.</p>
+
+  <div class="mt-10 flex justify-center">
+    <div class="device">
+      <!-- Status bar -->
+      <div style="height: 44px; padding: 0 22px; display: flex; align-items: center; justify-content: space-between; font-family: var(--font-latin); font-size: 13px; font-weight: 600; color: var(--fg-primary);">
+        <span>9:41</span>
+        <span style="display: inline-flex; gap: 6px; align-items: center;">
+          <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4" y="5" width="3" height="6" rx="1"/><rect x="8" y="3" width="3" height="8" rx="1"/><rect x="12" y="0" width="3" height="11" rx="1"/></svg>
+          <svg width="16" height="11" viewBox="0 0 16 11" fill="none" stroke="currentColor" stroke-width="1.4"><rect x="1" y="2" width="12" height="7" rx="2"/><rect x="3" y="4" width="8" height="3" fill="currentColor" rx="0.5"/><rect x="14" y="4.5" width="1.5" height="2" rx="0.5" fill="currentColor"/></svg>
+        </span>
+      </div>
+      <!-- App bar -->
+      <div style="padding: 8px 20px 12px; display: flex; align-items: center; justify-content: space-between;">
+        <div>
+          <div class="bn" style="font-size: 24px; font-weight: 700; letter-spacing: -0.005em;">এপ্রিল</div>
+          <div class="bn" style="font-size: 11px; color: var(--fg-tertiary);">১৪৩২ বঙ্গাব্দ · ১৪৪৭ হিজরি</div>
+        </div>
+        <div class="flex gap-2" style="color: var(--fg-secondary);">
+          <button class="btn-icon" style="width: 36px; height: 36px; border-radius: 999px; background: var(--bg-surface-2); border: 0; display: flex; align-items: center; justify-content: center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+          </button>
+          <button class="btn-icon" style="width: 36px; height: 36px; border-radius: 999px; background: var(--bg-surface-2); border: 0; display: flex; align-items: center; justify-content: center;">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M6 8a6 6 0 0112 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 004 0"/></svg>
+          </button>
+        </div>
+      </div>
+      <!-- Weekday header -->
+      <div style="padding: 0 16px;" class="grid grid-cols-7 gap-1">
+        <div class="bn text-center" style="font-size: 10px; font-weight: 600; color: var(--fg-tertiary); letter-spacing: 0.04em;">শনি</div>
+        <div class="bn text-center" style="font-size: 10px; font-weight: 600; color: var(--fg-tertiary);">রবি</div>
+        <div class="bn text-center" style="font-size: 10px; font-weight: 600; color: var(--fg-tertiary);">সোম</div>
+        <div class="bn text-center" style="font-size: 10px; font-weight: 600; color: var(--fg-tertiary);">মঙ্গল</div>
+        <div class="bn text-center" style="font-size: 10px; font-weight: 600; color: var(--fg-tertiary);">বুধ</div>
+        <div class="bn text-center" style="font-size: 10px; font-weight: 600; color: var(--fg-tertiary);">বৃহঃ</div>
+        <div class="bn text-center" style="font-size: 10px; font-weight: 600; color: var(--fg-tertiary);">শুক্র</div>
+      </div>
+      <!-- Calendar grid -->
+      <div style="padding: 8px 16px;" class="grid grid-cols-7 gap-1" id="mini-grid"></div>
+      <!-- Today summary -->
+      <div style="padding: 12px 16px;">
+        <div style="background: var(--brand-emerald-50); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 10px;">
+          <div class="dot" style="width: 8px; height: 8px; background: var(--brand-red);"></div>
+          <div class="flex-1">
+            <div class="bn" style="font-size: 13px; font-weight: 600;">আজ ৩টি অনুষ্ঠান</div>
+            <div class="bn" style="font-size: 11px; color: var(--fg-tertiary); margin-top: 1px;">প্রথমটি ১০:০০-এ</div>
+          </div>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" style="color: var(--brand-emerald);"><path d="M9 18l6-6-6-6"/></svg>
+        </div>
+      </div>
+      <!-- Bottom nav -->
+      <div style="position: absolute; bottom: 0; left: 0; right: 0; height: 64px; display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--border-subtle); background: color-mix(in oklab, var(--bg-surface) 90%, transparent); backdrop-filter: blur(20px);">
+        <div class="bn" style="display:flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--brand-emerald); font-size: 10px; font-weight: 600;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4" width="18" height="18" rx="3"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+          ক্যালেন্ডার
+        </div>
+        <div class="bn" style="display:flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--fg-tertiary); font-size: 10px; font-weight: 500;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h9"/></svg>
+          অনুষ্ঠান
+        </div>
+        <div class="bn" style="display:flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--fg-tertiary); font-size: 10px; font-weight: 500;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><path d="M12 2l2 6h6l-5 3.6 2 6.4-5-3.6-5 3.6 2-6.4L4 8h6z"/></svg>
+          উৎসব
+        </div>
+        <div class="bn" style="display:flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--fg-tertiary); font-size: 10px; font-weight: 500;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3"/></svg>
+          সেটিংস
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =========================== FOOTER =========================== -->
+<footer class="gutter" style="padding-top: 32px; padding-bottom: 64px; border-top: 1px solid var(--border-subtle); color: var(--fg-tertiary); font-size: 13px;">
+  <div class="flex flex-wrap items-center justify-between gap-4">
+    <div class="flex items-center gap-2">
+      <img src="assets/logo.svg" width="20" height="20" alt="">
+      <span>BongoCal · Design System v1.0</span>
+    </div>
+    <div class="bn">তিন ক্যালেন্ডার, এক জায়গায়।</div>
+  </div>
+</footer>
+
+<script>
+  // ---------- Theme toggle ----------
+  const root = document.documentElement;
+  const btn = document.getElementById('theme-toggle');
+  const pill = document.getElementById('theme-pill');
+  const icon = document.getElementById('theme-icon');
+  const SUN = '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"></path>';
+  const MOON = '<path d="M21 12.8A9 9 0 1111.2 3a7 7 0 009.8 9.8z"/>';
+  function setTheme(t) {
+    root.setAttribute('data-theme', t);
+    pill.textContent = t;
+    icon.innerHTML = t === 'dark' ? MOON : SUN;
+    try { localStorage.setItem('bongocal-theme', t); } catch(e) {}
+  }
+  btn.addEventListener('click', () => {
+    setTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  });
+  try {
+    const saved = localStorage.getItem('bongocal-theme');
+    if (saved) setTheme(saved);
+  } catch(e) {}
+
+  // ---------- Mini calendar grid ----------
+  // April 2026 starts on Wednesday (Gregorian); we display Sat-first weeks
+  // For the demo, we'll generate a clean April-ish 35-cell grid with:
+  // - day 27 = today
+  // - day 14 (Pohela Boishakh in this fiction) = holiday red
+  // - day 5 = festival gold
+  const grid = document.getElementById('mini-grid');
+  const banglaDigits = ['০','১','২','৩','৪','৫','৬','৭','৮','৯'];
+  const toBangla = n => String(n).split('').map(d => banglaDigits[+d] ?? d).join('');
+  // April 1, 2026 is a Wednesday. Sat-first week: Sat=0, Sun=1, ... Wed=4.
+  // So leading blanks = 4 (placeholders from previous month: 28,29,30,31).
+  const lead = [28,29,30,31];
+  const days = Array.from({length:30}, (_,i)=> i+1);
+  const trail = [1,2,3,4]; // mini fill
+  const cells = [...lead.map(n=>({n, dim:true})), ...days.map(n=>({n})), ...trail.map(n=>({n,dim:true}))].slice(0,35);
+  cells.forEach((c, i) => {
+    const isToday = c.n === 27 && !c.dim;
+    const isHoliday = c.n === 14 && !c.dim;
+    const isFestival = c.n === 5 && !c.dim;
+    const div = document.createElement('div');
+    div.className = 'dcell ' + (c.dim ? '' : 'normal') + (isToday ? ' today' : '') + (isHoliday ? ' holiday' : '');
+    div.style.width = 'auto';
+    div.style.height = '40px';
+    div.style.opacity = c.dim ? '0.3' : '1';
+    const numColor = isHoliday ? 'color: var(--brand-red);' : '';
+    div.innerHTML =
+      '<div class="num" style="font-size: 13px;' + numColor + '">' + c.n + '</div>' +
+      (c.dim ? '' : '<div class="sub">' + toBangla(((c.n - 14 + 30) % 30) + 1) + '</div>') +
+      (isHoliday ? '<div class="dot" style="background: var(--brand-red); margin-top:1px;"></div>' : '') +
+      (isFestival ? '<div class="dot" style="background: var(--brand-gold); margin-top:1px;"></div>' : '');
+    grid.appendChild(div);
+  });
+</script>
+
+</body>
+</html>

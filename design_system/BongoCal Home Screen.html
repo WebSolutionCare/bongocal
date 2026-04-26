@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BongoCal · Home (Today)</title>
+  <link rel="stylesheet" href="colors_and_type.css">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; min-height: 100vh; background: #EDEDE7; color: #141413; }
+    body {
+      font-family: var(--font-bangla);
+      padding: 56px 32px 80px;
+      display: flex; flex-direction: column; align-items: center; gap: 32px;
+    }
+    .header { text-align: center; max-width: 760px; }
+    .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; color: #767670; text-transform: uppercase; font-family: var(--font-latin); }
+    .title { font-family: var(--font-latin); font-size: 32px; font-weight: 700; letter-spacing: -0.02em; margin-top: 10px; color: #141413; }
+    .sub { font-family: var(--font-latin); font-size: 15px; color: #535350; margin-top: 8px; line-height: 1.5; }
+
+    .row { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+    .stage { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .label-wrap { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+    .label { font-family: var(--font-latin); font-size: 11px; font-weight: 700; color: #767670; letter-spacing: 0.10em; text-transform: uppercase; }
+    .label-sub { font-family: var(--font-latin); font-size: 12px; color: #535350; }
+
+    /* === iPhone frame === */
+    .device {
+      width: 390px; height: 844px;
+      background: var(--bg-canvas);
+      border-radius: 50px;
+      border: 10px solid #1A1A18;
+      box-shadow: 0 6px 12px rgba(20,20,19,.10), 0 30px 60px rgba(20,20,19,.20);
+      overflow: hidden;
+      position: relative;
+    }
+    .device.dark { background: #0E0E0D; border-color: #000; }
+    .island {
+      position: absolute; left: 50%; top: 8px; transform: translateX(-50%);
+      width: 110px; height: 32px; background: #000; border-radius: 999px; z-index: 50;
+    }
+    .statusbar {
+      position: absolute; top: 0; left: 0; right: 0; height: 47px;
+      padding: 0 30px; display: flex; align-items: center; justify-content: space-between;
+      font-family: var(--font-latin); font-size: 15px; font-weight: 600; color: var(--fg-primary);
+      z-index: 40; pointer-events: none;
+    }
+    .home-bar {
+      position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%);
+      width: 134px; height: 5px; border-radius: 999px; background: var(--fg-primary); opacity: 0.4; z-index: 40;
+    }
+    .home-bar.dark { background: #fff; opacity: 0.5; }
+    .screen { position: absolute; inset: 0; overflow: hidden; }
+
+    /* === Scaffold === */
+    .scroll {
+      position: absolute; top: 47px; left: 0; right: 0; bottom: 86px;
+      overflow-y: auto;
+      scrollbar-width: none;
+    }
+    .scroll::-webkit-scrollbar { display: none; }
+
+    /* === Top bar === */
+    .topbar {
+      position: sticky; top: 0; z-index: 10;
+      background: var(--bg-canvas);
+      padding: 8px 20px 12px;
+      display: flex; align-items: center; justify-content: space-between;
+      border-bottom: 1px solid transparent;
+    }
+    .device.dark .topbar { background: #0E0E0D; }
+    .wordmark {
+      font-family: var(--font-latin); font-size: 20px; font-weight: 700; letter-spacing: -0.02em;
+      color: var(--fg-primary);
+      display: inline-flex; align-items: center; gap: 8px;
+    }
+    .wordmark .dot { width: 8px; height: 8px; border-radius: 999px; background: var(--brand-emerald); }
+    .topbar-actions { display: flex; gap: 4px; }
+    .ic-btn {
+      width: 38px; height: 38px; border-radius: 999px;
+      display: inline-flex; align-items: center; justify-content: center;
+      background: transparent; border: 0; color: var(--fg-primary);
+      cursor: pointer; position: relative;
+    }
+    .ic-btn:hover { background: var(--bg-surface-2); }
+    .ic-btn svg { stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .ic-btn .badge {
+      position: absolute; top: 9px; right: 9px;
+      width: 8px; height: 8px; border-radius: 999px; background: var(--brand-red);
+      box-shadow: 0 0 0 2px var(--bg-canvas);
+    }
+
+    /* === Hero today card === */
+    .hero {
+      margin: 8px 16px 0;
+      border-radius: 28px;
+      padding: 22px 22px 24px;
+      color: #fff;
+      position: relative; overflow: hidden;
+      background:
+        radial-gradient(circle at 88% 8%, rgba(212,175,55,0.50) 0%, transparent 45%),
+        radial-gradient(circle at 12% 92%, rgba(0,0,0,0.18) 0%, transparent 50%),
+        linear-gradient(150deg, #00785A 0%, #006A4E 50%, #004A36 100%);
+      box-shadow: 0 6px 14px rgba(0,80,60,0.18), 0 18px 40px rgba(0,80,60,0.28);
+    }
+    .device.dark .hero {
+      background:
+        radial-gradient(circle at 88% 8%, rgba(212,175,55,0.40) 0%, transparent 45%),
+        radial-gradient(circle at 12% 92%, rgba(0,0,0,0.30) 0%, transparent 55%),
+        linear-gradient(150deg, #006A4E 0%, #004B36 60%, #002A1F 100%);
+    }
+    .hero::before {
+      /* Very subtle paisley arc — barely there */
+      content: ""; position: absolute; right: -90px; top: -90px;
+      width: 240px; height: 240px; border-radius: 999px;
+      border: 1px solid rgba(255,255,255,0.06);
+      box-shadow: 0 0 0 28px rgba(255,255,255,0.04), 0 0 0 64px rgba(255,255,255,0.02);
+      pointer-events: none;
+    }
+    .hero-top { display: flex; align-items: center; justify-content: space-between; opacity: 0.92; }
+    .hero-eyebrow {
+      font-family: var(--font-latin); font-size: 11px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .hero-eyebrow .pulse {
+      width: 7px; height: 7px; border-radius: 999px; background: #fff;
+      animation: pulseDot 2200ms ease-in-out infinite;
+      box-shadow: 0 0 0 0 rgba(255,255,255,0.6);
+    }
+    @keyframes pulseDot {
+      0%,100% { box-shadow: 0 0 0 0 rgba(255,255,255,0.45); }
+      50%     { box-shadow: 0 0 0 6px rgba(255,255,255,0); }
+    }
+    .hero-day-en {
+      font-family: var(--font-latin); font-size: 13px; font-weight: 500; opacity: 0.85;
+    }
+    .hero-num {
+      font-family: var(--font-latin); font-size: 96px; font-weight: 600; line-height: 0.95;
+      letter-spacing: -0.045em; margin-top: 6px;
+    }
+    .hero-monthrow {
+      display: flex; align-items: baseline; gap: 10px; margin-top: 4px;
+      font-family: var(--font-latin); font-size: 18px; font-weight: 500;
+    }
+    .hero-monthrow .yr { opacity: 0.65; font-weight: 400; }
+    .hero-divider {
+      height: 1px; background: rgba(255,255,255,0.18); margin: 18px 0 14px;
+    }
+    .hero-altrow {
+      display: flex; gap: 18px; align-items: stretch;
+    }
+    .hero-alt {
+      flex: 1; display: flex; flex-direction: column; gap: 2px;
+    }
+    .hero-alt .nm {
+      font-family: var(--font-latin); font-size: 10px; font-weight: 700; letter-spacing: 0.14em;
+      text-transform: uppercase; opacity: 0.75;
+    }
+    .hero-alt .vl {
+      font-family: var(--font-bangla); font-size: 17px; font-weight: 600; margin-top: 2px;
+    }
+    .hero-alt + .hero-alt { padding-left: 18px; border-left: 1px solid rgba(255,255,255,0.18); }
+
+    /* === Section heading === */
+    .sect-head {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 22px; margin: 28px 0 12px;
+    }
+    .sect-title {
+      font-family: var(--font-bangla); font-size: 16px; font-weight: 600; color: var(--fg-primary);
+    }
+    .sect-link {
+      font-family: var(--font-latin); font-size: 13px; font-weight: 500; color: var(--brand-emerald);
+      cursor: pointer; background: none; border: 0;
+    }
+    .device.dark .sect-link { color: #4FB394; }
+
+    /* === Holiday card === */
+    .holiday {
+      margin: 0 16px;
+      border-radius: 20px;
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-sm);
+      padding: 16px;
+      display: flex; gap: 14px; align-items: center;
+      position: relative; overflow: hidden;
+    }
+    .holiday::after {
+      content: ""; position: absolute; right: -40px; top: -40px;
+      width: 130px; height: 130px; border-radius: 999px;
+      background: radial-gradient(circle, rgba(212,175,55,0.10) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .ring {
+      width: 56px; height: 56px; flex-shrink: 0; position: relative;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .ring svg { position: absolute; inset: 0; transform: rotate(-90deg); }
+    .ring .ring-bg { stroke: var(--bg-surface-2); }
+    .ring .ring-fg { stroke: var(--brand-red); stroke-linecap: round; }
+    .ring .glyph {
+      font-family: var(--font-latin); font-size: 18px; font-weight: 700;
+      color: var(--brand-red);
+    }
+    .device.dark .ring .glyph { color: #FF6B7C; }
+    .device.dark .ring .ring-fg { stroke: #FF6B7C; }
+    .holiday-meta { flex: 1; min-width: 0; }
+    .holiday-eyebrow {
+      font-family: var(--font-bangla); font-size: 11px; font-weight: 600; color: var(--fg-tertiary);
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .holiday-title {
+      font-family: var(--font-bangla); font-size: 17px; font-weight: 600; color: var(--fg-primary);
+      margin-top: 2px;
+    }
+    .holiday-title .en {
+      font-family: var(--font-latin); font-size: 13px; font-weight: 500; color: var(--fg-tertiary);
+      margin-left: 6px;
+    }
+    .holiday-meta-row { display: flex; gap: 10px; margin-top: 6px; align-items: center; }
+    .pill-bn {
+      font-family: var(--font-bangla); font-size: 12px; font-weight: 600;
+      padding: 3px 10px; border-radius: 999px;
+      background: var(--brand-red-50); color: var(--brand-red-700);
+    }
+    .device.dark .pill-bn { background: rgba(244,42,65,0.15); color: #FF8A98; }
+    .holiday-meta-date {
+      font-family: var(--font-latin); font-size: 12px; color: var(--fg-tertiary);
+    }
+    .chev {
+      width: 22px; height: 22px; flex-shrink: 0; color: var(--fg-tertiary);
+    }
+    .chev svg { stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* === Week strip === */
+    .weekstrip {
+      display: flex; gap: 6px; padding: 0 16px 4px;
+      overflow-x: auto; scrollbar-width: none;
+    }
+    .weekstrip::-webkit-scrollbar { display: none; }
+    .day {
+      flex-shrink: 0; width: 46px; padding: 10px 0 12px;
+      border-radius: 14px; background: var(--bg-surface);
+      border: 1px solid var(--border-subtle);
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      position: relative; cursor: pointer;
+      transition: transform 120ms var(--ease-standard);
+    }
+    .day:hover { transform: translateY(-1px); }
+    .day .dow {
+      font-family: var(--font-bangla); font-size: 11px; font-weight: 600; color: var(--fg-tertiary);
+    }
+    .day .num {
+      font-family: var(--font-latin); font-size: 17px; font-weight: 600; color: var(--fg-primary);
+      letter-spacing: -0.01em;
+    }
+    .day .bn {
+      font-family: var(--font-bangla); font-size: 10px; color: var(--fg-tertiary); margin-top: 1px;
+    }
+    .day.holiday-day .num,
+    .day.holiday-day .dow { color: var(--brand-red); }
+    .device.dark .day.holiday-day .num,
+    .device.dark .day.holiday-day .dow { color: #FF6B7C; }
+    .day.holiday-day::after {
+      content: ""; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
+      width: 4px; height: 4px; border-radius: 999px; background: var(--brand-red);
+    }
+    .device.dark .day.holiday-day::after { background: #FF6B7C; }
+    .day.today {
+      background: var(--brand-emerald); border-color: var(--brand-emerald);
+      box-shadow: 0 4px 10px rgba(0,106,78,0.30);
+    }
+    .day.today .dow,
+    .day.today .num,
+    .day.today .bn { color: #fff; }
+    .day.today .bn { opacity: 0.85; }
+
+    /* === Quick actions grid === */
+    .qa-grid {
+      margin: 0 16px;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    }
+    .qa {
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      border-radius: 18px; padding: 14px;
+      display: flex; align-items: center; gap: 12px;
+      cursor: pointer; transition: transform 120ms var(--ease-standard);
+      box-shadow: var(--shadow-xs);
+    }
+    .qa:hover { transform: translateY(-1px); box-shadow: var(--shadow-sm); }
+    .qa-ic {
+      width: 38px; height: 38px; border-radius: 11px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .qa-ic svg { stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+    .qa-ic.em { background: var(--brand-emerald-50); color: var(--brand-emerald); }
+    .qa-ic.rd { background: var(--brand-red-50);     color: var(--brand-red); }
+    .qa-ic.gd { background: var(--brand-gold-50);    color: var(--brand-gold-700); }
+    .qa-ic.gy { background: var(--bg-surface-2);     color: var(--fg-secondary); }
+    .device.dark .qa-ic.gd { color: #E8C969; }
+    .device.dark .qa-ic.rd { color: #FF8A98; }
+    .qa-text { display: flex; flex-direction: column; min-width: 0; }
+    .qa-bn { font-family: var(--font-bangla); font-size: 13px; font-weight: 600; color: var(--fg-primary); }
+    .qa-en { font-family: var(--font-latin); font-size: 11px; color: var(--fg-tertiary); margin-top: 1px; }
+
+    /* === Personal events === */
+    .events { display: flex; flex-direction: column; gap: 8px; padding: 0 16px; }
+    .event {
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      border-radius: 16px; padding: 12px 14px;
+      display: flex; gap: 12px; align-items: center;
+      cursor: pointer; box-shadow: var(--shadow-xs);
+    }
+    .event:hover { box-shadow: var(--shadow-sm); }
+    .event-date {
+      flex-shrink: 0; width: 44px; height: 48px; border-radius: 10px;
+      background: var(--bg-surface-2);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      gap: 0;
+    }
+    .event-date .m { font-family: var(--font-latin); font-size: 9px; font-weight: 700; letter-spacing: 0.10em; text-transform: uppercase; color: var(--fg-tertiary); }
+    .event-date .d { font-family: var(--font-latin); font-size: 18px; font-weight: 600; color: var(--fg-primary); line-height: 1; margin-top: 2px; letter-spacing: -0.01em; }
+    .event-meta { flex: 1; min-width: 0; }
+    .event-title { font-family: var(--font-bangla); font-size: 14px; font-weight: 600; color: var(--fg-primary); }
+    .event-time { font-family: var(--font-latin); font-size: 12px; color: var(--fg-tertiary); margin-top: 2px; display: inline-flex; align-items: center; gap: 5px; }
+    .event-time svg { stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .event-tag {
+      flex-shrink: 0; width: 4px; align-self: stretch; border-radius: 999px;
+    }
+
+    /* === Bottom nav === */
+    .bottomnav {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 86px;
+      padding: 8px 6px 28px;
+      background: rgba(255,255,255,0.85);
+      backdrop-filter: saturate(180%) blur(20px);
+      -webkit-backdrop-filter: saturate(180%) blur(20px);
+      border-top: 1px solid var(--border-subtle);
+      display: flex; align-items: stretch; justify-content: space-around;
+      z-index: 30;
+    }
+    .device.dark .bottomnav { background: rgba(26,26,24,0.85); }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+      background: none; border: 0; cursor: pointer; padding: 4px 2px;
+      color: var(--fg-tertiary);
+    }
+    .nav-item svg { stroke: currentColor; fill: none; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+    .nav-item .lab {
+      font-family: var(--font-bangla); font-size: 10px; font-weight: 500;
+    }
+    .nav-item.active { color: var(--brand-emerald); }
+    .nav-item.active .lab { font-weight: 600; }
+    .device.dark .nav-item.active { color: #4FB394; }
+
+    /* Pad bottom of scroll content */
+    .scroll-end { height: 16px; }
+
+    /* Toolbar */
+    .toolbar {
+      position: fixed; top: 16px; right: 16px; z-index: 100;
+      background: #fff; border: 1px solid rgba(20,20,19,0.08);
+      border-radius: 999px; padding: 4px;
+      box-shadow: 0 1px 2px rgba(20,20,19,.04), 0 2px 6px rgba(20,20,19,.06);
+      display: flex; gap: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">BongoCal · Today screen</div>
+  <h1 class="title">Home, in light and dark.</h1>
+  <p class="sub">A premium today-view: hero with three calendars at once, next-holiday countdown, week strip, quick actions, and a personal event list. Pull-to-refresh haptic-ready, sticky top bar, frosted bottom nav.</p>
+</div>
+
+<div class="row" id="row"></div>
+
+<template id="home-tpl">
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="wordmark"><span class="dot"></span>BongoCal</div>
+    <div class="topbar-actions">
+      <button class="ic-btn" aria-label="Search">
+        <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      </button>
+      <button class="ic-btn" aria-label="Notifications">
+        <svg width="22" height="22" viewBox="0 0 24 24"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10 21a2 2 0 0 0 4 0"/></svg>
+        <span class="badge"></span>
+      </button>
+    </div>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-top">
+      <span class="hero-eyebrow"><span class="pulse"></span>Today · আজ</span>
+      <span class="hero-day-en">Saturday</span>
+    </div>
+    <div class="hero-num">26</div>
+    <div class="hero-monthrow"><span>April</span><span class="yr">2026</span></div>
+    <div class="hero-divider"></div>
+    <div class="hero-altrow">
+      <div class="hero-alt">
+        <div class="nm">বাংলা</div>
+        <div class="vl">১৩ বৈশাখ</div>
+        <div class="nm" style="opacity:0.5; margin-top:2px; font-size:10px; letter-spacing:0.10em;">১৪৩৩</div>
+      </div>
+      <div class="hero-alt">
+        <div class="nm">হিজরি</div>
+        <div class="vl">৮ শাওয়াল</div>
+        <div class="nm" style="opacity:0.5; margin-top:2px; font-size:10px; letter-spacing:0.10em;">১৪৪৭</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOLIDAY -->
+  <div class="sect-head">
+    <span class="sect-title">পরবর্তী ছুটি</span>
+    <button class="sect-link">সব দেখুন</button>
+  </div>
+  <div class="holiday">
+    <div class="ring">
+      <svg width="56" height="56" viewBox="0 0 56 56">
+        <circle class="ring-bg" cx="28" cy="28" r="24" stroke-width="3" fill="none"/>
+        <circle class="ring-fg" cx="28" cy="28" r="24" stroke-width="3" fill="none"
+                stroke-dasharray="150.8" stroke-dashoffset="100"/>
+      </svg>
+      <span class="glyph">৫</span>
+    </div>
+    <div class="holiday-meta">
+      <div class="holiday-eyebrow">৫ দিন বাকি</div>
+      <div class="holiday-title">মে দিবস<span class="en">May Day</span></div>
+      <div class="holiday-meta-row">
+        <span class="pill-bn">সরকারি ছুটি</span>
+        <span class="holiday-meta-date">শুক্রবার, ১ মে</span>
+      </div>
+    </div>
+    <span class="chev"><svg width="22" height="22" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+  </div>
+
+  <!-- WEEK STRIP -->
+  <div class="sect-head">
+    <span class="sect-title">এই সপ্তাহ</span>
+    <button class="sect-link">এপ্রিল ২০২৬</button>
+  </div>
+  <div class="weekstrip">
+    <div class="day"><span class="dow">শনি</span><span class="num">25</span><span class="bn">১২</span></div>
+    <div class="day today"><span class="dow">আজ</span><span class="num">26</span><span class="bn">১৩</span></div>
+    <div class="day"><span class="dow">সোম</span><span class="num">27</span><span class="bn">১৪</span></div>
+    <div class="day"><span class="dow">মঙ্গ</span><span class="num">28</span><span class="bn">১৫</span></div>
+    <div class="day"><span class="dow">বুধ</span><span class="num">29</span><span class="bn">১৬</span></div>
+    <div class="day"><span class="dow">বৃহ</span><span class="num">30</span><span class="bn">১৭</span></div>
+    <div class="day holiday-day"><span class="dow">শুক্র</span><span class="num">1</span><span class="bn">১৮</span></div>
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="sect-head"><span class="sect-title">দ্রুত অ্যাকশন</span></div>
+  <div class="qa-grid">
+    <button class="qa">
+      <span class="qa-ic em">
+        <svg width="20" height="20" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+      </span>
+      <span class="qa-text"><span class="qa-bn">মাসিক ভিউ</span><span class="qa-en">Monthly View</span></span>
+    </button>
+    <button class="qa">
+      <span class="qa-ic rd">
+        <svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 2l2 6h6l-5 3.6 2 6.4-5-3.6-5 3.6 2-6.4L4 8h6z"/></svg>
+      </span>
+      <span class="qa-text"><span class="qa-bn">সব ছুটি</span><span class="qa-en">All Holidays</span></span>
+    </button>
+    <button class="qa">
+      <span class="qa-ic gy">
+        <svg width="20" height="20" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+      </span>
+      <span class="qa-text"><span class="qa-bn">ইভেন্ট যোগ</span><span class="qa-en">Add Event</span></span>
+    </button>
+    <button class="qa">
+      <span class="qa-ic gd">
+        <svg width="20" height="20" viewBox="0 0 24 24"><path d="M4 21V10l8-6 8 6v11"/><path d="M9 21v-7h6v7"/><path d="M12 4V2"/></svg>
+      </span>
+      <span class="qa-text"><span class="qa-bn">নামাজের সময়</span><span class="qa-en">Prayer Times</span></span>
+    </button>
+  </div>
+
+  <!-- PERSONAL EVENTS -->
+  <div class="sect-head">
+    <span class="sect-title">আপনার ইভেন্ট</span>
+    <button class="sect-link">View all</button>
+  </div>
+  <div class="events">
+    <div class="event">
+      <div class="event-tag" style="background: var(--brand-emerald);"></div>
+      <div class="event-date"><span class="m">APR</span><span class="d">28</span></div>
+      <div class="event-meta">
+        <div class="event-title">আম্মার জন্মদিন</div>
+        <div class="event-time">
+          <svg width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          সারাদিন · পুনরাবৃত্তি
+        </div>
+      </div>
+      <span class="chev"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+    </div>
+    <div class="event">
+      <div class="event-tag" style="background: var(--brand-gold);"></div>
+      <div class="event-date"><span class="m">MAY</span><span class="d">02</span></div>
+      <div class="event-meta">
+        <div class="event-title">ফ্যামিলি ইফতার</div>
+        <div class="event-time">
+          <svg width="12" height="12" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          সন্ধ্যা ৬:২০ · ধানমন্ডি
+        </div>
+      </div>
+      <span class="chev"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></span>
+    </div>
+  </div>
+
+  <div class="scroll-end"></div>
+</template>
+
+<template id="nav-tpl">
+  <nav class="bottomnav">
+    <button class="nav-item active">
+      <svg width="22" height="22" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
+      <span class="lab">হোম</span>
+    </button>
+    <button class="nav-item">
+      <svg width="22" height="22" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg>
+      <span class="lab">ক্যালেন্ডার</span>
+    </button>
+    <button class="nav-item">
+      <svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 2l2 6h6l-5 3.6 2 6.4-5-3.6-5 3.6 2-6.4L4 8h6z"/></svg>
+      <span class="lab">ছুটি</span>
+    </button>
+    <button class="nav-item">
+      <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+      <span class="lab">ইভেন্ট</span>
+    </button>
+    <button class="nav-item">
+      <svg width="22" height="22" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 14a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V20a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H2a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h.01a1.65 1.65 0 0 0 1-1.51V2a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v.01a1.65 1.65 0 0 0 1.51 1H22a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      <span class="lab">সেটিংস</span>
+    </button>
+  </nav>
+</template>
+
+<template id="status-tpl">
+  <div class="statusbar">
+    <span>9:41</span>
+    <span style="display:inline-flex;gap:6px;align-items:center">
+      <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4" y="5" width="3" height="6" rx="1"/><rect x="8" y="3" width="3" height="8" rx="1"/><rect x="12" y="0" width="3" height="11" rx="1"/></svg>
+      <svg width="22" height="11" viewBox="0 0 22 11" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5"/><rect x="2" y="2" width="13" height="7" rx="1.2" fill="currentColor"/><rect x="19.5" y="3" width="1.5" height="5" rx="0.5" fill="currentColor"/></svg>
+    </span>
+  </div>
+</template>
+
+<script>
+  const row = document.getElementById('row');
+  const homeTpl = document.getElementById('home-tpl').innerHTML;
+  const navTpl = document.getElementById('nav-tpl').innerHTML;
+  const statusTpl = document.getElementById('status-tpl').innerHTML;
+
+  function makeStage(theme, label) {
+    const stage = document.createElement('div');
+    stage.className = 'stage';
+    const isDark = theme === 'dark';
+    stage.innerHTML = `
+      <div class="device ${isDark ? 'dark' : ''}" ${isDark ? 'data-theme="dark"' : ''}>
+        <div class="island"></div>
+        ${statusTpl}
+        <div class="screen">
+          <div class="scroll">${homeTpl}</div>
+          ${navTpl}
+        </div>
+        <div class="home-bar ${isDark ? 'dark' : ''}"></div>
+      </div>
+      <div class="label-wrap">
+        <div class="label">${label}</div>
+      </div>
+    `;
+    return stage;
+  }
+
+  row.appendChild(makeStage('light', 'Light · Today'));
+  row.appendChild(makeStage('dark', 'Dark · Today'));
+</script>
+
+</body>
+</html>

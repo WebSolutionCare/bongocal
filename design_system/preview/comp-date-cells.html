@@ -1,0 +1,31 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css"><link rel="stylesheet" href="_card.css">
+<style>
+  body { font-family: var(--font-bangla); }
+  .row { display:flex; gap: 12px; flex-wrap: wrap; }
+  .cell { width: 48px; height: 56px; border-radius: 10px; display:flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; cursor: pointer; transition: all 120ms cubic-bezier(.2,0,0,1); border: 1px solid transparent; }
+  .num { font-family: var(--font-latin); font-size: 17px; font-weight: 600; color: var(--fg-primary); font-variant-numeric: tabular-nums; }
+  .sub { font-family: var(--font-bangla); font-size: 10px; color: var(--fg-tertiary); }
+  .normal:hover { background: var(--bg-surface-2); }
+  .today { background: var(--brand-emerald); }
+  .today .num, .today .sub { color: #fff; }
+  .selected { border-color: var(--brand-emerald); background: var(--brand-emerald-50); }
+  .holiday .num { color: var(--brand-red); }
+  .holiday-dot { width: 5px; height: 5px; border-radius: 999px; background: var(--brand-red); }
+  .festival-dot { width: 5px; height: 5px; border-radius: 999px; background: var(--brand-gold); }
+  .other-month .num { color: var(--gray-300); }
+  .lab2 { font-size: 10px; color: var(--fg-tertiary); margin-top: 6px; text-align: center; font-family: var(--font-latin); }
+  .col { display:flex; flex-direction: column; align-items: center; }
+</style></head>
+<body>
+  <p class="lbl">Date cells</p>
+  <div class="row">
+    <div class="col"><div class="cell normal"><div class="num">14</div><div class="sub">১</div></div><div class="lab2">normal</div></div>
+    <div class="col"><div class="cell today"><div class="num">27</div><div class="sub">১৪</div></div><div class="lab2">today</div></div>
+    <div class="col"><div class="cell selected"><div class="num">21</div><div class="sub">৮</div></div><div class="lab2">selected</div></div>
+    <div class="col"><div class="cell holiday"><div class="num">14</div><div class="holiday-dot"></div></div><div class="lab2">holiday</div></div>
+    <div class="col"><div class="cell holiday"><div class="num">5</div><div class="festival-dot"></div></div><div class="lab2">festival</div></div>
+    <div class="col"><div class="cell other-month"><div class="num">30</div></div><div class="lab2">other month</div></div>
+    <div class="col"><div class="cell normal" style="background: var(--bg-surface-2)"><div class="num">12</div><div class="sub">৪</div></div><div class="lab2">hover</div></div>
+  </div>
+</body></html>

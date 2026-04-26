@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="bn" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <title>BongoCal · UI Kit</title>
+  <link rel="stylesheet" href="../../colors_and_type.css">
+  <style>
+    html, body { margin: 0; padding: 0; min-height: 100vh; background: var(--bg-canvas); color: var(--fg-primary); }
+    body {
+      font-family: var(--font-bangla);
+      display: flex; align-items: flex-start; justify-content: center;
+      padding: 40px 20px;
+      gap: 28px; flex-wrap: wrap;
+    }
+    .stage { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .label { font-size: 12px; color: var(--fg-tertiary); font-family: var(--font-latin); font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; }
+    .toolbar {
+      position: fixed; top: 16px; right: 16px; z-index: 100;
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      border-radius: 999px; padding: 4px;
+      box-shadow: var(--shadow-sm);
+      display: flex; gap: 4px;
+    }
+    .toolbar button {
+      border: 0; background: transparent; padding: 8px 14px; border-radius: 999px;
+      font-size: 12px; font-weight: 600; cursor: pointer; color: var(--fg-secondary);
+      font-family: var(--font-latin);
+    }
+    .toolbar button.on { background: var(--bg-surface-2); color: var(--fg-primary); }
+  </style>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div class="toolbar">
+    <button id="t-light" class="on" onclick="setTheme('light')">Light</button>
+    <button id="t-dark" onclick="setTheme('dark')">Dark</button>
+  </div>
+
+  <div class="stage">
+    <div id="root-1"></div>
+    <div class="label">Calendar · Day Sheet</div>
+  </div>
+  <div class="stage">
+    <div id="root-2"></div>
+    <div class="label">Festivals</div>
+  </div>
+  <div class="stage">
+    <div id="root-3"></div>
+    <div class="label">Settings</div>
+  </div>
+
+  <!-- Load fake data first -->
+  <script type="module">
+    import * as data from './data.js';
+    window.__BONGOCAL_DATA__ = data;
+    // Notify after load
+    window.dispatchEvent(new Event('bongocal-data-ready'));
+  </script>
+
+  <!-- Components -->
+  <script type="text/babel" data-presets="react" src="./Icon.jsx"></script>
+  <script type="text/babel" data-presets="react" src="./Frame.jsx"></script>
+  <script type="text/babel" data-presets="react" src="./AppBar.jsx"></script>
+  <script type="text/babel" data-presets="react" src="./BottomNav.jsx"></script>
+  <script type="text/babel" data-presets="react" src="./DateCell.jsx"></script>
+  <script type="text/babel" data-presets="react" src="./MonthView.jsx"></script>
+  <script type="text/babel" data-presets="react" src="./DaySheet.jsx"></script>
+  <script type="text/babel" data-presets="react" src="./FestivalScreen.jsx"></script>
+  <script type="text/babel" data-presets="react" src="./SettingsScreen.jsx"></script>
+  <script type="text/babel" data-presets="react" src="./App.jsx"></script>
+
+  <script type="text/babel" data-presets="react">
+    function setTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+      document.getElementById('t-light').classList.toggle('on', t === 'light');
+      document.getElementById('t-dark').classList.toggle('on', t === 'dark');
+    }
+    window.setTheme = setTheme;
+
+    // Standalone instances pre-routed to different screens
+    function Boot1() {
+      const [day, setDay] = React.useState(14);
+      return (
+        <Frame>
+          <MonthView onSelectDay={setDay} onOpenFestival={()=>{}} />
+          <BottomNav active="calendar" onChange={()=>{}} />
+          {day !== null && <DaySheet day={day} onClose={() => setDay(null)} />}
+        </Frame>
+      );
+    }
+    function Boot2() {
+      return (
+        <Frame>
+          <FestivalScreen onBack={()=>{}} />
+          <BottomNav active="festivals" onChange={()=>{}} />
+        </Frame>
+      );
+    }
+    function Boot3() {
+      return (
+        <Frame>
+          <SettingsScreen />
+          <BottomNav active="settings" onChange={()=>{}} />
+        </Frame>
+      );
+    }
+
+    function mountAll() {
+      ReactDOM.createRoot(document.getElementById('root-1')).render(<Boot1 />);
+      ReactDOM.createRoot(document.getElementById('root-2')).render(<Boot2 />);
+      ReactDOM.createRoot(document.getElementById('root-3')).render(<Boot3 />);
+    }
+
+    if (window.__BONGOCAL_DATA__) mountAll();
+    else window.addEventListener('bongocal-data-ready', mountAll);
+  </script>
+</body>
+</html>

@@ -1,0 +1,33 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css"><link rel="stylesheet" href="_card.css">
+<style>
+  body { font-family: var(--font-bangla); padding: 16px; background: var(--bg-surface-2); }
+  .sheet { background: var(--bg-surface); border-radius: 20px 20px 0 0; padding: 16px 20px 20px; box-shadow: 0 -8px 30px rgba(20,20,19,.10); max-width: 360px; }
+  .grabber { width: 36px; height: 4px; border-radius: 999px; background: var(--gray-300); margin: 0 auto 14px; }
+  .h { font-size: 18px; font-weight: 700; color: var(--fg-primary); }
+  .meta { font-size: 13px; color: var(--fg-tertiary); margin-top: 4px; }
+  .row { display: flex; gap: 10px; margin-top: 16px; }
+  .row .it { flex:1; padding: 10px 12px; background: var(--bg-surface-2); border-radius: 10px; font-size: 13px; }
+  .row .it b { display: block; font-size: 11px; color: var(--fg-tertiary); font-weight: 500; font-family: var(--font-latin); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 4px; }
+  .actions { display:flex; gap: 8px; margin-top: 16px; }
+  .btn { flex:1; height: 44px; border-radius: 10px; border: 0; font: inherit; font-weight: 600; font-size: 15px; cursor: pointer; }
+  .primary { background: var(--brand-emerald); color: #fff; }
+  .secondary { background: var(--bg-surface-2); color: var(--fg-primary); border: 1px solid var(--border-default); }
+</style></head>
+<body>
+  <p class="lbl">Bottom sheet / modal</p>
+  <div class="sheet">
+    <div class="grabber"></div>
+    <div class="h">পহেলা বৈশাখ</div>
+    <div class="meta">সরকারি ছুটি · নববর্ষ ১৪৩৩</div>
+    <div class="row">
+      <div class="it"><b>বাংলা</b>১ বৈশাখ</div>
+      <div class="it"><b>English</b>14 April</div>
+      <div class="it"><b>হিজরি</b>২৬ শাওয়াল</div>
+    </div>
+    <div class="actions">
+      <button class="btn secondary">শেয়ার</button>
+      <button class="btn primary">ক্যালেন্ডারে যোগ</button>
+    </div>
+  </div>
+</body></html>

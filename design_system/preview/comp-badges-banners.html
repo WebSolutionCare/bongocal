@@ -1,0 +1,45 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><link rel="stylesheet" href="../colors_and_type.css"><link rel="stylesheet" href="_card.css">
+<style>
+  body { font-family: var(--font-bangla); }
+  .wrap { display: flex; flex-direction: column; gap: 12px; }
+  .badge { display:inline-flex; align-items: center; gap: 6px; height: 28px; padding: 0 12px; border-radius: 999px; font-size: 12px; font-weight: 600; }
+  .b-eid { background: var(--brand-gold-100); color: var(--brand-gold-700); border: 1px solid var(--brand-gold); }
+  .b-puja { background: #FCE5CB; color: #B45A0F; border: 1px solid #E07A1F; }
+  .b-boishakh { background: var(--brand-red-100); color: var(--brand-red-700); border: 1px solid var(--brand-red); }
+  .b-independence { background: var(--brand-emerald-100); color: var(--brand-emerald-700); border: 1px solid var(--brand-emerald); }
+  .row { display:flex; gap: 8px; flex-wrap: wrap; }
+  .banner { display:flex; gap: 12px; align-items: flex-start; padding: 12px 14px; border-radius: 12px; border: 1px solid; }
+  .banner svg { flex-shrink: 0; margin-top: 2px; }
+  .b-info { background: var(--info-tint); border-color: #1E6FBE33; color: #16467A; }
+  .b-success { background: var(--success-tint); border-color: #1F8A4C33; color: #155A30; }
+  .b-warn { background: var(--warning-tint); border-color: #C97A1133; color: #7A4708; }
+  .b-error { background: var(--error-tint); border-color: #D02D2D33; color: #8A1818; }
+  .b-title { font-size: 14px; font-weight: 600; }
+  .b-text { font-size: 13px; opacity: 0.85; margin-top: 2px; }
+  svg.ic { stroke-width: 1.8; stroke-linecap: round; fill: none; stroke: currentColor; }
+</style></head>
+<body>
+  <p class="lbl">Festival badges</p>
+  <div class="row">
+    <span class="badge b-eid">✦ ঈদুল ফিতর</span>
+    <span class="badge b-puja">✦ দুর্গাপূজা</span>
+    <span class="badge b-boishakh">✦ পহেলা বৈশাখ</span>
+    <span class="badge b-independence">✦ স্বাধীনতা দিবস</span>
+  </div>
+  <p class="lbl" style="margin-top: 16px">Notification banners</p>
+  <div class="wrap">
+    <div class="banner b-info">
+      <svg class="ic" width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/></svg>
+      <div><div class="b-title">আগামীকাল পহেলা বৈশাখ</div><div class="b-text">নতুন বছরের শুভেচ্ছা জানাতে প্রস্তুত হোন।</div></div>
+    </div>
+    <div class="banner b-success">
+      <svg class="ic" width="20" height="20" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg>
+      <div><div class="b-title">অনুষ্ঠান সংরক্ষিত হয়েছে</div></div>
+    </div>
+    <div class="banner b-warn">
+      <svg class="ic" width="20" height="20" viewBox="0 0 24 24"><path d="M12 3l10 18H2z"/><path d="M12 10v4M12 18h.01"/></svg>
+      <div><div class="b-title">নোটিফিকেশন বন্ধ</div><div class="b-text">গুরুত্বপূর্ণ ছুটির রিমাইন্ডার পেতে চালু করুন।</div></div>
+    </div>
+  </div>
+</body></html>

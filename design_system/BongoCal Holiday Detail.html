@@ -1,0 +1,558 @@
+<!doctype html>
+<html lang="bn">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BongoCal · Holiday Detail · পহেলা বৈশাখ</title>
+  <link rel="stylesheet" href="colors_and_type.css">
+  <style>
+    * { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; min-height: 100vh; background: #EDEDE7; color: var(--fg-primary); }
+    body { font-family: var(--font-bangla); padding: 56px 32px 80px; display: flex; flex-direction: column; align-items: center; gap: 28px; }
+    .header { text-align: center; max-width: 760px; }
+    .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: 0.12em; color: #767670; text-transform: uppercase; font-family: var(--font-latin); }
+    .title { font-family: var(--font-latin); font-size: 32px; font-weight: 700; letter-spacing: -0.02em; margin-top: 10px; color: #141413; }
+    .sub { font-family: var(--font-latin); font-size: 15px; color: #535350; margin-top: 8px; line-height: 1.5; }
+    .row { display: flex; gap: 40px; flex-wrap: wrap; justify-content: center; align-items: flex-start; }
+    .stage { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .label { font-family: var(--font-latin); font-size: 11px; font-weight: 700; color: #767670; letter-spacing: 0.10em; text-transform: uppercase; }
+
+    .device { width: 390px; height: 844px; background: var(--bg-canvas); border-radius: 50px; border: 10px solid #1A1A18; box-shadow: 0 6px 12px rgba(20,20,19,.10), 0 30px 60px rgba(20,20,19,.20); overflow: hidden; position: relative; }
+    .device.dark { border-color: #000; }
+    .island { position: absolute; left: 50%; top: 8px; transform: translateX(-50%); width: 110px; height: 32px; background: #000; border-radius: 999px; z-index: 60; }
+    .home-bar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 134px; height: 5px; border-radius: 999px; background: var(--fg-primary); opacity: 0.4; z-index: 50; }
+    .scroll { position: absolute; inset: 0; overflow-y: auto; scrollbar-width: none; padding-bottom: 110px; }
+    .scroll::-webkit-scrollbar { display: none; }
+
+    /* status bar over hero */
+    .statusbar { position: absolute; top: 0; left: 0; right: 0; height: 47px; padding: 16px 30px 0; display: flex; align-items: center; justify-content: space-between; font-family: var(--font-latin); font-size: 15px; font-weight: 600; color: #fff; z-index: 50; pointer-events: none; }
+
+    /* ============ HERO ============ */
+    .hero {
+      position: relative; height: 440px; overflow: hidden;
+      color: #fff;
+    }
+    /* Boishakh-themed illustration: alpana radial + sun + paisleys, in red/gold */
+    .hero-illu {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(circle at 50% 28%, #FDB52A 0%, #F26A2E 30%, #C71F33 65%, #6E1018 100%);
+    }
+    .hero-illu::before {
+      /* concentric paisley/alpana rings */
+      content: ""; position: absolute; left: 50%; top: 28%; transform: translate(-50%,-50%);
+      width: 520px; height: 520px; border-radius: 999px;
+      background:
+        repeating-radial-gradient(circle at center,
+          rgba(255,255,255,0.0) 0 28px,
+          rgba(255,255,255,0.10) 28px 30px,
+          rgba(255,255,255,0.0) 30px 60px,
+          rgba(255,255,255,0.06) 60px 62px);
+      mask: radial-gradient(circle at center, #000 60%, transparent 75%);
+    }
+    .hero-illu::after {
+      /* warm vignette to bottom for legibility */
+      content: ""; position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0) 30%, rgba(20,8,8,0.0) 50%, rgba(20,8,8,0.55) 90%, rgba(20,8,8,0.85) 100%);
+    }
+    /* sun rays SVG layer */
+    .hero-rays { position: absolute; left: 50%; top: 16%; transform: translate(-50%,0); opacity: 0.55; }
+    .hero-petals { position: absolute; left: 50%; top: 28%; transform: translate(-50%,-50%); opacity: 0.35; mix-blend-mode: overlay; }
+
+    .hero-top {
+      position: absolute; top: 56px; left: 0; right: 0; padding: 0 16px; z-index: 20;
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    .icon-btn {
+      width: 36px; height: 36px; border-radius: 999px;
+      background: rgba(255,255,255,0.18); backdrop-filter: blur(10px);
+      border: 0; color: #fff; cursor: pointer;
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .icon-btn svg { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+    .hero-foot {
+      position: absolute; left: 0; right: 0; bottom: 0; padding: 24px 22px 26px;
+      z-index: 20;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 5px 10px 5px 8px; border-radius: 999px;
+      background: rgba(255,255,255,0.18); backdrop-filter: blur(10px);
+      font-family: var(--font-bangla); font-size: 11px; font-weight: 600; color: #fff;
+      border: 1px solid rgba(255,255,255,0.25);
+    }
+    .badge .dot { width: 6px; height: 6px; border-radius: 999px; background: #fff; }
+    .h-name {
+      font-family: var(--font-bangla); font-size: 38px; font-weight: 700;
+      line-height: 1.05; letter-spacing: -0.01em; margin-top: 12px;
+      text-shadow: 0 2px 12px rgba(0,0,0,0.35);
+    }
+    .h-name-en {
+      font-family: var(--font-latin); font-size: 14px; font-weight: 500;
+      opacity: 0.85; margin-top: 6px; letter-spacing: 0.005em;
+    }
+    .h-dates {
+      display: flex; gap: 14px; align-items: baseline; margin-top: 14px;
+    }
+    .h-date-bn {
+      font-family: var(--font-bangla); font-size: 16px; font-weight: 600;
+    }
+    .h-date-en {
+      font-family: var(--font-latin); font-size: 13px; font-weight: 500; opacity: 0.85;
+      padding-left: 14px; border-left: 1px solid rgba(255,255,255,0.35);
+    }
+
+    /* ============ COUNTDOWN ============ */
+    .countdown {
+      margin: -40px 16px 0; position: relative; z-index: 30;
+      background: var(--bg-surface); border-radius: 22px;
+      box-shadow: 0 12px 32px rgba(20,20,19,0.18), 0 1px 0 rgba(255,255,255,0.5) inset;
+      padding: 16px 18px;
+      display: flex; align-items: center; gap: 14px;
+      border: 1px solid var(--border-subtle);
+    }
+    .cd-pulse {
+      width: 44px; height: 44px; flex-shrink: 0; border-radius: 999px;
+      background: var(--brand-red-50); color: var(--festival-boishakh);
+      display: inline-flex; align-items: center; justify-content: center;
+      position: relative;
+    }
+    .cd-pulse svg { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .cd-pulse::after {
+      content: ""; position: absolute; inset: -3px; border-radius: 999px;
+      border: 2px solid var(--festival-boishakh); opacity: 0;
+      animation: pulse-ring 2.5s ease-out infinite;
+    }
+    @keyframes pulse-ring {
+      0% { opacity: 0.6; transform: scale(0.85); }
+      100% { opacity: 0; transform: scale(1.4); }
+    }
+    .cd-text { flex: 1; min-width: 0; }
+    .cd-num {
+      font-family: var(--font-latin); font-size: 26px; font-weight: 700; color: var(--fg-primary);
+      letter-spacing: -0.015em; line-height: 1;
+      display: inline-flex; align-items: baseline; gap: 6px;
+    }
+    .cd-num .unit {
+      font-family: var(--font-bangla); font-size: 14px; font-weight: 600; color: var(--fg-secondary);
+      letter-spacing: 0;
+    }
+    .cd-sub {
+      font-family: var(--font-bangla); font-size: 12px; color: var(--fg-tertiary); margin-top: 4px;
+    }
+    .cd-progress {
+      width: 56px; height: 56px; flex-shrink: 0; position: relative;
+    }
+    .cd-progress svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .cd-progress .track { stroke: var(--border-subtle); }
+    .cd-progress .fill {
+      stroke: var(--festival-boishakh);
+      stroke-dasharray: 150.8;
+      stroke-dashoffset: 33;
+      transition: stroke-dashoffset 1s var(--ease-spring);
+    }
+    .cd-progress-pct {
+      position: absolute; inset: 0; display: inline-flex; align-items: center; justify-content: center;
+      font-family: var(--font-latin); font-size: 11px; font-weight: 700; color: var(--fg-secondary);
+    }
+
+    /* ============ ACTIONS ============ */
+    .actions {
+      margin: 14px 16px 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+    }
+    .action {
+      background: var(--bg-surface); border: 1px solid var(--border-subtle);
+      border-radius: 14px; padding: 12px 8px;
+      display: flex; flex-direction: column; align-items: center; gap: 6px;
+      cursor: pointer; transition: all 120ms var(--ease-standard);
+    }
+    .action:hover { background: var(--bg-surface-2); }
+    .action.primary {
+      background: var(--brand-emerald-50); border-color: transparent;
+    }
+    .action .ic {
+      width: 32px; height: 32px; border-radius: 999px;
+      background: var(--bg-surface-2); color: var(--fg-secondary);
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .action.primary .ic { background: var(--brand-emerald); color: #fff; }
+    .action .ic svg { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .action .ic.filled svg { fill: currentColor; stroke: none; }
+    .action .lbl {
+      font-family: var(--font-bangla); font-size: 12px; font-weight: 500; color: var(--fg-primary);
+    }
+
+    /* ============ SECTIONS ============ */
+    .sec { padding: 0 22px; margin-top: 26px; }
+    .sec-title {
+      font-family: var(--font-bangla); font-size: 18px; font-weight: 700; color: var(--fg-primary);
+      letter-spacing: -0.005em; margin: 0 0 12px;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .sec-title .accent {
+      width: 3px; height: 16px; border-radius: 2px; background: var(--festival-boishakh);
+    }
+
+    .lede {
+      font-family: var(--font-bangla); font-size: 16px; line-height: 1.7; color: var(--fg-primary);
+      margin: 0 0 14px;
+      text-wrap: pretty;
+    }
+    .lede::first-letter {
+      font-family: var(--font-bangla); font-size: 44px; font-weight: 700;
+      color: var(--festival-boishakh);
+      float: left; line-height: 1; padding: 4px 8px 0 0;
+    }
+    .body-p {
+      font-family: var(--font-bangla); font-size: 14px; line-height: 1.75; color: var(--fg-secondary);
+      margin: 0 0 12px;
+      text-wrap: pretty;
+    }
+    .pull-quote {
+      margin: 16px 0;
+      padding: 14px 16px;
+      border-left: 3px solid var(--brand-gold);
+      background: var(--brand-gold-50);
+      border-radius: 0 12px 12px 0;
+      font-family: var(--font-bangla); font-size: 14px; font-style: italic;
+      line-height: 1.6; color: var(--fg-primary);
+    }
+    .pull-quote-attr {
+      display: block; margin-top: 8px;
+      font-family: var(--font-latin); font-size: 11px; font-style: normal;
+      color: var(--fg-tertiary); letter-spacing: 0.02em; text-transform: uppercase;
+    }
+
+    /* ============ INFO TABLE ============ */
+    .info-card {
+      background: var(--bg-surface); border-radius: 16px;
+      border: 1px solid var(--border-subtle);
+      overflow: hidden;
+    }
+    .info-row {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--border-subtle);
+    }
+    .info-row:last-child { border-bottom: 0; }
+    .info-row .ic {
+      width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+      background: var(--bg-surface-2); color: var(--fg-secondary);
+      display: inline-flex; align-items: center; justify-content: center;
+    }
+    .info-row .ic svg { stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .info-row .lbl {
+      font-family: var(--font-bangla); font-size: 14px; color: var(--fg-secondary); flex: 1;
+    }
+    .info-row .val {
+      font-family: var(--font-bangla); font-size: 14px; font-weight: 600; color: var(--fg-primary);
+      display: inline-flex; align-items: center; gap: 6px;
+    }
+    .info-row .val.num { font-family: var(--font-latin); }
+    .pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 2px 8px; border-radius: 999px;
+      font-family: var(--font-bangla); font-size: 11px; font-weight: 600;
+    }
+    .pill.yes { background: var(--success-tint); color: var(--success); }
+    .pill.partial { background: var(--warning-tint); color: var(--warning); }
+    .pill svg { stroke: currentColor; fill: none; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round; }
+
+    /* ============ SIMILAR (h-scroll) ============ */
+    .h-scroll {
+      display: flex; gap: 12px; overflow-x: auto;
+      padding: 0 22px 6px; margin: 0 -22px;
+      scrollbar-width: none;
+    }
+    .h-scroll::-webkit-scrollbar { display: none; }
+    .scard {
+      flex: 0 0 168px; height: 200px; border-radius: 16px;
+      position: relative; overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      cursor: pointer;
+    }
+    .scard .img { position: absolute; inset: 0; }
+    .scard .ovr {
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, transparent 40%, rgba(0,0,0,0.7) 100%);
+    }
+    .scard .meta {
+      position: absolute; left: 12px; right: 12px; bottom: 12px; color: #fff;
+    }
+    .scard .meta .when {
+      font-family: var(--font-latin); font-size: 10px; font-weight: 600;
+      letter-spacing: 0.10em; text-transform: uppercase; opacity: 0.85;
+    }
+    .scard .meta .nm {
+      font-family: var(--font-bangla); font-size: 16px; font-weight: 700;
+      margin-top: 3px; line-height: 1.2;
+      text-shadow: 0 1px 6px rgba(0,0,0,0.4);
+    }
+    .scard .meta .en {
+      font-family: var(--font-latin); font-size: 11px; opacity: 0.78; margin-top: 2px;
+    }
+    .scard .corner-pill {
+      position: absolute; top: 10px; left: 10px;
+      padding: 3px 7px; border-radius: 999px;
+      background: rgba(255,255,255,0.20); backdrop-filter: blur(8px);
+      font-family: var(--font-bangla); font-size: 10px; font-weight: 600; color: #fff;
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    /* card backgrounds (per holiday) */
+    .img-victory { background: radial-gradient(circle at 30% 30%, #C71F33, #6E1018 80%); }
+    .img-victory::after { content: ""; position: absolute; inset: 0;
+      background: repeating-linear-gradient(45deg, rgba(255,255,255,0.04) 0 12px, transparent 12px 24px); }
+    .img-indep   { background: radial-gradient(circle at 70% 30%, #008A66, #003B2C 80%); }
+    .img-indep::after { content: ""; position: absolute; inset: 0;
+      background: radial-gradient(circle at 30% 80%, rgba(212,175,55,0.30), transparent 50%); }
+    .img-language { background: linear-gradient(160deg, #2A2A28 0%, #1A1A18 100%); }
+    .img-language::after { content: ""; position: absolute; inset: 0;
+      background: radial-gradient(circle at 50% 35%, rgba(244,42,65,0.45), transparent 55%); }
+
+    /* tab bar (bottom safe spacer) */
+    .footer-fade {
+      position: absolute; left: 0; right: 0; bottom: 0; height: 80px;
+      background: linear-gradient(180deg, transparent, var(--bg-canvas) 60%);
+      pointer-events: none; z-index: 40;
+    }
+
+    /* DARK adjustments */
+    [data-theme="dark"] .lede::first-letter { color: #FF6B7E; }
+    [data-theme="dark"] .pull-quote { background: rgba(212,175,55,0.10); }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="eyebrow">BongoCal · Holiday Detail · পহেলা বৈশাখ</div>
+  <h1 class="title">Magazine-style holiday detail.</h1>
+  <p class="sub">Festival hero with alpana sun rays, 12-day countdown card, three-up actions, drop-cap article, info matrix, and a horizontal-scroll rail of related national days. Light + dark.</p>
+</div>
+
+<div class="row" id="row"></div>
+
+<template id="page-tpl">
+  <div class="hero">
+    <div class="hero-illu"></div>
+    <!-- sun rays -->
+    <svg class="hero-rays" width="380" height="380" viewBox="-190 -190 380 380">
+      <g stroke="rgba(255,255,255,0.55)" stroke-width="1.2" stroke-linecap="round" fill="none">
+        <!-- 16 rays -->
+        <g id="rays"></g>
+      </g>
+      <circle r="62" fill="rgba(253,181,42,0.0)" stroke="rgba(255,255,255,0.55)" stroke-width="1.5"/>
+      <circle r="48" fill="rgba(255,255,255,0.0)" stroke="rgba(255,255,255,0.35)" stroke-width="1"/>
+    </svg>
+    <!-- alpana petal motif -->
+    <svg class="hero-petals" width="280" height="280" viewBox="-140 -140 280 280">
+      <g fill="none" stroke="#fff" stroke-width="1.2">
+        <g id="petals"></g>
+      </g>
+    </svg>
+
+    <div class="statusbar">
+      <span>9:41</span>
+      <span style="display:inline-flex;gap:6px;align-items:center">
+        <svg width="16" height="11" viewBox="0 0 16 11" fill="currentColor"><rect x="0" y="7" width="3" height="4" rx="1"/><rect x="4" y="5" width="3" height="6" rx="1"/><rect x="8" y="3" width="3" height="8" rx="1"/><rect x="12" y="0" width="3" height="11" rx="1"/></svg>
+        <svg width="22" height="11" viewBox="0 0 22 11" fill="none" stroke="currentColor" stroke-width="1"><rect x="0.5" y="0.5" width="18" height="10" rx="2.5"/><rect x="2" y="2" width="13" height="7" rx="1.2" fill="currentColor"/><rect x="19.5" y="3" width="1.5" height="5" rx="0.5" fill="currentColor"/></svg>
+      </span>
+    </div>
+
+    <div class="hero-top">
+      <button class="icon-btn"><svg width="20" height="20" viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>
+      <button class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24"><path d="M5 12h.01M12 12h.01M19 12h.01"/></svg></button>
+    </div>
+
+    <div class="hero-foot">
+      <span class="badge"><span class="dot"></span>জাতীয় দিবস · National Day</span>
+      <h1 class="h-name">পহেলা বৈশাখ</h1>
+      <div class="h-name-en">Pohela Boishakh · Bengali New Year</div>
+      <div class="h-dates">
+        <div class="h-date-bn">১ বৈশাখ ১৪৩৩</div>
+        <div class="h-date-en">April 14, 2026 · Tuesday</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- countdown -->
+  <div class="countdown">
+    <div class="cd-pulse">
+      <svg width="20" height="20" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+    </div>
+    <div class="cd-text">
+      <div class="cd-num">12<span class="unit">দিন বাকি</span></div>
+      <div class="cd-sub">12 days · 4 hours · 23 minutes</div>
+    </div>
+    <div class="cd-progress">
+      <svg viewBox="0 0 60 60">
+        <circle class="track" cx="30" cy="30" r="24" fill="none" stroke-width="5"/>
+        <circle class="fill" cx="30" cy="30" r="24" fill="none" stroke-width="5" stroke-linecap="round"/>
+      </svg>
+      <div class="cd-progress-pct">78%</div>
+    </div>
+  </div>
+
+  <!-- actions -->
+  <div class="actions">
+    <div class="action primary">
+      <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M18 16v-5a6 6 0 1 0-12 0v5l-2 3h16zM10 19a2 2 0 0 0 4 0"/></svg></span>
+      <span class="lbl">রিমাইন্ডার</span>
+    </div>
+    <div class="action">
+      <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M4 12v7a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7M16 6l-4-4-4 4M12 2v14"/></svg></span>
+      <span class="lbl">শেয়ার করুন</span>
+    </div>
+    <div class="action">
+      <span class="ic"><svg width="16" height="16" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg></span>
+      <span class="lbl">সংরক্ষণ</span>
+    </div>
+  </div>
+
+  <!-- About -->
+  <div class="sec">
+    <h2 class="sec-title"><span class="accent"></span>এই দিন সম্পর্কে</h2>
+    <p class="lede">পহেলা বৈশাখ বাঙালির সর্বজনীন উৎসব — নতুন বছরকে বরণ করে নেওয়ার দিন। লাল-সাদা পোশাকে রমনার বটমূলে শুরু হয় ছায়ানটের প্রভাতি অনুষ্ঠান, ঢাকা বিশ্ববিদ্যালয় থেকে বের হয় বিশাল মঙ্গল শোভাযাত্রা।</p>
+    <p class="body-p">পান্তা-ইলিশ, মিষ্টি, এবং নতুন হালখাতায় ব্যবসায়ীরা শুভেচ্ছা বিনিময় করেন। গ্রামে বসে বৈশাখী মেলা — কাঠের পুতুল, মাটির হাঁড়ি, নাগরদোলা আর বাউল গানে ভরে ওঠে প্রাঙ্গণ।</p>
+    <div class="pull-quote">
+      "এসো হে বৈশাখ, এসো এসো" — পুরাতনকে মুছে নতুনের আবাহনে এই দিন বাঙালির আত্মপরিচয়ের প্রতীক হয়ে উঠেছে।
+      <span class="pull-quote-attr">— Cultural significance · UNESCO 2016</span>
+    </div>
+    <p class="body-p">১৫৮৪ সালে সম্রাট আকবর কর্তৃক বাংলা সন প্রবর্তিত হলেও আধুনিক রূপে পহেলা বৈশাখ উদযাপন শুরু হয় ১৯৬৫ সালে, ছায়ানটের রমনা বটমূল অনুষ্ঠানের মাধ্যমে। ১৯৮৯ সাল থেকে চারুকলা অনুষদের মঙ্গল শোভাযাত্রা শুরু হয় — যা ২০১৬ সালে UNESCO-র Intangible Cultural Heritage তালিকায় স্থান পায়।</p>
+  </div>
+
+  <!-- Info -->
+  <div class="sec">
+    <h2 class="sec-title"><span class="accent"></span>প্রয়োজনীয় তথ্য</h2>
+    <div class="info-card">
+      <div class="info-row">
+        <span class="ic"><svg width="14" height="14" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 9h18M8 3v4M16 3v4"/></svg></span>
+        <span class="lbl">সরকারি ছুটি</span>
+        <span class="val"><span class="pill yes"><svg width="10" height="10" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg>হ্যাঁ</span></span>
+      </div>
+      <div class="info-row">
+        <span class="ic"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M3 21h18M5 21V8l7-5 7 5v13M9 9h.01M15 9h.01M9 13h.01M15 13h.01M9 17h.01M15 17h.01"/></svg></span>
+        <span class="lbl">ব্যাংক বন্ধ</span>
+        <span class="val"><span class="pill yes"><svg width="10" height="10" viewBox="0 0 24 24"><path d="M5 12l4 4L19 6"/></svg>হ্যাঁ</span></span>
+      </div>
+      <div class="info-row">
+        <span class="ic"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M3 17h2l1 4h12l1-4h2M5 17V8a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v9M3 12h18"/></svg></span>
+        <span class="lbl">পাবলিক ট্রান্সপোর্ট</span>
+        <span class="val"><span class="pill partial">সীমিত</span></span>
+      </div>
+      <div class="info-row">
+        <span class="ic"><svg width="14" height="14" viewBox="0 0 24 24"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></span>
+        <span class="lbl">প্রথম পালিত</span>
+        <span class="val num">1965</span>
+      </div>
+      <div class="info-row">
+        <span class="ic"><svg width="14" height="14" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M2 12h20M12 2c3 3 4.5 6 4.5 10s-1.5 7-4.5 10c-3-3-4.5-6-4.5-10s1.5-7 4.5-10z"/></svg></span>
+        <span class="lbl">পালিত হয়</span>
+        <span class="val">বাংলাদেশ · পশ্চিমবঙ্গ</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Similar -->
+  <div class="sec">
+    <h2 class="sec-title"><span class="accent"></span>অন্যান্য জাতীয় দিবস</h2>
+  </div>
+  <div class="h-scroll">
+    <div class="scard">
+      <div class="img img-language"></div>
+      <span class="corner-pill">ফেব্রুয়ারি</span>
+      <div class="ovr"></div>
+      <div class="meta">
+        <div class="when">FEB 21 · ৮ ফাল্গুন</div>
+        <div class="nm">শহীদ দিবস</div>
+        <div class="en">International Mother Language Day</div>
+      </div>
+    </div>
+    <div class="scard">
+      <div class="img img-indep"></div>
+      <span class="corner-pill">মার্চ</span>
+      <div class="ovr"></div>
+      <div class="meta">
+        <div class="when">MAR 26 · ১২ চৈত্র</div>
+        <div class="nm">স্বাধীনতা দিবস</div>
+        <div class="en">Independence Day</div>
+      </div>
+    </div>
+    <div class="scard">
+      <div class="img img-victory"></div>
+      <span class="corner-pill">ডিসেম্বর</span>
+      <div class="ovr"></div>
+      <div class="meta">
+        <div class="when">DEC 16 · ১ পৌষ</div>
+        <div class="nm">বিজয় দিবস</div>
+        <div class="en">Victory Day</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="height: 24px;"></div>
+</template>
+
+<script>
+  // generate sun-ray and petal SVG paths
+  function build(theme) {
+    const stage = document.createElement('div');
+    stage.className = 'stage';
+    const dev = document.createElement('div');
+    dev.className = 'device' + (theme === 'dark' ? ' dark' : '');
+    dev.setAttribute('data-theme', theme);
+    dev.innerHTML = `
+      <div class="island"></div>
+      <div class="scroll">${document.getElementById('page-tpl').innerHTML}</div>
+      <div class="footer-fade"></div>
+      <div class="home-bar"></div>
+    `;
+    stage.appendChild(dev);
+    const lbl = document.createElement('div');
+    lbl.className = 'label';
+    lbl.textContent = theme === 'dark' ? 'Dark · Holiday detail' : 'Light · Holiday detail';
+    stage.appendChild(lbl);
+
+    // populate sun rays
+    const rays = stage.querySelector('#rays');
+    if (rays) {
+      for (let i = 0; i < 24; i++) {
+        const a = (i / 24) * Math.PI * 2;
+        const r1 = 70, r2 = i % 2 === 0 ? 130 : 110;
+        const x1 = Math.cos(a) * r1, y1 = Math.sin(a) * r1;
+        const x2 = Math.cos(a) * r2, y2 = Math.sin(a) * r2;
+        const ln = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        ln.setAttribute('x1', x1); ln.setAttribute('y1', y1);
+        ln.setAttribute('x2', x2); ln.setAttribute('y2', y2);
+        rays.appendChild(ln);
+      }
+    }
+    // alpana petals (8 lobed)
+    const petals = stage.querySelector('#petals');
+    if (petals) {
+      for (let i = 0; i < 8; i++) {
+        const a = (i / 8) * 360;
+        const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        p.setAttribute('d', 'M0,0 C 30,-20 60,-20 90,0 C 60,20 30,20 0,0 Z');
+        p.setAttribute('transform', `rotate(${a})`);
+        petals.appendChild(p);
+      }
+      // inner ring of 8
+      for (let i = 0; i < 8; i++) {
+        const a = ((i + 0.5) / 8) * 360;
+        const p = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+        p.setAttribute('d', 'M0,0 C 18,-10 38,-10 56,0 C 38,10 18,10 0,0 Z');
+        p.setAttribute('transform', `rotate(${a})`);
+        petals.appendChild(p);
+      }
+    }
+    return stage;
+  }
+  const row = document.getElementById('row');
+  row.appendChild(build('light'));
+  row.appendChild(build('dark'));
+</script>
+
+</body>
+</html>
