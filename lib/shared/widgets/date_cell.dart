@@ -49,12 +49,12 @@ class DateCell extends StatelessWidget {
           alignment: Alignment.center,
           children: <Widget>[
             if (isSelected)
-              DecoratedBox(
+              const DecoratedBox(
                 decoration: BoxDecoration(
                   color: AppColors.brandEmerald100,
                   borderRadius: AppRadii.smBorder,
                 ),
-                child: const SizedBox.expand(),
+                child: SizedBox.expand(),
               ),
             Column(
               mainAxisAlignment: MainAxisAlignment.center,

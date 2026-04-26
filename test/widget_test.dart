@@ -4,19 +4,55 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('Home renders BongoCal wordmark in brand emerald',
+  testWidgets('Home renders today across three calendars',
       (WidgetTester tester) async {
+    // Render at iPhone 14-ish size so the whole home is in the layout pass.
+    // The test scrolls below-fold sections to assert their text.
+    await tester.binding.setSurfaceSize(const Size(414, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
     await tester.pumpWidget(
       const ProviderScope(child: BongoCalApp()),
     );
 
-    // Wait one frame for fonts to settle.
+    // Drain the chain of FutureProviders. `pumpAndSettle` would hang on the
+    // today-dot's infinite pulse, so we pump several short frames instead.
+    for (int i = 0; i < 6; i++) {
+      await tester.pump(const Duration(milliseconds: 50));
+    }
+
+    // Top-bar wordmark.
+    expect(find.text('BongoCal'), findsOneWidget);
+
+    // Hero: today's Gregorian day, month, year.
+    expect(find.text('27'), findsWidgets); // hero + week strip
+    expect(find.text('April'), findsOneWidget);
+    expect(find.text('2026'), findsOneWidget);
+
+    // Hero: today in Bangla calendar (Boishakh 14, 1433 BS).
+    expect(find.text('১৪ বৈশাখ'), findsOneWidget);
+    expect(find.text('১৪৩৩'), findsOneWidget);
+
+    // Section headers in Bangla.
+    expect(find.text('পরবর্তী ছুটি'), findsOneWidget);
+    expect(find.text('এই সপ্তাহ'), findsOneWidget);
+
+    // Scroll down so the quick-actions section enters the layout-built range
+    // (ListView builds children lazily — items below the cache extent are
+    // not constructed until they're scrolled near).
+    final Finder list = find.byType(ListView).first;
+    await tester.dragUntilVisible(
+      find.text('দ্রুত অ্যাকশন'),
+      list,
+      const Offset(0, -200),
+    );
     await tester.pump();
 
-    expect(find.text('BongoCal'), findsOneWidget);
-    expect(find.text('বঙ্গক্যাল'), findsOneWidget);
+    expect(find.text('দ্রুত অ্যাকশন'), findsOneWidget);
+    expect(find.text('মাসিক ভিউ'), findsOneWidget);
 
-    final wordmark = tester.widget<Text>(find.text('BongoCal'));
-    expect(wordmark.style?.color, const Color(0xFF006A4E));
+    // Bottom nav.
+    expect(find.text('হোম'), findsOneWidget);
+    expect(find.text('ক্যালেন্ডার'), findsOneWidget);
   });
 }

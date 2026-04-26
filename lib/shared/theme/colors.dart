@@ -34,6 +34,13 @@ class AppColors {
   static const Color accentRed = brandRed;
   static const Color gold = brandGold;
 
+  // Hero gradient stops (today card + festival hero). Pulled from
+  // design_system/BongoCal Home Screen.html — used only on these surfaces.
+  static const Color brandEmeraldHeroLight1 = Color(0xFF00785A);
+  static const Color brandEmeraldHeroLight3 = Color(0xFF004A36);
+  static const Color brandEmeraldHeroDark2 = Color(0xFF004B36);
+  static const Color brandEmeraldHeroDark3 = Color(0xFF002A1F);
+
   // Neutrals (warm-leaning)
   static const Color gray50 = Color(0xFFFAFAF8);
   static const Color gray100 = Color(0xFFF4F4F1);

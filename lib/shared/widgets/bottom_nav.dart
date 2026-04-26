@@ -80,14 +80,17 @@ class _NavTile extends StatelessWidget {
       onTap: onTap,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          Icon(item.icon, size: 24, color: fg),
-          const SizedBox(height: 2),
+          Icon(item.icon, size: 22, color: fg),
+          const SizedBox(height: 3),
           Text(
             item.label,
             style: AppTypography.bodySmBn().copyWith(
               color: fg,
+              fontSize: 10,
               fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+              height: 1.1,
             ),
           ),
         ],

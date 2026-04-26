@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/calendar/presentation/pages/home_page.dart';
+import '../features/calendar/presentation/pages/month_view_page.dart';
 import '../shared/theme/theme.dart';
 
 /// Routes (kept as constants so feature code can `go(AppRoutes.holidays)`
@@ -30,7 +31,7 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       path: AppRoutes.month,
       builder: (BuildContext context, GoRouterState state) =>
-          const _PlaceholderPage(title: 'মাস ভিউ'),
+          const MonthViewPage(),
     ),
     GoRoute(
       path: AppRoutes.holidays,
