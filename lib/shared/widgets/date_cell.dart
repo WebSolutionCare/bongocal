@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/utils/bangla_numerals.dart';
+import '../../features/settings/presentation/providers/settings_provider.dart';
 import '../theme/theme.dart';
 
 /// A single calendar grid cell. Renders the Gregorian day number, an optional
@@ -9,7 +10,7 @@ import '../theme/theme.dart';
 ///
 /// Stub: layout is final but month-cell tap interactions and ripple are
 /// wired up in the calendar feature.
-class DateCell extends StatelessWidget {
+class DateCell extends ConsumerWidget {
   const DateCell({
     required this.date,
     this.secondary,
@@ -30,9 +31,12 @@ class DateCell extends StatelessWidget {
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) {
-    final roles = Theme.of(context).extension<AppColorRoles>()!;
-    final dayBn = BanglaNumerals.fromInt(date.day);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final AppColorRoles roles =
+        Theme.of(context).extension<AppColorRoles>()!;
+    final String Function(int) digits =
+        ref.watch(numeralFormatterProvider);
+    final String dayBn = digits(date.day);
 
     final fg = isOutsideMonth
         ? roles.fgTertiary

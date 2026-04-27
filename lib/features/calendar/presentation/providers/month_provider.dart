@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../settings/presentation/providers/settings_provider.dart';
 import '../../domain/entities/calendar_date.dart';
 import '../../domain/entities/month_data.dart';
 import '../../domain/repositories/calendar_repository.dart';
@@ -77,11 +78,13 @@ final FutureProvider<String> monthSubtitleProvider =
     FutureProvider<String>((Ref ref) async {
   final CalendarRepository repo = ref.watch(calendarRepositoryProvider);
   final CurrentMonth current = ref.watch(currentMonthProvider);
+  final bool useBn = ref.watch(useBanglaNumeralsProvider);
   final DateTime firstOfMonth = DateTime(current.year, current.month, 1);
   final result = await repo.convertToAllCalendars(firstOfMonth);
   return result.fold(
     (f) => throw StateError('monthSubtitleProvider failed: ${f.message ?? f}'),
     (CalendarDate cd) =>
-        '${cd.bangla.yearBn} বঙ্গাব্দ · ${cd.hijri.yearBn} হিজরি',
+        '${cd.bangla.yearBnFormatted(useBanglaNumerals: useBn)} বঙ্গাব্দ · '
+        '${cd.hijri.yearBnFormatted(useBanglaNumerals: useBn)} হিজরি',
   );
 });

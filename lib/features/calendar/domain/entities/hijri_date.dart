@@ -53,15 +53,23 @@ class HijriDate extends Equatable {
   String get monthNameBn => hijriMonthNamesBn[monthIndex];
   String get monthNameEn => hijriMonthNamesEn[monthIndex];
 
-  /// `৯ শাওয়াল ১৪৪৭`.
-  String formatFullBn() =>
-      '${BanglaNumerals.fromInt(day)} $monthNameBn ${BanglaNumerals.fromInt(year)}';
+  /// `৯ শাওয়াল ১৪৪৭` (or `9 শাওয়াল 1447` when [useBanglaNumerals] is false).
+  String formatFullBn({bool useBanglaNumerals = true}) =>
+      '${_n(day, useBanglaNumerals)} $monthNameBn ${_n(year, useBanglaNumerals)}';
 
   /// `৯ শাওয়াল`.
-  String formatDayMonthBn() =>
-      '${BanglaNumerals.fromInt(day)} $monthNameBn';
+  String formatDayMonthBn({bool useBanglaNumerals = true}) =>
+      '${_n(day, useBanglaNumerals)} $monthNameBn';
 
-  String get yearBn => BanglaNumerals.fromInt(year);
+  /// Year alone in either numeral system.
+  String yearBnFormatted({bool useBanglaNumerals = true}) =>
+      _n(year, useBanglaNumerals);
+
+  /// Convenience: always-Bangla year.
+  String get yearBn => _n(year, true);
+
+  static String _n(int v, bool bn) =>
+      bn ? BanglaNumerals.fromInt(v) : v.toString();
 
   /// `9 Shawwal 1447`.
   String formatFullEn() => '$day $monthNameEn $year';

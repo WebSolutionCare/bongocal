@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/utils/bangla_numerals.dart';
+import '../../../../features/settings/presentation/providers/settings_provider.dart';
 import '../../../../shared/theme/theme.dart';
 import '../../domain/entities/calendar_date.dart';
 
@@ -36,14 +37,16 @@ class WeekStrip extends StatelessWidget {
   }
 }
 
-class _DayChip extends StatelessWidget {
+class _DayChip extends ConsumerWidget {
   const _DayChip({required this.date, required this.isToday});
 
   final CalendarDate date;
   final bool isToday;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final String Function(int) digits =
+        ref.watch(numeralFormatterProvider);
     final AppColorRoles roles =
         Theme.of(context).extension<AppColorRoles>()!;
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
@@ -109,7 +112,7 @@ class _DayChip extends StatelessWidget {
           ),
           const SizedBox(height: 2),
           Text(
-            BanglaNumerals.fromInt(date.bangla.day),
+            digits(date.bangla.day),
             style: AppTypography.bodySmBn().copyWith(
               color: bnColor,
               fontSize: 10,

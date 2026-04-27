@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../features/settings/presentation/providers/settings_provider.dart';
 import '../../../../shared/theme/theme.dart';
 import '../../domain/entities/calendar_date.dart';
 
@@ -7,14 +9,15 @@ import '../../domain/entities/calendar_date.dart';
 /// Gregorian, Bengali, and Hijri view of today.
 ///
 /// Mirrors the `.hero` block in design_system/BongoCal Home Screen.html.
-class TodayCard extends StatelessWidget {
+class TodayCard extends ConsumerWidget {
   const TodayCard({required this.today, super.key});
 
   final CalendarDate today;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool useBn = ref.watch(useBanglaNumeralsProvider);
 
     return DecoratedBox(
       decoration: BoxDecoration(
@@ -117,8 +120,10 @@ class TodayCard extends StatelessWidget {
                       Expanded(
                         child: _AltCalendar(
                           labelEn: 'BANGLA',
-                          dayMonthBn: today.bangla.formatDayMonthBn(),
-                          yearBn: today.bangla.yearBn,
+                          dayMonthBn: today.bangla
+                              .formatDayMonthBn(useBanglaNumerals: useBn),
+                          yearBn: today.bangla
+                              .yearBnFormatted(useBanglaNumerals: useBn),
                         ),
                       ),
                       Container(
@@ -130,8 +135,10 @@ class TodayCard extends StatelessWidget {
                           padding: const EdgeInsets.only(left: 18),
                           child: _AltCalendar(
                             labelEn: 'হিজরি',
-                            dayMonthBn: today.hijri.formatDayMonthBn(),
-                            yearBn: today.hijri.yearBn,
+                            dayMonthBn: today.hijri
+                                .formatDayMonthBn(useBanglaNumerals: useBn),
+                            yearBn: today.hijri
+                                .yearBnFormatted(useBanglaNumerals: useBn),
                           ),
                         ),
                       ),

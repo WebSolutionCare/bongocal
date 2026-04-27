@@ -1,30 +1,29 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/clock_provider.dart';
+import '../../../events/presentation/providers/events_provider.dart';
+import '../../../holidays/presentation/providers/holidays_provider.dart';
 import '../../data/repositories/calendar_repository_impl.dart';
 import '../../domain/entities/calendar_date.dart';
-import '../../domain/entities/upcoming_holiday.dart';
 import '../../domain/repositories/calendar_repository.dart';
 import '../../domain/usecases/convert_date.dart';
 import '../../domain/usecases/get_today.dart';
 
-/// Pinned "today" so the placeholder build matches the design references.
-///
-/// Replace with `DateTime.now` once Phase 1 onboarding lands. Tests override
-/// this via `ProviderScope.overrides`.
-DateTime _defaultNow() => DateTime(2026, 4, 27);
-
-/// Function returning current `DateTime`. Treat this as the canonical clock
-/// for the calendar feature; production code reads it via [Ref.watch].
-final Provider<DateTime Function()> clockProvider =
-    Provider<DateTime Function()>((Ref ref) => _defaultNow);
+export '../../../../core/clock_provider.dart';
 
 final Provider<CalendarRepository> calendarRepositoryProvider =
-    Provider<CalendarRepository>(
-  (Ref ref) => CalendarRepositoryImpl(now: ref.watch(clockProvider)),
-);
+    Provider<CalendarRepository>((Ref ref) {
+  // Re-derive the calendar repo whenever events are mutated so the month
+  // grid's event-dot marks stay in sync.
+  ref.watch(eventsRevisionProvider);
+  return CalendarRepositoryImpl(
+    now: ref.watch(clockProvider),
+    holidayRepository: ref.watch(holidayRepositoryProvider),
+    eventRepository: ref.watch(eventRepositoryProvider),
+  );
+});
 
-/// Today resolved into the three calendars. Auto-dispose so a hot-restart or
-/// clock override is picked up immediately.
+/// Today resolved into the three calendars.
 final FutureProvider<CalendarDate> todayProvider =
     FutureProvider<CalendarDate>((Ref ref) async {
   final CalendarRepository repo = ref.watch(calendarRepositoryProvider);
@@ -60,16 +59,4 @@ final FutureProvider<List<CalendarDate>> weekStripProvider =
     );
   }
   return days;
-});
-
-/// Next upcoming holiday relative to "today" (or null if none seeded).
-final FutureProvider<UpcomingHoliday?> nextHolidayProvider =
-    FutureProvider<UpcomingHoliday?>((Ref ref) async {
-  final CalendarRepository repo = ref.watch(calendarRepositoryProvider);
-  final CalendarDate today = await ref.watch(todayProvider.future);
-  final result = await repo.getNextHoliday(today.gregorian);
-  return result.fold(
-    (f) => throw StateError('nextHolidayProvider failed: ${f.message ?? f}'),
-    (h) => h,
-  );
 });

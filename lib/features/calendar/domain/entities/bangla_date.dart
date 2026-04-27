@@ -53,16 +53,25 @@ class BanglaDate extends Equatable {
   String get monthNameBn => banglaMonthNamesBn[monthIndex];
   String get monthNameEn => banglaMonthNamesEn[monthIndex];
 
-  /// `১৪ বৈশাখ ১৪৩৩`.
-  String formatFullBn() =>
-      '${BanglaNumerals.fromInt(day)} $monthNameBn ${BanglaNumerals.fromInt(year)}';
+  /// `১৪ বৈশাখ ১৪৩৩` (or `14 বৈশাখ 1433` when [useBanglaNumerals] is false).
+  /// Month name stays in Bangla either way; only digits flip.
+  String formatFullBn({bool useBanglaNumerals = true}) =>
+      '${_n(day, useBanglaNumerals)} $monthNameBn ${_n(year, useBanglaNumerals)}';
 
   /// `১৪ বৈশাখ` — used on the hero where the year is rendered separately.
-  String formatDayMonthBn() =>
-      '${BanglaNumerals.fromInt(day)} $monthNameBn';
+  String formatDayMonthBn({bool useBanglaNumerals = true}) =>
+      '${_n(day, useBanglaNumerals)} $monthNameBn';
 
-  /// Bangla numerals for the year alone, e.g. `১৪৩৩`.
-  String get yearBn => BanglaNumerals.fromInt(year);
+  /// Year alone, e.g. `১৪৩৩` or `1433`.
+  String yearBnFormatted({bool useBanglaNumerals = true}) =>
+      _n(year, useBanglaNumerals);
+
+  /// Convenience: always-Bangla year. Equivalent to
+  /// `yearBnFormatted(useBanglaNumerals: true)`.
+  String get yearBn => _n(year, true);
+
+  static String _n(int v, bool bn) =>
+      bn ? BanglaNumerals.fromInt(v) : v.toString();
 
   /// `14 Boishakh 1433` — Latin transliteration for English-language UI.
   String formatFullEn() => '$day $monthNameEn $year';

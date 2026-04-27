@@ -5,6 +5,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/router.dart';
 import '../../../../shared/theme/theme.dart';
 import '../../../../shared/widgets/bottom_nav.dart';
+import '../../../settings/presentation/providers/settings_provider.dart';
 import '../../domain/entities/month_data.dart';
 import '../providers/calendar_provider.dart';
 import '../providers/month_provider.dart';
@@ -127,6 +128,7 @@ class _SelectedDayPanel extends ConsumerWidget {
     final AppColorRoles roles =
         Theme.of(context).extension<AppColorRoles>()!;
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
+    final bool useBn = ref.watch(useBanglaNumeralsProvider);
     final AsyncValue<MonthData> monthAsync = ref.watch(monthDataProvider);
 
     return monthAsync.maybeWhen(
@@ -178,7 +180,8 @@ class _SelectedDayPanel extends ConsumerWidget {
                       Expanded(
                         child: _AltCol(
                           label: 'বাংলা',
-                          value: cell.date.bangla.formatFullBn(),
+                          value: cell.date.bangla
+                              .formatFullBn(useBanglaNumerals: useBn),
                         ),
                       ),
                       Container(width: 1, color: roles.borderSubtle),
@@ -187,7 +190,8 @@ class _SelectedDayPanel extends ConsumerWidget {
                           padding: const EdgeInsets.only(left: 16),
                           child: _AltCol(
                             label: 'হিজরি',
-                            value: cell.date.hijri.formatFullBn(),
+                            value: cell.date.hijri
+                                .formatFullBn(useBanglaNumerals: useBn),
                           ),
                         ),
                       ),

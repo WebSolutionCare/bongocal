@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/utils/bangla_numerals.dart';
+import '../../../../features/settings/presentation/providers/settings_provider.dart';
 import '../../../../shared/theme/theme.dart';
 import '../../domain/entities/calendar_date.dart';
 import '../../domain/entities/month_data.dart';
@@ -84,7 +85,7 @@ class _WeekdayHeader extends StatelessWidget {
   }
 }
 
-class _DayCell extends StatelessWidget {
+class _DayCell extends ConsumerWidget {
   const _DayCell({
     required this.cell,
     required this.isSelected,
@@ -96,7 +97,9 @@ class _DayCell extends StatelessWidget {
   final VoidCallback onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final String Function(int) digits =
+        ref.watch(numeralFormatterProvider);
     final AppColorRoles roles =
         Theme.of(context).extension<AppColorRoles>()!;
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
@@ -177,7 +180,7 @@ class _DayCell extends StatelessWidget {
                 SizedBox(
                   height: 11,
                   child: Text(
-                    BanglaNumerals.fromInt(cell.date.bangla.day),
+                    digits(cell.date.bangla.day),
                     style: AppTypography.bodySmBn().copyWith(
                       color: roles.fgTertiary
                           .withValues(alpha: isOutside ? 0.4 : 1.0),

@@ -1,18 +1,24 @@
 import 'package:bongocal/app/app.dart';
+import 'package:bongocal/features/events/presentation/providers/events_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'features/events/_fakes/fake_event_repository.dart';
+
 void main() {
   testWidgets('Home renders today across three calendars',
       (WidgetTester tester) async {
-    // Render at iPhone 14-ish size so the whole home is in the layout pass.
-    // The test scrolls below-fold sections to assert their text.
     await tester.binding.setSurfaceSize(const Size(414, 1200));
     addTearDown(() => tester.binding.setSurfaceSize(null));
 
     await tester.pumpWidget(
-      const ProviderScope(child: BongoCalApp()),
+      ProviderScope(
+        overrides: <Override>[
+          eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
+        ],
+        child: const BongoCalApp(),
+      ),
     );
 
     // Drain the chain of FutureProviders. `pumpAndSettle` would hang on the

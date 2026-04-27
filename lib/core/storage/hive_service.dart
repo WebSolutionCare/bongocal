@@ -1,6 +1,9 @@
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
+import '../../features/events/data/models/personal_event_model.dart';
+import '../../features/settings/data/models/app_settings_model.dart';
+
 /// Thin wrapper around Hive initialization so features can register their
 /// own boxes / type adapters in one place.
 ///
@@ -13,19 +16,25 @@ class HiveService {
 
   bool _initialized = false;
 
-  /// Initialize Hive and open shared boxes. Idempotent.
+  /// Initialize Hive, register feature type adapters, and pre-open boxes
+  /// the home screen reads on first frame. Idempotent.
   Future<void> init() async {
     if (_initialized) return;
 
     await Hive.initFlutter();
 
-    // Register feature-owned type adapters here as features come online.
-    // _registerAdapters();
+    // === Type adapters ===
+    if (!Hive.isAdapterRegistered(PersonalEventModelAdapter().typeId)) {
+      Hive.registerAdapter(PersonalEventModelAdapter());
+    }
+    if (!Hive.isAdapterRegistered(AppSettingsModelAdapter().typeId)) {
+      Hive.registerAdapter(AppSettingsModelAdapter());
+    }
 
-    // Pre-open shared boxes that are read on the home screen so the first
-    // frame is not blocked on disk IO.
+    // === Pre-open boxes ===
     await Future.wait<void>(<Future<void>>[
       Hive.openBox<dynamic>(HiveBoxes.settings),
+      Hive.openBox<PersonalEventModel>(HiveBoxes.events),
     ]);
 
     _initialized = true;

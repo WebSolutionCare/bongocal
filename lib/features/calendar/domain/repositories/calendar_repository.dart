@@ -3,10 +3,13 @@ import 'package:dartz/dartz.dart';
 import '../../../../core/errors/failures.dart';
 import '../entities/calendar_date.dart';
 import '../entities/month_data.dart';
-import '../entities/upcoming_holiday.dart';
 
 /// Domain port for calendar conversions and month layout. Implemented by
-/// [CalendarRepositoryImpl] in the data layer.
+/// `CalendarRepositoryImpl` in the data layer.
+///
+/// "Next holiday" lookup deliberately lives in the holidays feature
+/// (`HolidayRepository.getUpcomingHolidays`) so this port stays focused on
+/// pure calendar concerns.
 abstract class CalendarRepository {
   /// Today resolved into Gregorian, Bengali and Hijri. The implementation is
   /// expected to read "now" from an injected clock so tests can pin it.
@@ -20,9 +23,4 @@ abstract class CalendarRepository {
   /// always contains 42 cells; leading and trailing days come from the
   /// adjacent months.
   Future<Either<Failure, MonthData>> getMonthData(int year, int month);
-
-  /// Return the next holiday or festival on or after [from] (start-of-day),
-  /// or `Right(null)` when none is configured. Backed by a hard-coded BD
-  /// holidays seed until the holidays feature lands.
-  Future<Either<Failure, UpcomingHoliday?>> getNextHoliday(DateTime from);
 }

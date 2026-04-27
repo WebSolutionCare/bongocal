@@ -1,27 +1,32 @@
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../../core/utils/bangla_numerals.dart';
+import '../../../../features/settings/presentation/providers/settings_provider.dart';
 import '../../../../shared/theme/theme.dart';
+import '../../../holidays/domain/entities/holiday.dart';
 import '../../domain/entities/calendar_date.dart';
-import '../../domain/entities/upcoming_holiday.dart';
 
 /// Holiday-with-countdown card that sits below the today hero. Mirrors the
 /// `.holiday` block in BongoCal Home Screen.html — circular ring with the
 /// day number inside, holiday name + government pill + Gregorian date.
-class UpcomingHolidayCard extends StatelessWidget {
+class UpcomingHolidayCard extends ConsumerWidget {
   const UpcomingHolidayCard({
     required this.holiday,
+    required this.daysAway,
     this.onTap,
     super.key,
   });
 
-  final UpcomingHoliday holiday;
+  final Holiday holiday;
+  final int daysAway;
   final VoidCallback? onTap;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final String Function(int) digits =
+        ref.watch(numeralFormatterProvider);
     final AppColorRoles roles =
         Theme.of(context).extension<AppColorRoles>()!;
     final bool isDark = Theme.of(context).brightness == Brightness.dark;
@@ -42,7 +47,6 @@ class UpcomingHolidayCard extends StatelessWidget {
           ),
           child: Stack(
             children: <Widget>[
-              // Soft gold radial wash in the upper-right corner.
               Positioned(
                 right: -40,
                 top: -40,
@@ -67,14 +71,18 @@ class UpcomingHolidayCard extends StatelessWidget {
                 padding: const EdgeInsets.all(AppSpacing.s4),
                 child: Row(
                   children: <Widget>[
-                    _CountdownRing(daysAway: holiday.daysAway, accent: accent),
+                    _CountdownRing(
+                      daysAway: daysAway,
+                      accent: accent,
+                      digits: digits,
+                    ),
                     const SizedBox(width: 14),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
                           Text(
-                            '${BanglaNumerals.fromInt(holiday.daysAway)} দিন বাকি',
+                            '${digits(daysAway)} দিন বাকি',
                             style: AppTypography.bodySmBn().copyWith(
                               color: roles.fgTertiary,
                               fontSize: 11,
@@ -106,7 +114,7 @@ class UpcomingHolidayCard extends StatelessWidget {
                           const SizedBox(height: 6),
                           Row(
                             children: <Widget>[
-                              if (holiday.isGovernment)
+                              if (holiday.isGovernmentHoliday)
                                 _Pill(
                                   label: 'সরকারি ছুটি',
                                   bg: isDark
@@ -149,18 +157,22 @@ class UpcomingHolidayCard extends StatelessWidget {
   }
 
   static String _englishDate(DateTime d) {
-    final String weekday = englishWeekdayShortNames[
-        (d.weekday + 1) % 7]; // sat-first index
+    final String weekday = englishWeekdayShortNames[(d.weekday + 1) % 7];
     final String month = englishMonthShortNames[d.month - 1];
     return '$weekday, ${d.day} $month';
   }
 }
 
 class _CountdownRing extends StatelessWidget {
-  const _CountdownRing({required this.daysAway, required this.accent});
+  const _CountdownRing({
+    required this.daysAway,
+    required this.accent,
+    required this.digits,
+  });
 
   final int daysAway;
   final Color accent;
+  final String Function(int) digits;
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +184,6 @@ class _CountdownRing extends StatelessWidget {
       child: Stack(
         alignment: Alignment.center,
         children: <Widget>[
-          // Background ring.
           SizedBox(
             width: 56,
             height: 56,
@@ -182,8 +193,6 @@ class _CountdownRing extends StatelessWidget {
               valueColor: AlwaysStoppedAnimation<Color>(roles.bgSurface2),
             ),
           ),
-          // Foreground ring — fill ratio inversely scales with daysAway,
-          // capped so >30 days still shows ~10% of the ring.
           SizedBox(
             width: 56,
             height: 56,
@@ -199,7 +208,7 @@ class _CountdownRing extends StatelessWidget {
             ),
           ),
           Text(
-            BanglaNumerals.fromInt(daysAway),
+            digits(daysAway),
             style: AppTypography.h3Bn().copyWith(
               color: accent,
               fontSize: 18,
@@ -230,10 +239,7 @@ class _Pill extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 3),
-      decoration: BoxDecoration(
-        color: bg,
-        borderRadius: AppRadii.pillBorder,
-      ),
+      decoration: BoxDecoration(color: bg, borderRadius: AppRadii.pillBorder),
       child: Text(
         label,
         style: AppTypography.bodySmBn().copyWith(

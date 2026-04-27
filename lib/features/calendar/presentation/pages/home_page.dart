@@ -5,8 +5,9 @@ import 'package:go_router/go_router.dart';
 import '../../../../app/router.dart';
 import '../../../../shared/theme/theme.dart';
 import '../../../../shared/widgets/bottom_nav.dart';
+import '../../../holidays/domain/entities/holiday.dart';
+import '../../../holidays/presentation/providers/holidays_provider.dart';
 import '../../domain/entities/calendar_date.dart';
-import '../../domain/entities/upcoming_holiday.dart';
 import '../providers/calendar_provider.dart';
 import '../widgets/quick_action_grid.dart';
 import '../widgets/today_card.dart';
@@ -199,10 +200,11 @@ class _HomeBody extends ConsumerWidget {
     final AppColorRoles roles =
         Theme.of(context).extension<AppColorRoles>()!;
 
-    final AsyncValue<UpcomingHoliday?> nextHoliday =
+    final AsyncValue<Holiday?> nextHoliday =
         ref.watch(nextHolidayProvider);
     final AsyncValue<List<CalendarDate>> weekStrip =
         ref.watch(weekStripProvider);
+    final DateTime now = ref.watch(clockProvider)();
 
     final double bottomInset = MediaQuery.of(context).padding.bottom;
     return ListView(
@@ -227,14 +229,18 @@ class _HomeBody extends ConsumerWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: nextHoliday.when(
-            data: (UpcomingHoliday? h) => h == null
+            data: (Holiday? h) => h == null
                 ? _EmptySectionPlaceholder(
                     text: 'কোনো ছুটি কাছাকাছি নেই।',
                     color: roles.fgTertiary,
                   )
                 : UpcomingHolidayCard(
                     holiday: h,
-                    onTap: () => _go(context, '${AppRoutes.holidays}/${h.id}'),
+                    daysAway: h.date
+                        .difference(DateTime(now.year, now.month, now.day))
+                        .inDays,
+                    onTap: () =>
+                        _go(context, '${AppRoutes.holidays}/${h.id}'),
                   ),
             loading: () => const _SectionLoading(height: 88),
             error: (_, __) => const _SectionError(),
