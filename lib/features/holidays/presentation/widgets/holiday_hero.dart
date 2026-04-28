@@ -124,32 +124,21 @@ class HolidayHero extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 14),
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    children: <Widget>[
-                      Text(
-                        banglaShort,
-                        style: AppTypography.bodyBn().copyWith(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Container(
-                        margin: const EdgeInsets.symmetric(horizontal: 14),
-                        height: 14,
-                        width: 1,
-                        color: Colors.white.withValues(alpha: 0.35),
-                      ),
-                      Text(
-                        '${holiday.date.day} ${_monthLong(holiday.date.month)} ${holiday.date.year} · $weekdayEn',
-                        style: AppTypography.bodySmEn().copyWith(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white.withValues(alpha: 0.85),
-                        ),
-                      ),
-                    ],
+                  // Single Text avoids the divider stranding on its own line
+                  // when the English string wraps in a `Wrap`. The bullet
+                  // separator preserves the visual rhythm at narrow widths.
+                  Text(
+                    '$banglaShort  ·  ${holiday.date.day} '
+                    '${_monthLong(holiday.date.month)} '
+                    '${holiday.date.year} · $weekdayEn',
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    style: AppTypography.bodyBn().copyWith(
+                      fontSize: 14,
+                      fontWeight: FontWeight.w500,
+                      color: Colors.white.withValues(alpha: 0.92),
+                      height: 1.45,
+                    ),
                   ),
                 ],
               ),

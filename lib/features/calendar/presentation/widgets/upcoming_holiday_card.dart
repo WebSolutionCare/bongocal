@@ -92,6 +92,8 @@ class UpcomingHolidayCard extends ConsumerWidget {
                           ),
                           const SizedBox(height: 2),
                           RichText(
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
                             text: TextSpan(
                               style: AppTypography.h3Bn().copyWith(
                                 color: roles.fgPrimary,

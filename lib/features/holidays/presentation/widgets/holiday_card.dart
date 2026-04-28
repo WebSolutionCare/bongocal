@@ -76,6 +76,8 @@ class HolidayCard extends StatelessWidget {
                             children: <Widget>[
                               Text(
                                 holiday.nameBn,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                                 style: AppTypography.h3Bn().copyWith(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -87,6 +89,8 @@ class HolidayCard extends StatelessWidget {
                               const SizedBox(height: 2),
                               Text(
                                 holiday.nameEn,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: AppTypography.bodySmEn().copyWith(
                                   fontSize: 12,
                                   fontWeight: FontWeight.w500,

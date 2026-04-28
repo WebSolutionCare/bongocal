@@ -141,6 +141,8 @@ class FeaturedUpcomingCard extends ConsumerWidget {
                             children: <Widget>[
                               Text(
                                 _englishLong(holiday.date),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: AppTypography.bodyEn().copyWith(
                                   fontSize: 16,
                                   fontWeight: FontWeight.w600,
@@ -151,6 +153,8 @@ class FeaturedUpcomingCard extends ConsumerWidget {
                               const SizedBox(height: 2),
                               Text(
                                 '$banglaFullDate · $hijriFullDate',
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
                                 style: AppTypography.bodySmBn().copyWith(
                                   fontSize: 12,
                                   color: roles.fgSecondary,
