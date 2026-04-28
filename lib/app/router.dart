@@ -6,6 +6,7 @@ import '../features/calendar/presentation/pages/month_view_page.dart';
 import '../features/events/presentation/pages/events_list_page.dart';
 import '../features/holidays/presentation/pages/holiday_detail_page.dart';
 import '../features/holidays/presentation/pages/holidays_list_page.dart';
+import '../features/pro_interest/presentation/pages/pro_interest_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../shared/theme/theme.dart';
 
@@ -22,6 +23,7 @@ class AppRoutes {
   static const String addEvent = newEvent;
   static const String settings = '/settings';
   static const String pro = '/pro';
+  static const String proInterest = '/pro-interest';
 }
 
 final GoRouter appRouter = GoRouter(
@@ -76,6 +78,11 @@ final GoRouter appRouter = GoRouter(
       path: AppRoutes.pro,
       builder: (BuildContext context, GoRouterState state) =>
           const _PlaceholderPage(title: 'প্রো'),
+    ),
+    GoRoute(
+      path: AppRoutes.proInterest,
+      builder: (BuildContext context, GoRouterState state) =>
+          const ProInterestPage(),
     ),
   ],
 );

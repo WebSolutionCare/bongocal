@@ -81,7 +81,7 @@ class ProfileCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'Sign in to sync across devices',
+                        'শীঘ্রই আসছে · Sign-in coming soon',
                         style: AppTypography.bodySmEn().copyWith(
                           fontSize: 12,
                           color: roles.fgTertiary,

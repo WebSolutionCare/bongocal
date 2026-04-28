@@ -130,6 +130,7 @@ class _Body extends ConsumerWidget {
               icon: Icons.public,
               tone: SettingsIconTone.info,
               label: 'ভাষা',
+              subLabel: 'সেটিং সংরক্ষিত · UI translations coming soon',
               trailing: InlineSegmentedControl<LanguagePreference>(
                 options: LanguagePreference.values,
                 selected: settings.language,
@@ -151,6 +152,7 @@ class _Body extends ConsumerWidget {
               icon: Icons.calendar_view_week_outlined,
               tone: SettingsIconTone.red,
               label: 'সপ্তাহ শুরু',
+              subLabel: 'সেটিং সংরক্ষিত · ক্যালেন্ডার গ্রিডে শীঘ্রই',
               trailing: SettingsValueTrailing(
                 text: settings.weekStartDay.displayBn,
               ),
@@ -180,7 +182,7 @@ class _Body extends ConsumerWidget {
               icon: Icons.star_outline,
               tone: SettingsIconTone.emerald,
               label: 'প্রধান ক্যালেন্ডার',
-              subLabel: 'Primary calendar',
+              subLabel: 'সেটিং সংরক্ষিত · লেআউট সুইচ শীঘ্রই',
               trailing: SettingsValueTrailing(
                 text: settings.primaryCalendar.displayBn,
               ),
@@ -210,6 +212,7 @@ class _Body extends ConsumerWidget {
               icon: Icons.notifications_active_outlined,
               tone: SettingsIconTone.red,
               label: 'ছুটির রিমাইন্ডার',
+              subLabel: 'সেটিং সংরক্ষিত · নোটিফিকেশন শীঘ্রই আসছে',
               value: settings.notificationsEnabled,
               onChanged: (bool v) =>
                   apply(settings.copyWith(notificationsEnabled: v)),
@@ -218,6 +221,7 @@ class _Body extends ConsumerWidget {
               icon: Icons.access_time,
               tone: SettingsIconTone.gray,
               label: 'কখন জানাবেন',
+              subLabel: 'সেটিং সংরক্ষিত',
               trailing: SettingsValueTrailing(
                 text: _holidayReminderLabel(
                   settings.holidayReminderDays,
@@ -252,6 +256,7 @@ class _Body extends ConsumerWidget {
               icon: Icons.celebration_outlined,
               tone: SettingsIconTone.gold,
               label: 'উৎসবের শুভেচ্ছা',
+              subLabel: 'সেটিং সংরক্ষিত · উৎসবের ওভারলে শীঘ্রই',
               value: settings.festivalGreetingsEnabled,
               onChanged: (bool v) =>
                   apply(settings.copyWith(festivalGreetingsEnabled: v)),
@@ -260,6 +265,7 @@ class _Body extends ConsumerWidget {
               icon: Icons.volume_up_outlined,
               tone: SettingsIconTone.info,
               label: 'ইভেন্ট সাউন্ড',
+              subLabel: 'সেটিং সংরক্ষিত',
               trailing: SettingsValueTrailing(
                 text: _soundLabel(settings.eventReminderSound),
               ),
@@ -280,7 +286,9 @@ class _Body extends ConsumerWidget {
         ),
 
         // === Pro upgrade ===
-        const ProUpgradeCard(),
+        ProUpgradeCard(
+          onUpgrade: () => context.push(AppRoutes.proInterest),
+        ),
 
         // === About ===
         SettingsSection(
@@ -291,6 +299,7 @@ class _Body extends ConsumerWidget {
               icon: Icons.info_outline,
               tone: SettingsIconTone.emerald,
               label: 'BongoCal সম্পর্কে',
+              subLabel: 'শীঘ্রই আসছে',
               trailing: const SettingsChevTrailing(),
               onTap: () {},
             ),
@@ -298,6 +307,7 @@ class _Body extends ConsumerWidget {
               icon: Icons.shield_outlined,
               tone: SettingsIconTone.gray,
               label: 'গোপনীয়তা নীতি',
+              subLabel: 'শীঘ্রই আসছে',
               trailing: const SettingsChevTrailing(),
               onTap: () {},
             ),
@@ -305,6 +315,7 @@ class _Body extends ConsumerWidget {
               icon: Icons.description_outlined,
               tone: SettingsIconTone.gray,
               label: 'শর্তাবলী',
+              subLabel: 'শীঘ্রই আসছে',
               trailing: const SettingsChevTrailing(),
               onTap: () {},
             ),
@@ -312,6 +323,7 @@ class _Body extends ConsumerWidget {
               icon: Icons.star_outline,
               tone: SettingsIconTone.gold,
               label: 'অ্যাপ রেট করুন',
+              subLabel: 'শীঘ্রই আসছে',
               trailing: const SettingsChevTrailing(),
               onTap: () {},
             ),
@@ -319,6 +331,7 @@ class _Body extends ConsumerWidget {
               icon: Icons.ios_share,
               tone: SettingsIconTone.info,
               label: 'শেয়ার করুন',
+              subLabel: 'শীঘ্রই আসছে',
               trailing: const SettingsChevTrailing(),
               onTap: () {},
             ),
@@ -326,6 +339,7 @@ class _Body extends ConsumerWidget {
               icon: Icons.message_outlined,
               tone: SettingsIconTone.purple,
               label: 'যোগাযোগ',
+              subLabel: 'শীঘ্রই আসছে',
               trailing: const SettingsChevTrailing(),
               onTap: () {},
             ),
@@ -352,6 +366,7 @@ class _Body extends ConsumerWidget {
               icon: Icons.logout,
               tone: SettingsIconTone.red,
               label: 'সাইন আউট',
+              subLabel: 'শীঘ্রই আসছে · sign-in needed first',
               isDestructive: true,
               onTap: () {},
             ),
