@@ -6,6 +6,8 @@ import '../features/calendar/presentation/pages/month_view_page.dart';
 import '../features/events/presentation/pages/events_list_page.dart';
 import '../features/holidays/presentation/pages/holiday_detail_page.dart';
 import '../features/holidays/presentation/pages/holidays_list_page.dart';
+import '../features/onboarding/presentation/pages/onboarding_page.dart';
+import '../features/onboarding/presentation/pages/splash_page.dart';
 import '../features/pro_interest/presentation/pages/pro_interest_page.dart';
 import '../features/settings/presentation/pages/settings_page.dart';
 import '../shared/theme/theme.dart';
@@ -13,6 +15,8 @@ import '../shared/theme/theme.dart';
 class AppRoutes {
   const AppRoutes._();
 
+  static const String splash = '/splash';
+  static const String onboarding = '/onboarding';
   static const String home = '/';
   static const String month = '/month';
   static const String holidays = '/holidays';
@@ -27,8 +31,18 @@ class AppRoutes {
 }
 
 final GoRouter appRouter = GoRouter(
-  initialLocation: AppRoutes.home,
+  initialLocation: AppRoutes.splash,
   routes: <RouteBase>[
+    GoRoute(
+      path: AppRoutes.splash,
+      builder: (BuildContext context, GoRouterState state) =>
+          const SplashPage(),
+    ),
+    GoRoute(
+      path: AppRoutes.onboarding,
+      builder: (BuildContext context, GoRouterState state) =>
+          const OnboardingPage(),
+    ),
     GoRoute(
       path: AppRoutes.home,
       builder: (BuildContext context, GoRouterState state) => const HomePage(),

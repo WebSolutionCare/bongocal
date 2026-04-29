@@ -94,4 +94,51 @@ class NotificationsService {
       // best effort
     }
   }
+
+  /// Ask the OS for notification permission. Returns true if granted (or if
+  /// the platform auto-grants). On unsupported platforms (web) returns
+  /// `false` without prompting.
+  ///
+  /// Onboarding's permission screen calls this; users who decline can
+  /// re-enable later from Settings.
+  Future<bool> requestPermission() async {
+    if (!_supported) return false;
+    if (!_initialized) await init();
+    try {
+      // iOS / macOS — explicit prompt.
+      final IOSFlutterLocalNotificationsPlugin? ios = _plugin
+          .resolvePlatformSpecificImplementation<
+              IOSFlutterLocalNotificationsPlugin>();
+      if (ios != null) {
+        final bool? granted = await ios.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+        return granted ?? false;
+      }
+      final MacOSFlutterLocalNotificationsPlugin? macos = _plugin
+          .resolvePlatformSpecificImplementation<
+              MacOSFlutterLocalNotificationsPlugin>();
+      if (macos != null) {
+        final bool? granted = await macos.requestPermissions(
+          alert: true,
+          badge: true,
+          sound: true,
+        );
+        return granted ?? false;
+      }
+      // Android 13+ runtime permission. < 13 auto-grants.
+      final AndroidFlutterLocalNotificationsPlugin? android = _plugin
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
+      if (android != null) {
+        final bool? granted = await android.requestNotificationsPermission();
+        return granted ?? true;
+      }
+      return false;
+    } on Exception {
+      return false;
+    }
+  }
 }

@@ -1,5 +1,6 @@
 import 'package:bongocal/app/app.dart';
 import 'package:bongocal/features/events/presentation/providers/events_provider.dart';
+import 'package:bongocal/features/onboarding/presentation/providers/onboarding_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,11 +17,13 @@ void main() {
       ProviderScope(
         overrides: <Override>[
           eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
+          hasCompletedOnboardingProvider.overrideWith((_) async => true),
+          splashMinDurationProvider.overrideWithValue(Duration.zero),
         ],
         child: const BongoCalApp(),
       ),
     );
-    for (int i = 0; i < 8; i++) {
+    for (int i = 0; i < 12; i++) {
       await tester.pump(const Duration(milliseconds: 50));
     }
 

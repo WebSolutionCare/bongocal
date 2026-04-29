@@ -1,5 +1,6 @@
 import 'package:bongocal/app/app.dart';
 import 'package:bongocal/features/events/presentation/providers/events_provider.dart';
+import 'package:bongocal/features/onboarding/presentation/providers/onboarding_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -16,14 +17,18 @@ void main() {
       ProviderScope(
         overrides: <Override>[
           eventRepositoryProvider.overrideWithValue(FakeEventRepository()),
+          // Pretend onboarding's already done so the splash routes
+          // straight to home.
+          hasCompletedOnboardingProvider.overrideWith((_) async => true),
+          splashMinDurationProvider.overrideWithValue(Duration.zero),
         ],
         child: const BongoCalApp(),
       ),
     );
 
-    // Drain the chain of FutureProviders. `pumpAndSettle` would hang on the
-    // today-dot's infinite pulse, so we pump several short frames instead.
-    for (int i = 0; i < 6; i++) {
+    // Drain splash → home transition + the chain of FutureProviders. We
+    // can't `pumpAndSettle` because of the today-dot's infinite pulse.
+    for (int i = 0; i < 12; i++) {
       await tester.pump(const Duration(milliseconds: 50));
     }
 
