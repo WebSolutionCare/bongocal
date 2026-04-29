@@ -33,7 +33,12 @@ class MonthGrid extends StatelessWidget {
             crossAxisCount: 7,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
-            childAspectRatio: 1 / 1.05,
+            // Cell heights need to fit a 36dp day-number disc + the
+            // Bangla numeral + dot row. 1/1.05 was just shy on Pixel-7
+            // metrics (overflowed ~3.7px); 1/1.18 leaves a comfortable
+            // margin and `FittedBox` inside the cell handles the
+            // narrowest devices.
+            childAspectRatio: 1 / 1.18,
             children: <Widget>[
               for (final CalendarDayCell cell in data.cells)
                 _DayCell(
@@ -166,38 +171,45 @@ class _DayCell extends ConsumerWidget {
             ),
           Padding(
             padding: const EdgeInsets.only(top: 6),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                _DayNumber(
-                  day: cell.date.gregorian.day,
-                  isToday: isToday,
-                  isSelected: isSelected,
-                  numberColor: numberColor,
-                  isOutside: isOutside,
-                ),
-                const SizedBox(height: 1),
-                SizedBox(
-                  height: 11,
-                  child: Text(
-                    digits(cell.date.bangla.day),
-                    style: AppTypography.bodySmBn().copyWith(
-                      color: roles.fgTertiary
-                          .withValues(alpha: isOutside ? 0.4 : 1.0),
-                      fontSize: 10,
-                      height: 1,
+            // FittedBox keeps the cell content from overflowing on
+            // narrow devices or unusual font metrics — it only scales
+            // *down*, so on typical screens the design renders at 1:1.
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.topCenter,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  _DayNumber(
+                    day: cell.date.gregorian.day,
+                    isToday: isToday,
+                    isSelected: isSelected,
+                    numberColor: numberColor,
+                    isOutside: isOutside,
+                  ),
+                  const SizedBox(height: 1),
+                  SizedBox(
+                    height: 11,
+                    child: Text(
+                      digits(cell.date.bangla.day),
+                      style: AppTypography.bodySmBn().copyWith(
+                        color: roles.fgTertiary
+                            .withValues(alpha: isOutside ? 0.4 : 1.0),
+                        fontSize: 10,
+                        height: 1,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(height: 4),
-                _Dots(
-                  isHoliday: isHoliday,
-                  isFestival: isFestival,
-                  hasEvent: hasEvent,
-                  isOutside: isOutside,
-                  isDark: isDark,
-                ),
-              ],
+                  const SizedBox(height: 4),
+                  _Dots(
+                    isHoliday: isHoliday,
+                    isFestival: isFestival,
+                    hasEvent: hasEvent,
+                    isOutside: isOutside,
+                    isDark: isDark,
+                  ),
+                ],
+              ),
             ),
           ),
         ],
