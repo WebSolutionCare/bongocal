@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../features/festival_overlay/presentation/widgets/festival_overlay_wrapper.dart';
 import '../features/notifications/presentation/providers/notification_scheduler_provider.dart';
 import '../shared/theme/theme.dart';
 import 'router.dart';
@@ -25,6 +26,11 @@ class BongoCalApp extends ConsumerWidget {
       darkTheme: AppTheme.dark(),
       themeMode: ThemeMode.system,
       routerConfig: appRouter,
+      // Wraps every routed page so the festival greeting can paint on
+      // top of the home / month / settings views without each one
+      // having to opt in.
+      builder: (BuildContext context, Widget? child) =>
+          FestivalOverlayWrapper(child: child ?? const SizedBox.shrink()),
       localizationsDelegates: const <LocalizationsDelegate<dynamic>>[
         GlobalMaterialLocalizations.delegate,
         GlobalWidgetsLocalizations.delegate,

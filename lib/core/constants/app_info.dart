@@ -2,8 +2,12 @@
 class AppInfo {
   const AppInfo._();
 
+  /// Canonical app name — keep in lock-step with `android:label` in
+  /// `AndroidManifest.xml` and the splash wordmark.
+  static const String appName = 'BongoCal';
+
   static const String displayNameBn = 'বঙ্গক্যাল';
-  static const String displayNameEn = 'BongoCal';
+  static const String displayNameEn = appName;
 
   /// Tagline used on splash and onboarding.
   static const String taglineBn = 'তিন ক্যালেন্ডার, এক জায়গায়';

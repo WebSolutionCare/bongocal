@@ -1,7 +1,7 @@
 name: bongocal
 description: A premium Bangla calendar for Bangladesh — three calendars, one place.
 publish_to: 'none'
-version: 0.1.0+1
+version: 0.9.0+1
 
 environment:
   sdk: ">=3.6.0 <4.0.0"
@@ -30,6 +30,7 @@ dependencies:
   uuid: ^4.4.2
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.13.0
   flutter_lints: ^4.0.0
   flutter_test:
     sdk: flutter
@@ -41,3 +42,12 @@ flutter:
     - assets/icons/
     - assets/images/
     - assets/data/
+
+flutter_launcher_icons:
+  android: true
+  ios: false
+  image_path: "assets/images/app_icon.png"
+  background_color: "#006A4E"
+  theme_color: "#006A4E"
+  adaptive_icon_background: "#006A4E"
+  adaptive_icon_foreground: "assets/images/app_icon.png"

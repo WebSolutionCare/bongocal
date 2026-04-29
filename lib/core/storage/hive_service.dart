@@ -36,6 +36,7 @@ class HiveService {
       Hive.openBox<dynamic>(HiveBoxes.settings),
       Hive.openBox<PersonalEventModel>(HiveBoxes.events),
       Hive.openBox<dynamic>(HiveBoxes.notifications),
+      Hive.openBox<dynamic>(HiveBoxes.festivalState),
     ]);
 
     _initialized = true;
@@ -65,4 +66,5 @@ class HiveBoxes {
   static const String prayerTimes = 'prayer_times';
   static const String weather = 'weather';
   static const String notifications = 'notifications_state';
+  static const String festivalState = 'festival_state';
 }

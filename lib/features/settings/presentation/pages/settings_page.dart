@@ -217,7 +217,9 @@ class _Body extends ConsumerWidget {
               icon: Icons.celebration_outlined,
               tone: SettingsIconTone.gold,
               label: 'উৎসবের শুভেচ্ছা',
-              subLabel: 'সেটিং সংরক্ষিত · উৎসবের ওভারলে শীঘ্রই',
+              subLabel: settings.festivalGreetingsEnabled
+                  ? 'উৎসবের সকালে শুভেচ্ছার ওভারলে দেখাবে'
+                  : 'নিষ্ক্রিয়',
               value: settings.festivalGreetingsEnabled,
               onChanged: (bool v) =>
                   apply(settings.copyWith(festivalGreetingsEnabled: v)),

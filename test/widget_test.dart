@@ -1,4 +1,5 @@
 import 'package:bongocal/app/app.dart';
+import 'package:bongocal/core/clock_provider.dart';
 import 'package:bongocal/features/events/presentation/providers/events_provider.dart';
 import 'package:bongocal/features/onboarding/presentation/providers/onboarding_provider.dart';
 import 'package:flutter/material.dart';
@@ -21,6 +22,9 @@ void main() {
           // straight to home.
           hasCompletedOnboardingProvider.overrideWith((_) async => true),
           splashMinDurationProvider.overrideWithValue(Duration.zero),
+          // Pin "today" so the asserted date strings stay stable now
+          // that the production clock is `DateTime.now()`.
+          clockProvider.overrideWithValue(() => DateTime(2026, 4, 27)),
         ],
         child: const BongoCalApp(),
       ),

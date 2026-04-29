@@ -1,0 +1,65 @@
+{
+  "pohela_boishakh": {
+    "nameBn": "শুভ নববর্ষ ১৪৩৩",
+    "nameEn": "Happy Bengali New Year",
+    "greetingBn": "নতুন বছরের শুভেচ্ছা! পান্তা-ইলিশের সাথে বরণ করি ১৪৩৩।",
+    "greetingEn": "Wishing you a joyful Pohela Boishakh.",
+    "theme": "boishakh",
+    "colors": { "start": "#F42A41", "end": "#FF6B6B" },
+    "illustrationKey": "boishakh_alpana"
+  },
+  "eid_ul_fitr": {
+    "nameBn": "ঈদ মোবারক",
+    "nameEn": "Eid Mubarak",
+    "greetingBn": "ঈদুল ফিতরের আন্তরিক শুভেচ্ছা। পরিবার ও বন্ধুদের সাথে আনন্দে কাটুক দিনটি।",
+    "greetingEn": "May this Eid bring peace, joy, and togetherness.",
+    "theme": "eid",
+    "colors": { "start": "#0E5C46", "end": "#1F8A6C" },
+    "illustrationKey": "eid_crescent"
+  },
+  "eid_ul_adha": {
+    "nameBn": "ঈদ মোবারক",
+    "nameEn": "Eid Mubarak",
+    "greetingBn": "ঈদুল আযহার শুভেচ্ছা। ত্যাগের এই দিনে ভরে উঠুক আপনার হৃদয়।",
+    "greetingEn": "Eid ul-Adha greetings — a day of sacrifice and grace.",
+    "theme": "eid",
+    "colors": { "start": "#0E5C46", "end": "#D4AF37" },
+    "illustrationKey": "eid_crescent"
+  },
+  "independence_day": {
+    "nameBn": "শুভ স্বাধীনতা দিবস",
+    "nameEn": "Happy Independence Day",
+    "greetingBn": "মুক্তিযোদ্ধাদের প্রতি শ্রদ্ধা — স্বাধীনতা ও জাতীয় দিবসের শুভেচ্ছা।",
+    "greetingEn": "Honoring the heroes of 1971.",
+    "theme": "independence",
+    "colors": { "start": "#006A4E", "end": "#08956F" },
+    "illustrationKey": "bd_flag"
+  },
+  "victory_day": {
+    "nameBn": "মহান বিজয় দিবস",
+    "nameEn": "Victory Day",
+    "greetingBn": "১৯৭১-এর বিজয়ের গর্ব আজও বুকে — শুভ বিজয় দিবস।",
+    "greetingEn": "Celebrating the victory of 1971.",
+    "theme": "victory",
+    "colors": { "start": "#006A4E", "end": "#F42A41" },
+    "illustrationKey": "bd_flag"
+  },
+  "durga_puja": {
+    "nameBn": "শুভ দুর্গাপূজা",
+    "nameEn": "Subho Durga Puja",
+    "greetingBn": "মা দুর্গার আশীর্বাদে ভরে উঠুক আপনার ঘর। শুভ শারদীয়া।",
+    "greetingEn": "Wishing you a blessed Durga Puja.",
+    "theme": "durga_puja",
+    "colors": { "start": "#C9622E", "end": "#F2A65A" },
+    "illustrationKey": "durga_pattern"
+  },
+  "christmas": {
+    "nameBn": "শুভ বড়দিন",
+    "nameEn": "Merry Christmas",
+    "greetingBn": "শুভ বড়দিন। শান্তি ও আনন্দে কাটুক দিনটি।",
+    "greetingEn": "Wishing you peace and joy this Christmas.",
+    "theme": "christmas",
+    "colors": { "start": "#0E5C46", "end": "#D4AF37" },
+    "illustrationKey": "christmas_star"
+  }
+}
