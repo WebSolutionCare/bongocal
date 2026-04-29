@@ -60,3 +60,9 @@ class ValidationFailure extends Failure {
 class UnknownFailure extends Failure {
   const UnknownFailure({super.message});
 }
+
+/// OS-level notification scheduling failed (channel rejected, exact-alarm
+/// permission missing on Android 12+, plugin not initialized, etc.).
+class NotificationFailure extends Failure {
+  const NotificationFailure({super.message});
+}

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../features/notifications/presentation/providers/notification_scheduler_provider.dart';
 import '../shared/theme/theme.dart';
 import 'router.dart';
 
@@ -12,6 +13,11 @@ class BongoCalApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Activates the holiday-reminder orchestrator. Watching it here keeps
+    // the provider alive for the app lifetime; it self-reschedules
+    // whenever settings or the upcoming-holiday list change.
+    ref.watch(notificationOrchestratorProvider);
+
     return MaterialApp.router(
       title: 'BongoCal',
       debugShowCheckedModeBanner: false,

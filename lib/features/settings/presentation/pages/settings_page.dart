@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -6,6 +7,7 @@ import '../../../../app/router.dart';
 import '../../../../core/utils/bangla_numerals.dart';
 import '../../../../shared/theme/theme.dart';
 import '../../../../shared/widgets/bottom_nav.dart';
+import '../../../notifications/presentation/providers/notification_scheduler_provider.dart';
 import '../../domain/entities/app_settings.dart';
 import '../../domain/entities/language_preference.dart';
 import '../../domain/entities/primary_calendar_preference.dart';
@@ -208,50 +210,9 @@ class _Body extends ConsumerWidget {
           titleBn: 'নোটিফিকেশন',
           titleEn: 'Notifications',
           children: <Widget>[
-            SettingsSwitchTile(
-              icon: Icons.notifications_active_outlined,
-              tone: SettingsIconTone.red,
-              label: 'ছুটির রিমাইন্ডার',
-              subLabel: 'সেটিং সংরক্ষিত · নোটিফিকেশন শীঘ্রই আসছে',
-              value: settings.notificationsEnabled,
-              onChanged: (bool v) =>
-                  apply(settings.copyWith(notificationsEnabled: v)),
-            ),
-            SettingsTile(
-              icon: Icons.access_time,
-              tone: SettingsIconTone.gray,
-              label: 'কখন জানাবেন',
-              subLabel: 'সেটিং সংরক্ষিত',
-              trailing: SettingsValueTrailing(
-                text: _holidayReminderLabel(
-                  settings.holidayReminderDays,
-                  useBn: settings.showBanglaNumerals,
-                ),
-              ),
-              onTap: () async {
-                final List<int>? picked =
-                    await showPreferencePicker<List<int>>(
-                  context: context,
-                  title: 'কখন জানাবেন',
-                  options: const <List<int>>[
-                    <int>[1],
-                    <int>[3],
-                    <int>[7],
-                    <int>[1, 3, 7],
-                  ],
-                  selected: settings.holidayReminderDays,
-                  labelOf: (List<int> d) => _holidayReminderLabel(
-                    d,
-                    useBn: settings.showBanglaNumerals,
-                  ),
-                );
-                if (picked != null) {
-                  await apply(
-                    settings.copyWith(holidayReminderDays: picked),
-                  );
-                }
-              },
-            ),
+            _HolidayReminderToggleTile(settings: settings, apply: apply),
+            _HolidayReminderDaysTile(settings: settings, apply: apply),
+            const _TestNotificationTile(),
             SettingsSwitchTile(
               icon: Icons.celebration_outlined,
               tone: SettingsIconTone.gold,
@@ -379,15 +340,6 @@ class _Body extends ConsumerWidget {
     );
   }
 
-  static String _holidayReminderLabel(List<int> days, {bool useBn = true}) {
-    if (days.isEmpty) return 'বন্ধ';
-    String fmt(int n) => useBn ? BanglaNumerals.fromInt(n) : '$n';
-    if (days.length == 1) {
-      return '${fmt(days.first)} দিন আগে';
-    }
-    return '${days.map(fmt).join(' · ')} দিন আগে';
-  }
-
   static String _soundLabel(String key) {
     switch (key) {
       case 'chime':
@@ -397,6 +349,142 @@ class _Body extends ConsumerWidget {
       default:
         return 'ডিফল্ট';
     }
+  }
+}
+
+String _holidayReminderLabel(List<int> days, {bool useBn = true}) {
+  if (days.isEmpty) return 'বন্ধ';
+  String fmt(int n) => useBn ? BanglaNumerals.fromInt(n) : '$n';
+  if (days.length == 1) return '${fmt(days.first)} দিন আগে';
+  return '${days.map(fmt).join(' · ')} দিন আগে';
+}
+
+/// Toggle tile for holiday reminders. On web the plugin is unsupported,
+/// so flipping it on shows a snackbar (and still persists, so the
+/// preference rides along to mobile).
+class _HolidayReminderToggleTile extends ConsumerWidget {
+  const _HolidayReminderToggleTile({
+    required this.settings,
+    required this.apply,
+  });
+
+  final AppSettings settings;
+  final Future<void> Function(AppSettings) apply;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final AsyncValue<int> count =
+        ref.watch(pendingHolidayReminderCountProvider);
+    final bool useBn = settings.showBanglaNumerals;
+    final String subLabel;
+    if (!settings.notificationsEnabled) {
+      subLabel = 'বন্ধ';
+    } else if (kIsWeb) {
+      subLabel = 'শুধু Android/iOS-এ পাঠানো হয়';
+    } else {
+      final int n = count.valueOrNull ?? 0;
+      final String num = useBn ? BanglaNumerals.fromInt(n) : '$n';
+      subLabel = '$num টি রিমাইন্ডার নির্ধারিত';
+    }
+    return SettingsSwitchTile(
+      icon: Icons.notifications_active_outlined,
+      tone: SettingsIconTone.red,
+      label: 'ছুটির রিমাইন্ডার',
+      subLabel: subLabel,
+      value: settings.notificationsEnabled,
+      onChanged: (bool v) async {
+        await apply(settings.copyWith(notificationsEnabled: v));
+        if (v && kIsWeb && context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('নোটিফিকেশন শুধু Android ও iOS-এ পাঠানো হয়।'),
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+      },
+    );
+  }
+}
+
+class _HolidayReminderDaysTile extends StatelessWidget {
+  const _HolidayReminderDaysTile({
+    required this.settings,
+    required this.apply,
+  });
+
+  final AppSettings settings;
+  final Future<void> Function(AppSettings) apply;
+
+  @override
+  Widget build(BuildContext context) {
+    return SettingsTile(
+      icon: Icons.access_time,
+      tone: SettingsIconTone.gray,
+      label: 'কখন জানাবেন',
+      subLabel: settings.notificationsEnabled
+          ? 'ছুটির আগে রিমাইন্ডার পাঠানো হবে'
+          : 'রিমাইন্ডার বন্ধ আছে',
+      trailing: SettingsValueTrailing(
+        text: _holidayReminderLabel(
+          settings.holidayReminderDays,
+          useBn: settings.showBanglaNumerals,
+        ),
+      ),
+      onTap: settings.notificationsEnabled
+          ? () async {
+              final List<int>? picked = await showPreferencePicker<List<int>>(
+                context: context,
+                title: 'কখন জানাবেন',
+                options: const <List<int>>[
+                  <int>[1],
+                  <int>[3],
+                  <int>[7],
+                  <int>[1, 3, 7],
+                ],
+                selected: settings.holidayReminderDays,
+                labelOf: (List<int> d) => _holidayReminderLabel(
+                  d,
+                  useBn: settings.showBanglaNumerals,
+                ),
+              );
+              if (picked != null) {
+                await apply(settings.copyWith(holidayReminderDays: picked));
+              }
+            }
+          : null,
+    );
+  }
+}
+
+/// Sends a self-test notification 5 s after tap so the user can confirm
+/// the OS channel is wired correctly. Hidden on web.
+class _TestNotificationTile extends ConsumerWidget {
+  const _TestNotificationTile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    if (kIsWeb) return const SizedBox.shrink();
+    return SettingsTile(
+      icon: Icons.send_outlined,
+      tone: SettingsIconTone.info,
+      label: 'টেস্ট নোটিফিকেশন',
+      subLabel: '৫ সেকেন্ড পরে একটি টেস্ট পাঠাবে',
+      trailing: const SettingsChevTrailing(),
+      onTap: () async {
+        await ref
+            .read(notificationSchedulerProvider)
+            .scheduleTestNotification();
+        if (context.mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('টেস্ট নোটিফিকেশন ৫ সেকেন্ড পরে আসবে।'),
+              duration: Duration(seconds: 3),
+            ),
+          );
+        }
+      },
+    );
   }
 }
 

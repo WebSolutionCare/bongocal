@@ -35,6 +35,7 @@ class HiveService {
     await Future.wait<void>(<Future<void>>[
       Hive.openBox<dynamic>(HiveBoxes.settings),
       Hive.openBox<PersonalEventModel>(HiveBoxes.events),
+      Hive.openBox<dynamic>(HiveBoxes.notifications),
     ]);
 
     _initialized = true;
